@@ -4,7 +4,7 @@ _Last updated: 2026-11-07_
 
 ## Goal
 
-Build a simple, good-looking mobile-first, online multiplayer four-digit guessing game that friends can play on Wi-Fi using a private invite code.
+Build a simple, good-looking mobile-first, online multiplayer four-digit guessing game that friends can play from different locations using a public internet connection and private invite code (Wi-Fi or mobile data).
 
 ## Confirmed game mechanics
 
@@ -36,9 +36,9 @@ Build a simple, good-looking mobile-first, online multiplayer four-digit guessin
 
 ## Still to do for public launch
 
-- [ ] Create a dedicated GitHub repository (the connected GitHub integration currently cannot create repositories)
-- [ ] Push this standalone codebase to the new repository
-- [ ] Deploy persistent Node/WebSocket hosting and test from two phones on different networks
+- [x] Dedicated GitHub repository created by user: `HY0831/fourcast-number-duel`
+- [x] All 21 source/project files pushed to `main` on GitHub
+- [ ] Approve and deploy the Render Blueprint (public Node/WebSocket service) and test from two phones on different networks
 - [ ] Add persistent room storage (Redis/PostgreSQL) for server restarts
 - [ ] Install frontend dependencies, perform the full typecheck/build, and test on Android and iOS browsers (npm registry blocked in current workspace)
 - [x] Mobile web-app manifest and install icons (HTTPS host required for home-screen installation)
@@ -63,3 +63,9 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - `render.yaml` specifies Singapore region and free hobby plan; the online guide provides the one-click deployment link.
 - GitHub repository: `HY0831/fourcast-number-duel` (new, separate from other projects).
 - Rooms currently live in server memory and cannot survive server restart/sleep. Later production enhancement: persist active rooms to durable storage.
+
+## Publishing note (2026-11-07)
+
+- GitHub upload completed on branch `main`, commit `6aaaae3b6c6e711cbb3a550418de06c3fdc73f24`.
+- Latest local validation: 10 of 10 Node game-engine tests passed. Frontend package installation and full production build have not yet been verified because npm registry access was unavailable in the current environment.
+- A Render plugin was connected, but deployment controls did not become callable within this active tool session; the one-click [Render Blueprint](https://render.com/deploy?repo=https://github.com/HY0831/fourcast-number-duel) is prepared for deployment approval. No public gameplay URL has been verified yet.
