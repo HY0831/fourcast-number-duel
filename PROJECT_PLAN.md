@@ -74,6 +74,6 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 
 - Applied nine supplied palette colors on every UI stage (home/create/join, waiting room, secret lock, active game/history, finished/rematch) in `client/src/theme.css`, with original base CSS recolored to remove legacy purple/mint branding.
 - Recolored favicon, PNG app icons, browser theme and install manifest for consistent branding. Game logic and Socket.IO interactions unchanged.
-- Render `vite: not found` diagnosed as `NODE_ENV=production` omitting `devDependencies` during `npm install`. Build step now uses `npm install --include=dev --no-audit --no-fund && npm run build`; Vite remains a devDependency. Node engine pinned to 22.x LTS.
+- Render `vite: not found` diagnosed as `NODE_ENV=production` omitting `devDependencies` during `npm install`. Build step now uses `npm install --include=dev --no-audit --no-fund && npm run build`; Vite and the React plugin are also included in regular dependencies as a fallback for existing Render services that still use the old build command. Node engine pinned to 22.x LTS.
 - Validate deployment via Render build logs and `/health`; app is not considered deployed until Render reports success.
 - Reminder: Render Free sleep/restarts reset active in-memory games; game sessions are not persistent yet.
