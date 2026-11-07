@@ -170,3 +170,15 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--sprout); ou
 @media (prefers-reduced-motion: reduce) {
   .ambient { animation: none; }
 }
+
+/* Player-separated histories: compact, independently expandable cards. */
+.player-history { border-top: 4px solid var(--redwood); }
+.player-history-2 { border-top-color: var(--rainfall); }
+.player-history .side-heading h3 { font-size: 17px; margin-top: 5px; overflow-wrap: anywhere; }
+.player-history .guess-list { margin-top: 15px; }
+.player-history .guess-row { padding: 10px 0; }
+.player-history .guess-details strong { color: var(--sow); }
+.player-history .guess-player-dot { flex: 0 0 29px; font-size: 11px; }
+.player-history .history-empty { min-height: 125px; padding: 18px 0 4px; }
+.player-history .history-empty > div { height: 42px; width: 42px; }
+.player-history .view-all { padding-top: 14px; }

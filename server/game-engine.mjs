@@ -16,10 +16,17 @@ export function normalizeRoomCode(value) {
   return String(value ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
 }
 
-export function validateCode(value, mode) {
+// Guesses always allow repeated digits, regardless of the selected secret-code mode.
+export function validateGuess(value) {
   if (typeof value !== 'string' || !/^\d{4}$/.test(value)) {
     throw new GameError('Enter exactly four digits (0–9).');
   }
+  return value;
+}
+
+// The uniqueness restriction applies only when players choose their secrets.
+export function validateCode(value, mode) {
+  validateGuess(value);
   if (mode === 'unique' && new Set(value).size !== 4) {
     throw new GameError('All four digits must be different in Unique mode.');
   }
@@ -160,7 +167,7 @@ export class GameStore {
     if (room.phase !== 'playing') throw new GameError('The game has not started.');
     if (room.players[room.turnIndex].id !== player.id) throw new GameError('Wait for your turn.');
     if (room.players.some((p) => !p.socketId)) throw new GameError('Wait for both players to reconnect.');
-    const guess = validateCode(proposedGuess, room.mode);
+    const guess = validateGuess(proposedGuess);
     const opponent = room.players.find((p) => p.id !== player.id);
     if (!opponent || !opponent.secret) throw new GameError('Opponent has not chosen a number.');
     const exact = countExact(opponent.secret, guess);

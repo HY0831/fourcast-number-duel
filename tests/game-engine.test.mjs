@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { countExact, GameStore, publicRoom, validateCode } from '../server/game-engine.mjs';
+import { countExact, GameStore, publicRoom, validateCode, validateGuess } from '../server/game-engine.mjs';
 
 test('exact-place matches only: mispositioned digits produce no hint', () => {
   assert.equal(countExact('1234', '4321'), 0);
@@ -93,13 +93,46 @@ test('only token owner can recover reserved seat', () => {
 });
 
 
-test('invalid unique-mode guesses do not consume a turn', () => {
-  const { store, room, a, b } = activeRoom();
+test('unique mode restricts only secret codes, while guesses may repeat digits', () => {
+  const { store, room, a, b } = activeRoom('unique');
+  assert.throws(() => store.setSecret(room.code, a.token, '1111'), /different/);
+  assert.equal(a.ready, false);
   store.setSecret(room.code, a.token, '1234');
   store.setSecret(room.code, b.token, '5678');
-  assert.throws(() => store.guess(room.code, a.token, '1111'), /different/);
-  assert.equal(room.guesses.length, 0);
+
+  store.guess(room.code, a.token, '1111');
+  assert.equal(room.guesses[0].guess, '1111');
+  assert.equal(room.guesses[0].exact, 0);
+  assert.equal(room.players[room.turnIndex].id, b.id);
+  store.guess(room.code, b.token, '0000');
+  assert.equal(room.guesses[1].guess, '0000');
   assert.equal(room.players[room.turnIndex].id, a.id);
+});
+
+test('repeatable and unique modes accept repeated guesses, including leading zeros', () => {
+  for (const mode of ['repeat', 'unique']) {
+    assert.equal(validateGuess('0011'), '0011');
+    assert.equal(validateGuess('9999'), '9999');
+    const { store, room, a, b } = activeRoom(mode);
+    store.setSecret(room.code, a.token, '1234');
+    store.setSecret(room.code, b.token, '5678');
+    store.guess(room.code, a.token, '0055');
+    assert.equal(room.guesses[0].guess, '0055');
+    assert.equal(room.guesses[0].exact, 0);
+  }
+});
+
+test('invalid guess format rejects without consuming turn in either mode', () => {
+  for (const mode of ['repeat', 'unique']) {
+    const { store, room, a, b } = activeRoom(mode);
+    store.setSecret(room.code, a.token, '1234');
+    store.setSecret(room.code, b.token, '5678');
+    for (const invalid of ['12', '12a4', '12345', 1234, null]) {
+      assert.throws(() => store.guess(room.code, a.token, invalid), /four digits/);
+      assert.equal(room.guesses.length, 0);
+      assert.equal(room.players[room.turnIndex].id, a.id);
+    }
+  }
 });
 
 test('simultaneous rooms stay independent', () => {

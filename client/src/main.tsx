@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { io, Socket } from 'socket.io-client'
 import {
@@ -46,6 +46,7 @@ function initials(name: string) { return name.trim().slice(0, 1).toUpperCase() |
 function validDigits(code: string, mode: Mode) {
   return /^\d{4}$/.test(code) && (mode === 'repeat' || new Set(code).size === 4)
 }
+function validGuess(code: string) { return /^\d{4}$/.test(code) }
 function countText(n: number) { return n === 1 ? '1 correct position' : `${n} correct positions` }
 
 function Logo({ small = false }: { small?: boolean }) {
@@ -63,7 +64,7 @@ function ModeChoice({ value, selected, onClick, compact = false, disabled = fals
     <div className="mode-choice-top"><span className={`mode-symbol ${repeat ? 'lilac' : 'mint'}`}>{repeat ? <RefreshCw size={18} /> : <Fingerprint size={18} />}</span>
       <span className="mode-select">{selected ? <CheckCircle2 size={20} /> : <span className="empty-radio" />}</span></div>
     <strong>{repeat ? 'Repeatable' : 'No repeats'}</strong>
-    <span>{repeat ? 'Digits may repeat, like 1133.' : 'Every digit must be different.'}</span>
+    <span>{repeat ? 'Secret digits may repeat, like 1133.' : 'Your secret must use four different digits.'}</span>
     <span className="mode-example">{repeat ? 'e.g. 8 8 2 8' : 'e.g. 3 9 1 6'}</span>
   </button>
 }
@@ -96,6 +97,31 @@ function Avatar({ player, size = 'regular' }: { player: Player; size?: 'regular'
   return <div className={`avatar ${size === 'large' ? 'avatar-large' : ''} ${player.isHost ? 'avatar-primary' : 'avatar-secondary'}`}>{initials(player.name)}</div>
 }
 
+
+function PlayerHistory({ player, index, guesses, isYou, expanded, onToggle }: {
+  player: Player; index: number; guesses: Guess[]; isYou: boolean;
+  expanded: boolean; onToggle: () => void;
+}) {
+  const playerGuesses = guesses.filter(guess => guess.by === player.id).reverse()
+  const visible = expanded ? playerGuesses : playerGuesses.slice(0, 5)
+  return <section className={`game-card history-card player-history player-history-${index + 1}`} aria-label={`Player ${index + 1} guess history`}>
+    <div className="side-heading">
+      <div><span className="step-label">PLAYER {index + 1} HISTORY</span><h3>{isYou ? 'Your guesses' : `${player.name}'s guesses`}</h3></div>
+      <span className="count-bubble" aria-label={`${playerGuesses.length} guesses`}>{playerGuesses.length}</span>
+    </div>
+    {playerGuesses.length ? <>
+      <div className="guess-list">{visible.map((guess, i) => <div className="guess-row" key={guess.id}>
+        <div className={`guess-player-dot ${index === 0 ? 'dot-you' : 'dot-them'}`}>{playerGuesses.length - i}</div>
+        <div className="guess-details"><span>Attempt {playerGuesses.length - i}</span><strong>{guess.guess.split('').join('  ')}</strong></div>
+        <div className={`guess-exact ${guess.exact > 0 ? 'has-match' : ''}`}><strong>{guess.exact}/4</strong><small>correct</small></div>
+      </div>)}</div>
+      {playerGuesses.length > 5 && <button type="button" className="view-all" onClick={onToggle} aria-expanded={expanded}>
+        {expanded ? 'Show fewer guesses' : `View all ${playerGuesses.length} guesses`}<ChevronRight size={15} />
+      </button>}
+    </> : <div className="history-empty"><div><Hash size={22}/></div><strong>No guesses yet</strong><span>{isYou ? 'Your attempts will appear here.' : `${player.name}'s attempts will appear here.`}</span></div>}
+  </section>
+}
+
 function App() {
   const [connected, setConnected] = useState(false)
   const [room, setRoom] = useState<Room | null>(null)
@@ -109,7 +135,7 @@ function App() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [historyAll, setHistoryAll] = useState(false)
+  const [expandedHistory, setExpandedHistory] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     const socket = io({ reconnection: true, reconnectionDelay: 500, timeout: 10000 })
@@ -136,9 +162,9 @@ function App() {
     return () => { socket.disconnect(); socketRef.current = null }
   }, [])
 
-  useEffect(() => { setDigits(''); setHistoryAll(false) }, [room?.phase, room?.round])
+  useEffect(() => { setDigits(''); setExpandedHistory({}) }, [room?.phase, room?.round])
   useEffect(() => {
-    if (!room || room.mode === 'repeat' || new Set(digits).size === digits.length) return
+    if (!room || room.phase !== 'setup' || room.mode === 'repeat' || new Set(digits).size === digits.length) return
     setDigits('')
   }, [room?.mode])
 
@@ -147,10 +173,6 @@ function App() {
   const isTurn = room?.phase === 'playing' && room.turnPlayerId === room.you
   const bothOnline = room?.players.every(p => p.online) || false
   const latest = room?.guesses.at(-1)
-  const visibleGuesses = useMemo(() => {
-    if (!room) return []
-    return historyAll ? [...room.guesses].reverse() : [...room.guesses].reverse().slice(0, 6)
-  }, [room, historyAll])
 
   async function request<T extends Ack>(event: string, payload: unknown): Promise<T> {
     const socket = socketRef.current
@@ -274,7 +296,11 @@ function App() {
           {!self?.ready ? <><div className="mini-label">YOUR SECRET CODE</div><CodeSlots code={digits} mode={room.mode} /><div className="code-hint"><ShieldCheck size={15} /> Your number is hidden from your opponent</div><div className="keypad-wrap"><Keypad code={digits} setCode={gameInput} mode={room.mode} disabled={busy} /></div><button className="primary-btn submit-btn" disabled={!validDigits(digits, room.mode) || busy || !connected} onClick={() => act('room:secret', {code: digits}, () => setDigits(''))}>Lock my secret number <LockKeyhole size={18} /></button></> : <><div className="success-check"><Check size={40} /></div><div className="waiting-line"><span className="waiting-pulse" /> Waiting for your opponent to lock their code...</div></>}
           {self?.isHost && room.players.every(p => !p.ready) && <div className="change-mode"><span>Change mode</span><button onClick={() => act('room:mode', { mode: room.mode === 'unique' ? 'repeat' : 'unique' })} disabled={busy}>{room.mode === 'unique' ? 'Switch to repeatable' : 'Switch to no repeats'}<ChevronRight size={16}/></button></div>}</section>}
 
-        {room.phase === 'playing' && <div className="play-columns"><section className="game-card play-card"><div className={`turn-banner ${isTurn && bothOnline ? 'your-turn' : 'other-turn'}`}><span className="turn-banner-icon">{!bothOnline ? <WifiOff size={19} /> : isTurn ? <Sparkles size={19} /> : <Clock3 size={19}/>}</span><div><strong>{!bothOnline ? 'Waiting for reconnection' : isTurn ? 'Your turn to guess!' : `${opponent?.name || 'Opponent'} is guessing`}</strong><span>{!bothOnline ? 'The game will resume when both are online.' : isTurn ? `Try to crack ${opponent?.name || 'their'}'s secret code` : 'Your turn is coming up next.'}</span></div></div><div className="mini-label">{isTurn ? 'YOUR GUESS' : 'NEXT GUESS'}</div><CodeSlots code={digits} mode={room.mode} /><div className="guess-helper">{room.mode === 'unique' ? 'Each digit can only be used once.' : 'You can repeat digits.'} Only exact positions count.</div><div className="keypad-wrap"><Keypad code={digits} setCode={gameInput} mode={room.mode} disabled={!isTurn || !bothOnline || busy} /></div><button className="primary-btn submit-btn" onClick={() => act('room:guess', { guess: digits }, () => setDigits(''))} disabled={!isTurn || !bothOnline || !validDigits(digits, room.mode) || busy || !connected}>Submit guess <ArrowRight size={19} /></button>{latest && <div className="last-result"><div className="last-result-icon"><Hash size={18}/></div><div><span>LATEST GUESS</span><strong>{latest.guess.split('').join(' ')}</strong></div><div className="exact-counter"><strong>{latest.exact}<span>/4</span></strong><span>correct</span></div></div>}</section><section className="side-content"><div className="game-card history-card"><div className="side-heading"><div><span className="step-label">THE GAME SO FAR</span><h3>Guess history</h3></div><span className="count-bubble">{room.guesses.length}</span></div>{room.guesses.length ? <><div className="guess-list">{visibleGuesses.map((guess) => <div className="guess-row" key={guess.id}><div className={`guess-player-dot ${guess.by === room.you ? 'dot-you' : 'dot-them'}`}>{initials(room.players.find(p => p.id === guess.by)?.name || '?')}</div><div className="guess-details"><span>{guess.by === room.you ? 'You' : room.players.find(p => p.id === guess.by)?.name}</span><strong>{guess.guess.split('').join('  ')}</strong></div><div className={`guess-exact ${guess.exact > 0 ? 'has-match' : ''}`}><strong>{guess.exact}/4</strong><small>correct</small></div></div>)}</div>{room.guesses.length > 6 && <button className="view-all" onClick={() => setHistoryAll(!historyAll)}>{historyAll ? 'Show less' : `View all ${room.guesses.length} guesses`}<ChevronRight size={15} /></button>}</> : <div className="history-empty"><div><Hash size={23}/></div><strong>No guesses yet</strong><span>The first guess will appear here.</span></div>}</div><div className="tips-card"><div><ShieldCheck size={19} /><strong>A little reminder</strong></div><p>Only the right digit in the right position counts. We won't tell you which digits are correct!</p></div></section></div>}
+        {room.phase === 'playing' && <div className="play-columns"><section className="game-card play-card"><div className={`turn-banner ${isTurn && bothOnline ? 'your-turn' : 'other-turn'}`}><span className="turn-banner-icon">{!bothOnline ? <WifiOff size={19} /> : isTurn ? <Sparkles size={19} /> : <Clock3 size={19}/>}</span><div><strong>{!bothOnline ? 'Waiting for reconnection' : isTurn ? 'Your turn to guess!' : `${opponent?.name || 'Opponent'} is guessing`}</strong><span>{!bothOnline ? 'The game will resume when both are online.' : isTurn ? `Try to crack ${opponent?.name || 'their'}'s secret code` : 'Your turn is coming up next.'}</span></div></div><div className="mini-label">{isTurn ? 'YOUR GUESS' : 'NEXT GUESS'}</div><CodeSlots code={digits} mode="repeat" /><div className="guess-helper">You can repeat digits in any guess. Only exact positions count.</div><div className="keypad-wrap"><Keypad code={digits} setCode={gameInput} mode="repeat" disabled={!isTurn || !bothOnline || busy} /></div><button className="primary-btn submit-btn" onClick={() => act('room:guess', { guess: digits }, () => setDigits(''))} disabled={!isTurn || !bothOnline || !validGuess(digits) || busy || !connected}>Submit guess <ArrowRight size={19} /></button>{latest && <div className="last-result"><div className="last-result-icon"><Hash size={18}/></div><div><span>LATEST GUESS</span><strong>{latest.guess.split('').join(' ')}</strong></div><div className="exact-counter"><strong>{latest.exact}<span>/4</span></strong><span>correct</span></div></div>}</section><section className="side-content">
+          {room.players.map((player, index) => <PlayerHistory key={player.id} player={player} index={index}
+            guesses={room.guesses} isYou={player.id === room.you} expanded={!!expandedHistory[player.id]}
+            onToggle={() => setExpandedHistory(previous => ({ ...previous, [player.id]: !previous[player.id] }))} />)}
+          <div className="tips-card"><div><ShieldCheck size={19} /><strong>A little reminder</strong></div><p>Only the right digit in the right position counts. We won't tell you which digits are correct!</p></div></section></div>}
 
         {room.phase === 'finished' && <section className="game-card result-card"><div className={`winner-emblem ${room.winnerId === room.you ? 'you-won' : ''}`}>{room.winnerId === room.you ? <Trophy size={42} /> : <PartyPopper size={42} />}</div><span className="step-label">ROUND {room.round} COMPLETE</span><h2>{room.winnerId === room.you ? 'You cracked it!' : `${room.players.find(p => p.id === room.winnerId)?.name || 'Opponent'} wins!`}</h2><p>{room.winnerId === room.you ? 'Four digits. Four perfect positions. Nicely played.' : 'The code has been cracked. Ready for another round?'}</p><div className="reveal-panel"><span className="mini-label">SECRET NUMBERS REVEALED</span>{room.players.map(player => <div key={player.id} className="reveal-row"><div><Avatar player={player} /><strong>{player.id === room.you ? 'Your code' : `${player.name}'s code`}</strong></div><span>{room.revealedSecrets?.[player.id]?.split('').join(' ') || '—'}</span></div>)}</div><div className="result-stats"><div><strong>{room.guesses.filter(g => g.by === room.you).length}</strong><span>Your guesses</span></div><div><strong>{room.guesses.filter(g => g.by !== room.you).length}</strong><span>Their guesses</span></div></div>{self?.isHost ? <button className="primary-btn submit-btn" disabled={busy || !connected} onClick={() => act('room:rematch', {})}>Play another round <RotateCcw size={19} /></button> : <div className="waiting-line"><span className="waiting-pulse" /> Waiting for the host to start the next round...</div>}</section>}
         <footer className="game-footer"><LockKeyhole size={15} /> Private room <span>·</span> Codes stay secret until the round ends</footer>

@@ -4,19 +4,19 @@ A polished, mobile-first **real-time multiplayer number-guessing game**. Players
 
 ## Game rules
 
-1. One player **creates a room** and chooses **No repeats** (e.g. `1234`) or **Repeatable** (e.g. `1112`).
+1. One player **creates a room** and chooses **No repeats** (e.g. `1234`) or **Repeatable** (e.g. `1112`) for players' **secret codes**.
 2. They send the **six-character room code** or invite URL to a second player.
 3. Both players pick a secret **4-digit string** (leading `0` is allowed) and lock it. Their secrets are never sent to the opponent before the match ends.
 4. The server selects the first guesser (host first in round 1; switches on subsequent rounds).
-5. On their turn, a player enters four digits and submits a guess of the **other player's secret**.
+5. On their turn, a player enters four digits and submits a guess of the **other player's secret**. **Every guess may repeat digits**, even in No repeats mode.
 6. The only hint is the **number of digits at the exact correct position**, `0/4` through `4/4`. No other hint is given. Example: secret `1234`, guess `4321` → **0/4**, even though all four digits exist.
 7. The first player to receive `4/4` wins immediately. Both codes are revealed at the end. Host can initiate a rematch.
 8. If either player disconnects, guessing is paused until they return; browser refreshes automatically resume reserved seats from a locally stored session token.
 
 ## Features
 
-- Real-time turns and live guess history with Socket.IO
-- Two rulesets: repeatable or unique digits, enforced **on the server** for both secrets and guesses
+- Real-time turns and **separate Player 1 and Player 2 guess histories**, each independently expandable, with Socket.IO
+- Two secret-code rulesets: repeatable or unique digits, enforced **on the server when locking a secret**; guesses can always repeat digits
 - Private invite-code rooms, nickname entry, share/copy, reconnection
 - Secret codes never included in room broadcasts until the round is finished
 - Mobile-friendly number keypad (including `0`), large touch targets, clear feedback

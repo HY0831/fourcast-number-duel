@@ -22,8 +22,8 @@ Example in Repeatable mode: secret `1122` against guess `1111` returns `2/4`.
 
 ## 2. Two modes
 
-- **No repeats:** All four digits must be distinct in both secret codes and guesses; `0123` valid, `0012` invalid.
-- **Repeatable:** Digits may repeat in both codes and guesses; `0000` and `9090` valid.
+- **No repeats:** All four digits must be distinct when **setting a secret code**; `0123` valid, `0012` invalid as a secret. Guesses may repeat digits.
+- **Repeatable:** Digits may repeat in secret codes and guesses; `0000` and `9090` valid.
 - **Both:** Leading zeros are legal; every code is exactly four **characters**, not a numeric integer. Four numbers and their positions must all match for victory.
 
 ## 3. User journeys and screens
@@ -31,7 +31,7 @@ Example in Repeatable mode: secret `1122` against guess `1111` returns `2/4`.
 1. **Home:** Enter nickname; create room or join room. Creator chooses mode.
 2. **Waiting lobby:** See six-character room code, copy/share link, and wait for Player 2. Host may change mode.
 3. **Secret selection:** Both players privately enter four digits with the touch keypad and lock their code. Ready status is shown; the digits are not revealed to the rival.
-4. **Game screen:** See current turn indicator, numeric guess keypad, last guess and its exact-position count, and a chronologically ordered guess history.
+4. **Game screen:** See current turn indicator, numeric guess keypad, last guess and exact-position count, plus **separate Player 1 and Player 2 history cards** with newest attempts first and independent expand controls.
 5. **Result:** Display winner, both codes, total guess counts, and rematch action.
 6. **Reconnect:** Browser refresh or temporary network drop restores the player's seat using a randomly generated session token.
 
@@ -58,7 +58,7 @@ flowchart TD
 - Server owns all game state, tokens, secrets, scores, turn order and winner.
 - A player can only submit a secret during code selection, once per round.
 - A player can only guess during their own turn while both players are connected.
-- Bad-format or duplicate digits in Unique mode are rejected without taking a turn.
+- Bad-format guesses are rejected without taking a turn. Duplicate digits are rejected only when a player sets a secret in No repeats mode; guesses can always repeat.
 - There is no limit on the number of guesses per round.
 - There is no timer in MVP, so a player may think as long as needed while connected.
 - Turn alternation is strictly one submitted valid guess each.

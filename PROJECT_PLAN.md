@@ -12,8 +12,10 @@ Build a simple, good-looking mobile-first, online multiplayer four-digit guessin
 | --- | --- |
 | Players | 2 players per private room; many rooms supported |
 | Mode A | Repeatable digits (`0011`, `7777` both valid) |
-| Mode B | Unrepeatable digits (`0123` valid; `0012` invalid) |
-| Secrets | Each person locks their own hidden four-character digit string |
+| Mode B | Unrepeatable **secret** digits (`0123` valid; `0012` invalid as a secret) |
+| Secrets | Each person locks their own hidden four-character digit string; only secrets obey the selected uniqueness rule |
+| Guesses | All four-digit guesses may repeat digits in either mode; exact-position scoring remains unchanged |
+| History | Separate Player 1 and Player 2 cards with latest-first attempts and independent expand/collapse |
 | Turn | One guess at a time, strictly alternating |
 | Match feedback | Count of digits in exact correct positions only, never which positions |
 | Victory | First to guess all 4 positions correctly wins immediately |
@@ -30,7 +32,8 @@ Build a simple, good-looking mobile-first, online multiplayer four-digit guessin
 - [x] Server-side rules enforcement and turn validation
 - [x] Secret numbers excluded from snapshots until round ends
 - [x] Room/session reconnect and opponent presence
-- [x] Both number modes, 0-leading codes, numeric keypad
+- [x] Both secret-number modes, repeatable guesses in both modes, 0-leading codes and numeric keypad
+- [x] Separate, independently expandable Player 1 / Player 2 guess histories
 - [x] Automated game-engine tests (10 passing; local engine validation)
 - [x] Development and production commands + deployment instructions
 
@@ -74,6 +77,12 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 
 - Applied nine supplied palette colors on every UI stage (home/create/join, waiting room, secret lock, active game/history, finished/rematch) in `client/src/theme.css`, with original base CSS recolored to remove legacy purple/mint branding.
 - Recolored favicon, PNG app icons, browser theme and install manifest for consistent branding. Game logic and Socket.IO interactions unchanged.
-- Render `vite: not found` diagnosed as `NODE_ENV=production` omitting `devDependencies` during `npm install`. Build step now uses `npm install --include=dev --no-audit --no-fund && npm run build`; Vite and the React plugin are also included in regular dependencies as a fallback for existing Render services that still use the old build command. Node engine pinned to 22.x LTS.
+- Render `vite: not found` diagnosed as `NODE_ENV=production` omitting `devDependencies` during `npm install`. Build step now uses `npm install --include=dev --no-audit --no-fund && npm run build`; Vite and its React plugin were also moved to runtime dependencies as a fallback for existing Render services that still use the original build command; Node engine pinned to 22.x LTS.
 - Validate deployment via Render build logs and `/health`; app is not considered deployed until Render reports success.
 - Reminder: Render Free sleep/restarts reset active in-memory games; game sessions are not persistent yet.
+
+## Gameplay refinement (2026-11-08)
+
+- Unrepeatable mode now applies **only** when locking a secret; users can enter and submit repeated-digit guesses in either mode. Server-side validation has its own guess validator to prevent rules mismatching the UI.
+- Both players' guess histories are separated and labelled Player 1 / Player 2. Cards show their own attempt count, newest guesses first, and independent Show all controls.
+- Test coverage expanded for repeated guesses and malformed guess rejection. Palette preserved.
