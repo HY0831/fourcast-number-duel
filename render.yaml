@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: fourcast-number-duel
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: npm install --no-audit --no-fund && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
