@@ -8,6 +8,7 @@ import {
   Trophy, Users, Wifi, WifiOff, X,
 } from 'lucide-react'
 import './style.css'
+import './theme.css'
 
 type Mode = 'unique' | 'repeat'
 type Phase = 'lobby' | 'setup' | 'playing' | 'finished'

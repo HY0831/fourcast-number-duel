@@ -1,6 +1,6 @@
 # Fourcast — Project Plan & Progress
 
-_Last updated: 2026-11-07_
+_Last updated: 2026-11-08_
 
 ## Goal
 
@@ -69,3 +69,11 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - GitHub upload completed on branch `main`, commit `6aaaae3b6c6e711cbb3a550418de06c3fdc73f24`.
 - Latest local validation: 10 of 10 Node game-engine tests passed. Frontend package installation and full production build have not yet been verified because npm registry access was unavailable in the current environment.
 - A Render plugin was connected, but deployment controls did not become callable within this active tool session; the one-click [Render Blueprint](https://render.com/deploy?repo=https://github.com/HY0831/fourcast-number-duel) is prepared for deployment approval. No public gameplay URL has been verified yet.
+
+## Palette and Render build repair (2026-11-08)
+
+- Applied nine supplied palette colors on every UI stage (home/create/join, waiting room, secret lock, active game/history, finished/rematch) in `client/src/theme.css`, with original base CSS recolored to remove legacy purple/mint branding.
+- Recolored favicon, PNG app icons, browser theme and install manifest for consistent branding. Game logic and Socket.IO interactions unchanged.
+- Render `vite: not found` diagnosed as `NODE_ENV=production` omitting `devDependencies` during `npm install`. Build step now uses `npm install --include=dev --no-audit --no-fund && npm run build`; Vite remains a devDependency. Node engine pinned to 22.x LTS.
+- Validate deployment via Render build logs and `/health`; app is not considered deployed until Render reports success.
+- Reminder: Render Free sleep/restarts reset active in-memory games; game sessions are not persistent yet.

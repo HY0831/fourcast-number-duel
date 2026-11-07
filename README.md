@@ -39,7 +39,7 @@ After it is hosted, the host creates a private room and sends an invite link or 
 
 ## Local development
 
-Requires **Node.js 20.19+** and npm.
+Requires **Node.js 22.x** and npm.
 
 ```bash
 npm install
@@ -61,7 +61,11 @@ npm start       # Starts the built full-stack server on port 3001
 
 ### Hosting
 
-Deploy to a **persistent Node.js hosting provider that supports WebSockets** (e.g., a Node web service on Render, Railway, or Fly.io). Build: `npm install && npm run build`. Start: `npm start`. Expose the provider's `$PORT`. Share the public HTTPS address with friends; they can play from anywhere using Wi-Fi or mobile data. **Static-only hosting such as GitHub Pages or a Vercel static project will not support live Socket.IO game rooms by itself.**
+Deploy to a **persistent Node.js hosting provider that supports WebSockets** (e.g., a Node web service on Render, Railway, or Fly.io). Build: `npm install --include=dev --no-audit --no-fund && npm run build`. Start: `npm start`. Expose the provider's `$PORT`. Share the public HTTPS address with friends; they can play from anywhere using Wi-Fi or mobile data. **Static-only hosting such as GitHub Pages or a Vercel static project will not support live Socket.IO game rooms by itself.**
+
+## Design system
+
+Fourcast uses the nine-colour Seedling/Sow/Redwood palette provided by the project owner. Reusable role tokens and screen-state rules live in `client/src/theme.css` and are imported after the base `style.css`. The palette covers the welcome/room screens, private-code entry, both turn states, history, winner/rematch screens, favicons and PWA theme. All gameplay and networking behavior stays unchanged.
 
 ## Structure
 

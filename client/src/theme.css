@@ -1,0 +1,172 @@
+/* Fourcast / nine-colour identity — 2026-11-08.
+   All color values originate from the supplied Seedling/Sow palette.
+   This file intentionally loads AFTER style.css and preserves its spacing and responsive layout.
+*/
+:root {
+  --seedling: #FAF5E9;
+  --sow: #392525;
+  --redwood: #683226;
+  --terracotta: #B25D3E;
+  --rainfall: #728383;
+  --foliage: #3E4734;
+  --sprout: #E3E890;
+  --mist: #B6B7A5;
+  --pebble: #7E7B62;
+  color: var(--sow);
+  background: var(--sow);
+  color-scheme: light;
+}
+::selection { background: var(--sprout); color: var(--sow); }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--sprout); outline-offset: 3px; }
+.app-shell {
+  color: var(--sow);
+  background: radial-gradient(circle at 92% 8%, rgba(104,50,38,.55), transparent 34%),
+    radial-gradient(circle at 0% 82%, rgba(62,71,52,.42), transparent 40%), var(--sow);
+}
+.ambient-a { background: radial-gradient(circle, rgba(178,93,62,.19), transparent 72%); }
+.ambient-b { background: radial-gradient(circle, rgba(227,232,144,.13), transparent 72%); }
+/* Global navigation and logo, on the dark background. */
+.brand { color: var(--seedling); }
+.brand-period { color: var(--sprout); }
+.brand-icon { background: var(--sprout); box-shadow: 0 9px 22px rgba(0,0,0,.15); }
+.brand-icon span { background: var(--sow); }
+.brand-icon span:last-child { background: var(--terracotta); }
+.connection { color: var(--mist); }
+.connection-dot { background: var(--pebble); }
+.connection-live { color: var(--sprout); }
+.connection-live .connection-dot { background: var(--sprout); box-shadow: 0 0 0 4px rgba(227,232,144,.14); }
+.topbar-exit { color: var(--seedling); background: var(--redwood); border-color: var(--redwood); }
+.topbar-exit:hover { background: var(--terracotta); border-color: var(--terracotta); }
+.alert { background: var(--seedling); color: var(--redwood); border-color: var(--terracotta); box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+.site-footer, .game-footer { color: var(--mist); }
+/* Landing / create / join room */
+.hero h1 { color: var(--seedling); }
+.hero h1 span { color: var(--sprout); }
+.hero>p, .hero-perks { color: var(--seedling); }
+.hero-perks svg { color: var(--sprout); }
+.eyebrow { background: var(--sprout); color: var(--sow); }
+.step-label { color: var(--terracotta); }
+.floating-code { background: var(--seedling); border-color: var(--mist); box-shadow: 0 22px 55px rgba(0,0,0,.2); }
+.floating-code span { background: var(--sprout); color: var(--sow); }
+.floating-code span:nth-child(2) { background: var(--mist); color: var(--sow); }
+.floating-code span:nth-child(4) { background: var(--rainfall); color: var(--sow); }
+.sparkle-one { color: var(--sprout); }
+.sparkle-two { color: var(--terracotta); }
+.small-orbit { border-color: var(--rainfall); }
+.panel, .game-card { background: var(--seedling); border-color: var(--mist); box-shadow: 0 20px 55px rgba(0,0,0,.16); }
+.tabs { background: var(--mist); border-bottom-color: var(--pebble); }
+.tabs button { color: var(--sow); }
+.tabs button.active { color: var(--redwood); background: var(--seedling); box-shadow: 0 2px 10px rgba(57,37,37,.13); }
+.tabs button:not(.active):hover { background: rgba(250,245,233,.5); }
+.panel-heading h2, .game-card h2, .side-heading h3 { color: var(--sow); }
+.panel-heading p, .small-hint, .lobby-card>p, .result-card>p, .center-heading>p { color: var(--redwood); }
+.field-label, .mini-label { color: var(--redwood); }
+.row-heading>span { color: var(--redwood); }
+.text-input { background: var(--seedling); border-color: var(--mist); color: var(--sow); }
+.text-input:focus { border-color: var(--terracotta); box-shadow: 0 0 0 4px rgba(178,93,62,.16); }
+.text-input::placeholder { color: var(--pebble); }
+.mode-choice { background: var(--seedling); border-color: var(--mist); color: var(--sow); }
+.mode-choice.selected { background: var(--sprout); border-color: var(--foliage); box-shadow: inset 0 0 0 1px var(--foliage); }
+.mode-choice:focus-visible { outline-color: var(--redwood); }
+.mode-choice>span:not(.mode-choice-top), .mode-choice .mode-example { color: var(--redwood); }
+.mode-symbol.mint, .mint { background: var(--mist); color: var(--foliage); }
+.mode-symbol.lilac, .lilac { background: var(--rainfall); color: var(--sow); }
+.mode-select { color: var(--foliage); }
+.empty-radio { border-color: var(--pebble); }
+.primary-btn { background: var(--redwood); color: var(--seedling); box-shadow: 0 9px 22px rgba(104,50,38,.26); }
+.primary-btn:hover:not(:disabled) { background: var(--terracotta); }
+.primary-btn:disabled { background: var(--mist); color: var(--sow); box-shadow: none; opacity: 1; }
+.outline-btn { background: var(--seedling); color: var(--redwood); border: 1px solid var(--pebble); }
+.outline-btn:hover:not(:disabled) { background: var(--sprout); border-color: var(--foliage); }
+/* Private room: share code, waiting state, and selected mode. */
+.room-subhead h1 { color: var(--seedling); }
+.room-subhead .step-label { color: var(--sprout); }
+.round-pill { background: var(--sprout); color: var(--sow); }
+.mode-tag { background: var(--seedling); color: var(--redwood); border-color: var(--mist); }
+.mode-tag svg { color: var(--terracotta); }
+.player-chip { background: var(--seedling); border-color: var(--mist); }
+.player-active { background: var(--sprout); border-color: var(--foliage); box-shadow: 0 4px 15px rgba(227,232,144,.12); }
+.player-chip strong { color: var(--sow); }
+.player-chip>div:nth-child(2)>span { color: var(--redwood); }
+.avatar-primary, .dot-you { color: var(--seedling); background: var(--redwood); }
+.avatar-secondary, .dot-them { color: var(--sow); background: var(--rainfall); }
+.avatar.ghost { background: var(--mist); color: var(--redwood); }
+.versus { color: var(--seedling); }
+.chip-check { color: var(--foliage); }
+.offline-tag { color: var(--seedling); background: var(--redwood); border-color: var(--terracotta); }
+.big-icon.lilac-bg, .lilac-bg { color: var(--seedling); background: var(--redwood); }
+.big-icon.mint-bg, .mint-bg { color: var(--sow); background: var(--sprout); }
+.room-code-label { color: var(--redwood); }
+.invite-code span { color: var(--sow); background: var(--sprout); border-color: var(--foliage); }
+.waiting-line { color: var(--redwood); }
+.waiting-pulse { background: var(--terracotta); box-shadow: 0 0 0 5px rgba(178,93,62,.14); }
+@keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(178,93,62,.04); } }
+.lobby-mode { border-top-color: var(--mist); }
+.lobby-mode-actions { background: var(--mist); }
+.lobby-mode-actions button { color: var(--redwood); }
+.lobby-mode-actions button.on { color: var(--sow); background: var(--sprout); box-shadow: 0 1px 7px rgba(57,37,37,.12); }
+/* Both secret-code selection and in-turn guessing share the same keypad. */
+.code-slot { background: var(--seedling); border-color: var(--mist); color: var(--sow); }
+.code-slot:not(.filled) { color: var(--pebble); }
+.code-slot.filled { background: var(--sprout); border-color: var(--foliage); }
+.code-slot.cursor-slot { border-color: var(--terracotta); }
+.code-error .code-slot { border-color: var(--terracotta); }
+.code-hint, .guess-helper { color: var(--redwood); }
+.key { color: var(--sow); border-color: var(--mist); background: var(--seedling); box-shadow: 0 3px 0 var(--mist); }
+.key:hover:not(:disabled), .key:focus-visible { background: var(--sprout); border-color: var(--foliage); }
+.key:active:not(:disabled) { box-shadow: 0 1px 0 var(--mist); }
+.key:disabled { background: var(--mist); color: var(--pebble); }
+.key-soft { background: var(--mist); border-color: var(--mist); box-shadow: none; }
+.key-clear { color: var(--redwood); }
+.success-check { color: var(--seedling); background: var(--foliage); border-color: var(--sprout); }
+.change-mode { color: var(--redwood); }
+.change-mode button { color: var(--terracotta); }
+/* Playing: clearly distinct own turn vs opponent's turn, exact matches and history. */
+.your-turn { background: var(--sprout); color: var(--sow); }
+.your-turn .turn-banner-icon { color: var(--seedling); background: var(--foliage); }
+.other-turn { background: var(--mist); color: var(--sow); }
+.other-turn .turn-banner-icon { color: var(--seedling); background: var(--redwood); }
+.turn-banner span:not(.turn-banner-icon) { color: var(--sow); }
+.last-result { background: var(--mist); }
+.last-result-icon { color: var(--seedling); background: var(--redwood); }
+.last-result>div:nth-child(2) span { color: var(--redwood); }
+.last-result>div:nth-child(2) strong { color: var(--sow); }
+.exact-counter { background: var(--foliage); color: var(--seedling); }
+.exact-counter strong span { color: var(--sprout); }
+.exact-counter>span { color: var(--seedling); }
+.side-heading .step-label { color: var(--terracotta); }
+.count-bubble { background: var(--sprout); color: var(--sow); }
+.history-empty>div { color: var(--seedling); background: var(--rainfall); }
+.history-empty strong { color: var(--sow); }
+.history-empty span { color: var(--redwood); }
+.guess-row { border-bottom-color: var(--mist); }
+.guess-details span { color: var(--redwood); }
+.guess-details strong { color: var(--sow); }
+.guess-exact { background: var(--mist); color: var(--sow); }
+.guess-exact.has-match { background: var(--sprout); color: var(--sow); }
+.view-all { color: var(--redwood); }
+.view-all:hover { color: var(--terracotta); }
+.tips-card { color: var(--sow); background: var(--rainfall); }
+.tips-card>div, .tips-card p { color: var(--sow); }
+.tips-card strong { color: var(--sow); }
+/* Win/lose and rematch. Sprout rewards and Foliage signal a finished game. */
+.result-card { border-top: 7px solid var(--foliage); }
+.winner-emblem { color: var(--seedling); background: var(--foliage); }
+.winner-emblem.you-won { color: var(--foliage); background: var(--sprout); }
+.result-card .step-label { color: var(--terracotta); }
+.reveal-panel { background: var(--mist); }
+.reveal-panel .mini-label { color: var(--redwood); }
+.reveal-row + .reveal-row { border-top-color: var(--pebble); }
+.reveal-row strong, .reveal-row>span { color: var(--sow); }
+.result-stats strong { color: var(--redwood); }
+.result-stats span { color: var(--redwood); }
+/* Touch targets, small screen legibility and accessible motion. */
+@media (max-width: 700px) {
+  .mode-choice { border-width: 2px; }
+  .primary-btn, .outline-btn { min-height: 48px; }
+  .topbar-exit { min-height: 42px; }
+  .key { min-height: 53px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambient { animation: none; }
+}

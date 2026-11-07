@@ -10,7 +10,9 @@ Fourcast is an **online multiplayer web game**. The two people can be in differe
 4. Approve creation. When the build finishes, Render supplies a **public HTTPS link**, typically `https://fourcast-number-duel.onrender.com` (the actual assigned URL can be different; check your dashboard).
 5. Open the assigned URL on **two different phones** using separate internet connections. No developer computer needs to stay on.
 
-You can also create a Render **Web Service** manually using this repository, selecting Node, Free plan, region Singapore, build command `npm install --no-audit --no-fund && npm run build`, start command `npm start`, and health check `/health`.
+After the source changes are pushed to GitHub, existing Render services with auto-deploy enabled should rebuild. For a manual service, the **Build Command** must be updated in the Render dashboard if it has been configured independently of `render.yaml`.
+
+You can also create a Render **Web Service** manually using this repository, selecting Node, Free plan, region Singapore, build command `npm install --include=dev --no-audit --no-fund && npm run build`, start command `npm start`, and health check `/health`.
 
 **Important**: The GitHub repository is source code, not the game link. GitHub Pages or static-only hosting will not run the Socket.IO backend. A hosted Node server is necessary.
 
@@ -36,3 +38,7 @@ A room supports two players; multiple pairs can play in different rooms simultan
 ## 4. Developer-only setup
 
 To test the source on a computer locally, run `npm install` and `npm run dev`. This is optional and **not required** for remote friends after the Render deployment is live.
+
+## 5. Troubleshooting `vite: not found`
+
+Vite is a build-time devDependency. When `NODE_ENV=production` is present, plain `npm install` skips devDependencies. The `render.yaml` build command explicitly includes them: `npm install --include=dev --no-audit --no-fund && npm run build`. If Render has a manually configured build command instead of Blueprint sync, update it in **Service > Settings > Build & Deploy** to match. Restart with a fresh deployment after changing build settings. The production start command remains `npm start`.

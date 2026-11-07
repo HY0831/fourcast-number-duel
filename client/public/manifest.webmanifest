@@ -1,14 +1,24 @@
 {
-  "name": "Fourcast — The Number Duel",
+  "name": "Fourcast \u2014 The Number Duel",
   "short_name": "Fourcast",
   "description": "Play a private four-digit guessing game with a friend, live on your phones.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f7f8fb",
-  "theme_color": "#7864e8",
+  "background_color": "#392525",
+  "theme_color": "#683226",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
