@@ -24,6 +24,21 @@ test('Playgrove homepage, Fourcast entry, and back navigation work on mobile', a
   await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible()
 })
 
+test('homepage has no horizontal overflow on small phones or desktop', async ({ page }) => {
+  for (const viewport of [
+    { width: 320, height: 700 },
+    { width: 390, height: 844 },
+    { width: 1440, height: 900 },
+  ]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Play Fourcast' })).toBeVisible()
+    const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)
+    expect(horizontalOverflow, `No horizontal overflow at ${viewport.width}px`).toBe(false)
+  }
+})
+
 test('old Fourcast invite links still open the correct Join screen', async ({ page }) => {
   await page.goto('/?room=ABC123')
   await expect(page).toHaveURL(/\/games\/fourcast\?room=ABC123$/)
@@ -65,7 +80,12 @@ test('two online players can guess, view separate histories, resume and rematch'
     await expect(page.locator('.player-history-1 .guess-row')).toHaveCount(1)
     await expect(page.locator('.player-history-2 .guess-row')).toHaveCount(1)
 
-    // Returning to the library keeps the same Fourcast session for recovery.
+    // Cancelling a navigation warning must leave the active duel untouched.
+    page.once('dialog', dialog => dialog.dismiss())
+    await page.getByRole('button', { name: 'All games' }).click()
+    await expect(page).toHaveURL(/\/games\/fourcast$/)
+
+    // Accepting the warning preserves the room session for recovery.
     page.once('dialog', dialog => dialog.accept())
     await page.getByRole('button', { name: 'All games' }).click()
     await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible()
