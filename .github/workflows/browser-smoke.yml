@@ -1,0 +1,44 @@
+name: Playgrove Browser Smoke Tests
+on:
+  push:
+    branches:
+      - feature/playgrove-homepage-v1
+  pull_request:
+    paths:
+      - 'client/**'
+      - 'server/**'
+      - 'e2e/**'
+      - 'playwright.config.ts'
+permissions:
+  contents: read
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Install project dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Playwright for browser verification
+        run: npm install --no-save --no-audit --no-fund @playwright/test@1.56.1
+      - name: Install Chromium browser
+        run: npx playwright install --with-deps chromium
+      - name: Build production web app
+        run: npm run build
+      - name: Run browser smoke tests
+        run: npx playwright test
+      - name: Upload failure details
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playgrove-browser-test-results
+          path: test-results/
+          retention-days: 5
+          if-no-files-found: ignore
