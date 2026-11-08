@@ -86,3 +86,14 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - Unrepeatable mode now applies **only** when locking a secret; users can enter and submit repeated-digit guesses in either mode. Server-side validation has its own guess validator to prevent rules mismatching the UI.
 - Both players' guess histories are separated and labelled Player 1 / Player 2. Cards show their own attempt count, newest guesses first, and independent Show all controls.
 - Test coverage expanded for repeated guesses and malformed guess rejection. Palette preserved.
+
+## Playgrove Homepage v1 — feature branch (2026-11-08)
+
+- Working platform name: **Playgrove**. Fourcast remains the first standalone playable game.
+- Feature branch: `feature/playgrove-homepage-v1`; development is isolated from Render production `main`.
+- Added a mobile-first Game Library homepage and shared navigation using the existing 9-colour palette.
+- Routes: `/` for library; `/games/fourcast` for original game; `/?room=ABC123` preserved via canonical redirect.
+- Navigation from an active match warns before returning to Game Library. Existing browser session token is retained to resume; expired sessions still fall back to existing error handling.
+- No changes to `server/`, Fourcast game-engine rules, existing Socket.IO events or Fourcast per-player histories.
+- Pure routing tests included; GitHub Actions TypeScript/unit/build check required before merge.
+- **Do not merge** until browser smoke tests on the feature branch or a preview have verified cross-device create/join/share/reconnect/rematch, and the UI at mobile/desktop widths.

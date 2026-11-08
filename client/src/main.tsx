@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { io, Socket } from 'socket.io-client'
 import {
@@ -9,6 +9,9 @@ import {
 } from 'lucide-react'
 import './style.css'
 import './theme.css'
+import PlaygroveHome from './playgrove/PlaygroveHome'
+import { resolveHubRoute } from './playgrove/routing.mjs'
+import './playgrove/playgrove.css'
 
 type Mode = 'unique' | 'repeat'
 type Phase = 'lobby' | 'setup' | 'playing' | 'finished'
@@ -122,7 +125,7 @@ function PlayerHistory({ player, index, guesses, isYou, expanded, onToggle }: {
   </section>
 }
 
-function App() {
+function FourcastApp({ onBack, onActivityChange }: { onBack: () => void; onActivityChange: (active: boolean) => void }) {
   const [connected, setConnected] = useState(false)
   const [room, setRoom] = useState<Room | null>(null)
   const sessionRef = useRef<Session | null>(getSession())
@@ -136,6 +139,11 @@ function App() {
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
   const [expandedHistory, setExpandedHistory] = useState<Record<string, boolean>>({})
+
+  useEffect(() => {
+    onActivityChange(room?.phase === 'setup' || room?.phase === 'playing')
+    return () => onActivityChange(false)
+  }, [room?.phase, onActivityChange])
 
   useEffect(() => {
     const socket = io({ reconnection: true, reconnectionDelay: 500, timeout: 10000 })
@@ -262,6 +270,7 @@ function App() {
           {room && <button type="button" onClick={leave} className="topbar-exit" title="Leave room"><X size={18} /><span>Exit</span></button>}
         </div>
       </header>
+      <nav className="pg-return-strip" aria-label="Back to Playgrove"><button type="button" onClick={onBack}><ArrowLeft size={15}/> All games</button></nav>
       {error && <div className="alert" role="alert"><span>{error}</span><button aria-label="Dismiss error" onClick={() => setError('')}><X size={17} /></button></div>}
 
       {!room && <main className="home-layout">
@@ -309,6 +318,61 @@ function App() {
       <footer className="site-footer"><span>Made for little rivalries & big brain moments.</span><span>fourcast © 2026</span></footer>
     </div>
   </div>
+}
+
+function hasSavedFourcastSession(): boolean {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null') as Session | null
+    return typeof saved?.code === 'string' && saved.code.length === 6 && typeof saved.token === 'string' && saved.token.length > 0
+  } catch { return false }
+}
+
+const ACTIVE_ROOM_WARNING = 'Return to Playgrove? Your room stays saved, but the game pauses while you are away. You can resume it from the Game Library.'
+
+function currentPage() {
+  const route = resolveHubRoute(window.location.pathname, window.location.search)
+  if (route.redirect) window.history.replaceState(null, '', route.redirect)
+  return route.page
+}
+
+function App() {
+  const [page, setPage] = useState<'hub' | 'fourcast'>(currentPage)
+  const pageRef = useRef(page)
+  const activeMatchRef = useRef(false)
+  const onActivityChange = useCallback((active: boolean) => { activeMatchRef.current = active }, [])
+
+  const goTo = useCallback((path: string) => {
+    if (pageRef.current === 'fourcast' && path === '/' && activeMatchRef.current && !window.confirm(ACTIVE_ROOM_WARNING)) return
+    window.history.pushState(null, '', path)
+    const next = currentPage()
+    pageRef.current = next
+    setPage(next)
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
+    const onPopState = () => {
+      const next = resolveHubRoute(window.location.pathname, window.location.search)
+      if (pageRef.current === 'fourcast' && next.page === 'hub' && activeMatchRef.current && !window.confirm(ACTIVE_ROOM_WARNING)) {
+        window.history.pushState(null, '', '/games/fourcast')
+        return
+      }
+      const resolved = currentPage()
+      pageRef.current = resolved
+      setPage(resolved)
+      window.scrollTo(0, 0)
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
+
+  useEffect(() => {
+    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : 'Fourcast — The Number Duel | Playgrove'
+  }, [page])
+
+  return page === 'hub'
+    ? <PlaygroveHome hasSavedSession={hasSavedFourcastSession()} onPlayFourcast={() => goTo('/games/fourcast')} onResumeFourcast={() => goTo('/games/fourcast')} />
+    : <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
 }
 
 createRoot(document.getElementById('root')!).render(<App />)

@@ -1,0 +1,130 @@
+/* Playgrove Homepage v1. All new selectors are scoped, so Fourcast keeps its current UI. */
+.pg-shell {
+  --pg-seedling: #FAF5E9;
+  --pg-sow: #392525;
+  --pg-redwood: #683226;
+  --pg-terracotta: #B25D3E;
+  --pg-rainfall: #728383;
+  --pg-foliage: #3E4734;
+  --pg-sprout: #E3E890;
+  --pg-mist: #B6B7A5;
+  --pg-pebble: #7E7B62;
+  isolation: isolate;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--pg-sow);
+  color: var(--pg-seedling);
+  font-family: 'DM Sans', sans-serif;
+}
+.pg-shell button { font: inherit; cursor: pointer; }
+.pg-shell button:focus-visible, .pg-return-strip button:focus-visible { outline: 3px solid var(--pg-sprout, #E3E890); outline-offset: 4px; }
+.pg-background-orb { position: absolute; z-index: -1; pointer-events: none; border-radius: 50%; filter: blur(8px); }
+.pg-orb-one { width: 540px; height: 540px; right: -290px; top: -290px; opacity: .18; background: radial-gradient(circle, var(--pg-terracotta), transparent 68%); }
+.pg-orb-two { width: 410px; height: 410px; left: -250px; bottom: 5%; opacity: .1; background: radial-gradient(circle, var(--pg-sprout), transparent 70%); }
+.pg-frame { width: min(1110px, 100%); min-height: 100vh; margin: 0 auto; padding: 0 32px; display: flex; flex-direction: column; }
+.pg-header { min-height: 99px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #7E7B6240; }
+.pg-brand { display: flex; align-items: center; gap: 13px; color: var(--pg-seedling); font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; letter-spacing: -1.4px; }
+.pg-brand-icon { width: 41px; height: 41px; display: grid; place-items: center; background: var(--pg-sprout); color: var(--pg-sow); border-radius: 13px; }
+.pg-brand-period, .pg-footer-period { color: var(--pg-sprout); }
+.pg-header-label { font-size: 12px; font-weight: 700; color: var(--pg-mist); letter-spacing: .2px; }
+.pg-main { flex: 1; padding: 61px 0 70px; }
+.pg-hero { min-height: 348px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, .82fr); align-items: center; gap: 40px; }
+.pg-kicker { display: inline-flex; align-items: center; gap: 8px; color: var(--pg-sprout); font-size: 11px; letter-spacing: 1.5px; font-weight: 800; }
+.pg-hero h1 { margin: 20px 0 19px; font-family: 'Space Grotesk', sans-serif; font-size: clamp(44px, 5vw, 66px); line-height: 1.1; font-weight: 700; letter-spacing: -3px; }
+.pg-hero h1 span { color: var(--pg-sprout); }
+.pg-hero-content > p { max-width: 440px; color: var(--pg-mist); font-size: 15px; line-height: 1.85; margin: 0; }
+.pg-hero-perks { display: flex; flex-wrap: wrap; align-items: center; gap: 11px 19px; margin-top: 28px; }
+.pg-hero-perks span { display: flex; align-items: center; gap: 7px; color: var(--pg-seedling); font-size: 11px; font-weight: 650; }
+.pg-hero-perks svg { color: var(--pg-sprout); }
+.pg-hero-art { position: relative; min-height: 305px; display: flex; justify-content: center; align-items: center; }
+.pg-art-glow { position: absolute; inset: 45px 10px; background: #E3E89014; border-radius: 50%; filter: blur(35px); }
+.pg-art-swatch { display: grid; place-items: center; position: absolute; z-index: 1; width: 76px; height: 91px; font-size: 37px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; border-radius: 16px; box-shadow: 0 25px 40px #21131157; }
+.pg-art-swatch-one { left: 20%; top: 29px; transform: rotate(-14deg); color: var(--pg-sow); background: var(--pg-sprout); }
+.pg-art-swatch-two { left: 44%; top: 42px; transform: rotate(9deg); color: var(--pg-seedling); background: var(--pg-terracotta); }
+.pg-art-swatch-three { left: 29%; top: 129px; transform: rotate(7deg); color: var(--pg-seedling); background: var(--pg-rainfall); }
+.pg-art-swatch-four { left: 54%; top: 133px; transform: rotate(-12deg); color: var(--pg-seedling); background: var(--pg-foliage); }
+.pg-art-sparkle { position: absolute; color: var(--pg-sprout); }
+.pg-art-sparkle-one { top: 10px; right: 18%; font-size: 33px; }
+.pg-art-sparkle-two { bottom: 40px; left: 15%; font-size: 28px; }
+.pg-hero-art p { position: absolute; bottom: 7px; right: 4%; font-size: 11px; line-height: 1.55; font-weight: 700; letter-spacing: .4px; color: var(--pg-mist); }
+.pg-resume { display: flex; align-items: center; gap: 15px; padding: 16px 19px; margin: 6px 0 37px; border: 1px solid #E3E8905c; background: #E3E89010; border-radius: 15px; }
+.pg-resume-mark { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 12px; color: var(--pg-sow); background: var(--pg-sprout); }
+.pg-resume-copy { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.pg-resume-copy strong { font-size: 13px; }
+.pg-resume-copy span { color: var(--pg-mist); font-size: 11px; line-height: 1.5; }
+.pg-resume-button { flex: none; min-height: 41px; padding: 8px 13px; border-radius: 10px; border: 1px solid #E3E8907d; background: transparent; color: var(--pg-sprout); font-size: 12px !important; font-weight: 800 !important; display: inline-flex; align-items: center; gap: 8px; }
+.pg-resume-button:hover { background: #E3E89018; }
+.pg-library { margin-top: 29px; }
+.pg-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+.pg-section-eyebrow { display: block; color: var(--pg-sprout); font-weight: 800; letter-spacing: 1.4px; font-size: 10px; margin-bottom: 8px; }
+.pg-section-heading h2 { font-family: 'Space Grotesk', sans-serif; font-size: 27px; line-height: 1.2; letter-spacing: -1.2px; margin: 0; }
+.pg-game-count { color: var(--pg-mist); font-weight: 800; font-size: 10px; letter-spacing: 1px; padding-bottom: 5px; white-space: nowrap; }
+.pg-games-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr); gap: 18px; align-items: stretch; }
+.pg-game-card { background: var(--pg-seedling); color: var(--pg-sow); border: 1px solid #B6B7A58c; border-radius: 21px; padding: 27px; box-shadow: 0 24px 55px #21141421; display: flex; flex-direction: column; min-height: 375px; }
+.pg-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.pg-game-symbol { display: grid; place-items: center; width: 69px; height: 69px; background: var(--pg-sprout); color: var(--pg-sow); border-radius: 19px; }
+.pg-availability { display: inline-flex; align-items: center; gap: 7px; background: #B6B7A53b; border: 1px solid #3E473422; padding: 8px 10px; border-radius: 30px; color: var(--pg-foliage); font-size: 10px; font-weight: 800; }
+.pg-availability-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pg-foliage); }
+.pg-game-description { padding-top: 23px; }
+.pg-card-kicker { font-size: 10px; font-weight: 800; letter-spacing: 1.1px; color: var(--pg-terracotta); }
+.pg-game-description h3 { font-family: 'Space Grotesk', sans-serif; font-size: 32px; margin: 7px 0 8px; letter-spacing: -1.2px; }
+.pg-game-description p { font-size: 13px; line-height: 1.75; color: var(--pg-redwood); margin: 0; max-width: 405px; }
+.pg-game-features { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-top: 23px; margin-top: auto; }
+.pg-game-features span { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; color: var(--pg-redwood); }
+.pg-play-button { display: inline-flex; width: 100%; min-height: 51px; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 17px; margin-top: 21px; border: 0; border-radius: 12px; background: var(--pg-redwood); color: var(--pg-seedling); font-size: 13px !important; font-weight: 800 !important; transition: background .18s, transform .18s; }
+.pg-play-button:hover { background: var(--pg-terracotta); transform: translateY(-1px); }
+.pg-coming-soon { border: 1.5px dashed #B6B7A581; border-radius: 21px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 375px; padding: 30px; }
+.pg-coming-icon { display: grid; place-items: center; width: 57px; height: 57px; border: 1px solid #E3E89068; border-radius: 15px; color: var(--pg-sprout); background: #E3E89010; margin-bottom: 25px; }
+.pg-coming-soon h3 { font-family: 'Space Grotesk', sans-serif; font-size: 24px; letter-spacing: -.7px; line-height: 1.25; margin: 0 0 12px; }
+.pg-coming-soon p { font-size: 12px; color: var(--pg-mist); line-height: 1.75; margin: 0; max-width: 260px; }
+.pg-coming-label { color: var(--pg-sprout); letter-spacing: 1.5px; font-size: 10px; font-weight: 800; margin-top: 28px; }
+.pg-footer { min-height: 72px; display: flex; justify-content: space-between; align-items: center; gap: 15px; border-top: 1px solid #7E7B6240; color: var(--pg-mist); font-size: 11px; }
+.pg-footer > span:first-child { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: -.4px; color: var(--pg-seedling); }
+/* Scoped return link: does not change Fourcast's existing components. */
+.pg-return-strip { display: flex; margin-top: -8px; margin-bottom: 8px; }
+.pg-return-strip button { display: inline-flex; align-items: center; gap: 6px; color: #683226; padding: 7px 1px; border: 0; background: transparent; font-size: 11px; font-weight: 800; }
+.pg-return-strip button:hover { color: #B25D3E; }
+@media (max-width: 800px) {
+  .pg-frame { padding: 0 22px; }
+  .pg-main { padding-top: 43px; }
+  .pg-hero { grid-template-columns: minmax(0, 1fr) minmax(190px, .6fr); gap: 18px; }
+  .pg-hero-art { min-height: 270px; }
+  .pg-art-swatch { width: 58px; height: 70px; font-size: 30px; border-radius: 12px; }
+  .pg-art-swatch-three { top: 116px; }
+  .pg-art-swatch-four { top: 121px; }
+}
+@media (max-width: 620px) {
+  .pg-frame { padding: 0 20px; }
+  .pg-header { min-height: 75px; }
+  .pg-brand { font-size: 22px; gap: 10px; }
+  .pg-brand-icon { width: 36px; height: 36px; border-radius: 11px; }
+  .pg-main { padding: 39px 0 52px; }
+  .pg-hero { min-height: auto; display: block; }
+  .pg-hero h1 { font-size: clamp(41px, 10vw, 57px); letter-spacing: -2.1px; }
+  .pg-hero-content > p { font-size: 14px; }
+  .pg-hero-art { display: none; }
+  .pg-hero-perks { margin-top: 22px; }
+  .pg-library { margin-top: 48px; }
+  .pg-section-heading h2 { font-size: 24px; }
+  .pg-games-grid { grid-template-columns: 1fr; }
+  .pg-game-card { padding: 22px; min-height: 360px; }
+  .pg-coming-soon { min-height: 205px; padding: 23px; }
+  .pg-coming-icon { margin-bottom: 10px; width: 43px; height: 43px; }
+  .pg-coming-soon h3 { font-size: 20px; }
+  .pg-coming-label { margin-top: 14px; }
+  .pg-footer { align-items: flex-start; padding: 21px 0; }
+  .pg-resume { flex-wrap: wrap; }
+  .pg-resume-button { width: 100%; justify-content: center; }
+}
+@media (max-width: 370px) {
+  .pg-frame { padding: 0 15px; }
+  .pg-header-label { font-size: 11px; }
+  .pg-kicker { font-size: 10px; }
+  .pg-game-features { gap: 8px; }
+  .pg-game-count { font-size: 9px; }
+  .pg-game-card { padding: 19px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pg-play-button { transition: none; }
+}
