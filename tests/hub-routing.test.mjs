@@ -25,3 +25,11 @@ test('unknown and trailing-slash routes have a safe canonical destination', () =
   assert.deepEqual(resolveHubRoute('/random-page', ''), { page: 'hub', redirect: '/' });
   assert.deepEqual(resolveHubRoute('/games/fourcast///', ''), { page: 'fourcast', redirect: null });
 });
+
+
+test('Sudoku has its own route without changing legacy Fourcast invites', () => {
+  assert.deepEqual(resolveHubRoute('/games/sudoku'), { page: 'sudoku', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/sudoku/'), { page: 'sudoku', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/fourcast?room=ABC123', ''), { page: 'hub', redirect: '/' });
+  assert.deepEqual(resolveHubRoute('/', '?room=ABC123'), { page: 'fourcast', redirect: '/games/fourcast?room=ABC123' });
+});

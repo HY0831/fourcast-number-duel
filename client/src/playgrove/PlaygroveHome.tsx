@@ -1,12 +1,13 @@
-import { ArrowRight, Gamepad2, Hash, RotateCcw, ShieldCheck, Sprout, Users, Wifi } from 'lucide-react'
+import { ArrowRight, Gamepad2, Grid3X3, Hash, RotateCcw, ShieldCheck, Sprout, Users, Wifi } from 'lucide-react'
 
 type Props = {
   hasSavedSession: boolean
   onPlayFourcast: () => void
+  onPlaySudoku: () => void
   onResumeFourcast: () => void
 }
 
-export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onResumeFourcast }: Props) {
+export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlaySudoku, onResumeFourcast }: Props) {
   return <div className="pg-shell">
     <div className="pg-background-orb pg-orb-one" aria-hidden="true" />
     <div className="pg-background-orb pg-orb-two" aria-hidden="true" />
@@ -24,10 +25,10 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onResum
           <div className="pg-hero-content">
             <span className="pg-kicker"><Sprout size={16} /> YOUR LITTLE CORNER OF FUN</span>
             <h1 id="pg-hero-title">Good games.<br /><span>Great company.</span></h1>
-            <p>Choose a game, invite a friend, and play together from anywhere.</p>
+            <p>Play with a friend or enjoy a quiet solo challenge. A little fun for every mood.</p>
             <div className="pg-hero-perks" aria-label="How Playgrove works">
-              <span><Users size={15} /> Pick a game</span>
-              <span><ShieldCheck size={15} /> Private rooms</span>
+              <span><Users size={15} /> Play together or solo</span>
+              <span><ShieldCheck size={15} /> Easy to start</span>
               <span><Wifi size={15} /> Play online</span>
             </div>
           </div>
@@ -60,7 +61,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onResum
               <span className="pg-section-eyebrow">THE GAME LIBRARY</span>
               <h2 id="pg-library-title">Explore games</h2>
             </div>
-            <span className="pg-game-count">01 GAME AVAILABLE</span>
+            <span className="pg-game-count">02 GAMES AVAILABLE</span>
           </div>
           <div className="pg-games-grid">
             <article className="pg-game-card">
@@ -81,16 +82,34 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onResum
                 Play Fourcast <ArrowRight size={18} />
               </button>
             </article>
+            <article className="pg-game-card pg-sudoku-card">
+              <div className="pg-card-top">
+                <div className="pg-game-symbol pg-sudoku-symbol"><Grid3X3 size={37} strokeWidth={2.0} /></div>
+                <span className="pg-availability"><span className="pg-availability-dot" /> Available</span>
+              </div>
+              <div className="pg-game-description">
+                <span className="pg-card-kicker">THE CLASSIC LOGIC PUZZLE</span>
+                <h3>Sudoku</h3>
+                <p>Find a little space to think. Fill the grid with numbers and enjoy the challenge.</p>
+              </div>
+              <div className="pg-game-features">
+                <span><Users size={16} /> Solo play</span>
+                <span><Grid3X3 size={16} /> 3 difficulty levels</span>
+              </div>
+              <button className="pg-play-button pg-sudoku-play" type="button" onClick={onPlaySudoku}>
+                Play Sudoku <ArrowRight size={18} />
+              </button>
+            </article>
             <div className="pg-coming-soon">
               <div className="pg-coming-icon"><Sprout size={30} strokeWidth={1.8} /></div>
               <h3>More games are<br />growing here.</h3>
-              <p>New games are coming to Playgrove. Until then, the duel is on.</p>
+              <p>More games are on their way. Until then, battle a friend or solve a Sudoku.</p>
               <span className="pg-coming-label">COMING SOON</span>
             </div>
           </div>
         </section>
       </main>
-      <footer className="pg-footer"><span>playgrove<span className="pg-footer-period">.</span></span><span>Made for playing together · 2026</span></footer>
+      <footer className="pg-footer"><span>playgrove<span className="pg-footer-period">.</span></span><span>Made for every kind of player · 2026</span></footer>
     </div>
   </div>
 }

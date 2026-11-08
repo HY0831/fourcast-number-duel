@@ -128,3 +128,24 @@
 @media (prefers-reduced-motion: reduce) {
   .pg-play-button { transition: none; }
 }
+
+/* Two live games: give Fourcast and Sudoku equal weight. */
+.pg-games-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.pg-sudoku-symbol { background:var(--pg-rainfall); color:var(--pg-seedling); }
+.pg-sudoku-card { border-top:5px solid var(--pg-rainfall); }
+.pg-sudoku-card .pg-card-kicker { color:var(--pg-foliage); }
+.pg-sudoku-card .pg-availability-dot { background:var(--pg-foliage); }
+.pg-sudoku-play { background:var(--pg-foliage); }
+.pg-sudoku-play:hover { background:var(--pg-redwood); }
+.pg-coming-soon { grid-column:1 / -1; min-height:156px; padding:23px 28px; display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; column-gap:22px; }
+.pg-coming-icon { margin-bottom:0; }
+.pg-coming-soon h3 { font-size:20px; margin:0; }
+.pg-coming-soon p { max-width:400px; }
+.pg-coming-label { margin-top:0; }
+@media (max-width:620px) {
+  .pg-games-grid { grid-template-columns:1fr; }
+  .pg-coming-soon { grid-column:auto; display:flex; align-items:flex-start; min-height:205px; padding:23px; }
+  .pg-coming-icon { margin-bottom:10px; }
+  .pg-coming-soon h3 { margin-bottom:12px; }
+  .pg-coming-label { margin-top:14px; }
+}

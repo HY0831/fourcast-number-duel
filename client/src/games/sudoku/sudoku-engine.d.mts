@@ -1,0 +1,14 @@
+export type SudokuLevel = 'easy' | 'medium' | 'hard';
+export type SudokuPuzzle = {level: SudokuLevel; puzzle: string; solution: string};
+export const SUDOKU_LEVELS: ReadonlyArray<SudokuLevel>;
+export const LEVEL_META: Readonly<Record<SudokuLevel, {label: string; subtitle: string; clueCount: number}>>;
+export function isLevel(level: unknown): level is SudokuLevel;
+export function isGrid(value: unknown): value is string;
+export function clueCount(puzzle: string): number;
+export function peersOf(index: number): number[];
+export function generateSudoku(level?: SudokuLevel, rng?: () => number): SudokuPuzzle;
+export function getConflicts(board: string): Set<number>;
+export function enterDigit(board: string, givens: string, index: number, digit: number): string;
+export function isSolved(board: string, solution: string): boolean;
+export function progress(board: string): number;
+export function nextHint(board: string, solution: string, preferred?: number | null): number | null;

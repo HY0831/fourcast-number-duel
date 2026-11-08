@@ -10,6 +10,7 @@ import {
 import './style.css'
 import './theme.css'
 import PlaygroveHome from './playgrove/PlaygroveHome'
+import SudokuPage from './games/sudoku/SudokuPage'
 import { resolveHubRoute } from './playgrove/routing.mjs'
 import './playgrove/playgrove.css'
 
@@ -336,7 +337,7 @@ function currentPage() {
 }
 
 function App() {
-  const [page, setPage] = useState<'hub' | 'fourcast'>(currentPage)
+  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku'>(currentPage)
   const pageRef = useRef(page)
   const activeMatchRef = useRef(false)
   const onActivityChange = useCallback((active: boolean) => { activeMatchRef.current = active }, [])
@@ -367,12 +368,17 @@ function App() {
   }, [])
 
   useEffect(() => {
-    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : 'Fourcast — The Number Duel | Playgrove'
+    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
   }, [page])
 
-  return page === 'hub'
-    ? <PlaygroveHome hasSavedSession={hasSavedFourcastSession()} onPlayFourcast={() => goTo('/games/fourcast')} onResumeFourcast={() => goTo('/games/fourcast')} />
-    : <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
+  if (page === 'hub') return <PlaygroveHome
+    hasSavedSession={hasSavedFourcastSession()}
+    onPlayFourcast={() => goTo('/games/fourcast')}
+    onResumeFourcast={() => goTo('/games/fourcast')}
+    onPlaySudoku={() => goTo('/games/sudoku')}
+  />
+  if (page === 'sudoku') return <SudokuPage onBack={() => goTo('/')} />
+  return <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
 }
 
 createRoot(document.getElementById('root')!).render(<App />)

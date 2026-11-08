@@ -1,7 +1,7 @@
 {
   "name": "Playgrove — Online Games",
   "short_name": "Playgrove",
-  "description": "A cozy online multiplayer game library. Play Fourcast with friends from anywhere.",
+  "description": "Playgrove offers quick games for every mood: online Fourcast duels and solo Sudoku puzzles.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

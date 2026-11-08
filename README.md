@@ -2,10 +2,17 @@
 
 **Playgrove** is a mobile-first library of private multiplayer games for friends in different places. Fourcast is our first game; its real-time multiplayer mechanics are preserved.
 
+## Available Games
+
+- **Fourcast** — 2-player real-time online number duel, with private room invitations, distinct secret-code modes, per-player guess histories and rematches.
+- **Sudoku** — single-player 9×9 number puzzle, featuring **Easy, Medium and Hard** levels. Includes pencil notes, hints, undo, pause, timer, mistake indicators, local progress save/resume and best-time tracking. Each puzzle has exactly one solution. Play at `/games/sudoku`.
+
+Fourcast is unchanged: its current real-time server, URL and existing invitation links still work. Sudoku runs entirely on the client and does not need an account or a multiplayer room. See [SUDOKU_DESIGN.md](SUDOKU_DESIGN.md) for difficulty validation and technical details.
+
 ## Explore Playgrove
 
 - `/` — Playgrove Game Library: available Fourcast card, game introduction, coming-soon panel and saved-session prompt.
-- `/games/fourcast` — the existing Fourcast create/join and gameplay experience.
+- `/games/sudoku` — single-player Sudoku (Easy / Medium / Hard).\n- `/games/fourcast` — the existing Fourcast create/join and gameplay experience.
 - `/games/fourcast?room=ABC123` — a direct Fourcast invitation that pre-fills the join code.
 - `/?room=ABC123` — **old Fourcast invitation links still work** and are automatically redirected to the game route.
 
