@@ -104,3 +104,14 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - Unit/TypeScript/production build passed. Automated Chromium checks passed at 320px, 390px and desktop, including real two-session multiplayer, old invitations, separate guess histories, resume and rematch.
 - Merged PR #1 into `main` using squash commit `4f28ae9edfa4bbbe88f9dbc98e038237379e1423`.
 - Render currently serves the preceding Fourcast commit `16c76109e95b4ce108e370d4c50945b67ded76cd`; the new game hub requires a successful redeployment. The Render service reports auto-deploy enabled, but no commit-triggered deployment was observed.
+
+
+## Second game — Sudoku (2026-11-08)
+
+- Feature branch: `feature/playgrove-sudoku-v1`, created from the latest `main`.
+- Added single-player 9×9 Sudoku as the second Playgrove game, available at `/games/sudoku`.
+- Difficulty design is logic-based, not just an arbitrary name: Easy uses naked singles, Medium requires hidden singles, Hard exceeds basic singles; 43/34/29 starting clues. Nine curated uniquely solvable seeds are transformed through Sudoku-preserving permutations for variety.
+- Accessible keypad and keyboard entry, notes, hints, undo, pause, timer, highlights for incorrect values, and a completion screen.
+- Saved progress and per-level best times in browser localStorage; a new puzzle can be started on demand.
+- Fourcast game engine, server Socket.IO events, existing room links and gameplay behavior remain unchanged.
+- New Sudoku unit tests and Playwright browser tests must pass on GitHub before merging to `main`.
