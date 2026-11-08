@@ -103,7 +103,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
             <div className="pg-coming-soon">
               <div className="pg-coming-icon"><Sprout size={30} strokeWidth={1.8} /></div>
               <h3>More games are<br />growing here.</h3>
-              <p>More games are on their way. Until then, battle a friend or solve a Sudoku.</p>
+              <p>Fresh challenges are on their way. Until then, battle a friend or solve a Sudoku.</p>
               <span className="pg-coming-label">COMING SOON</span>
             </div>
           </div>
