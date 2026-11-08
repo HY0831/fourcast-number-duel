@@ -1,8 +1,5 @@
 name: Playgrove Browser Smoke Tests
 on:
-  push:
-    branches:
-      - feature/playgrove-homepage-v1
   pull_request:
     paths:
       - 'client/**'
@@ -13,7 +10,7 @@ permissions:
   contents: read
 jobs:
   browser-smoke:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Check out source
@@ -27,7 +24,7 @@ jobs:
       - name: Install project dependencies
         run: npm install --no-audit --no-fund
       - name: Install Playwright for browser verification
-        run: npm install --no-save --no-audit --no-fund @playwright/test@1.56.1
+        run: npm install --no-save --no-audit --no-fund @playwright/test@1.65.0
       - name: Install Chromium browser
         run: npx playwright install --with-deps chromium
       - name: Build production web app
