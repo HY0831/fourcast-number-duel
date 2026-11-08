@@ -97,3 +97,10 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - No changes to `server/`, Fourcast game-engine rules, existing Socket.IO events or Fourcast per-player histories.
 - Pure routing tests included; GitHub Actions TypeScript/unit/build check required before merge.
 - **Do not merge** until browser smoke tests on the feature branch or a preview have verified cross-device create/join/share/reconnect/rematch, and the UI at mobile/desktop widths.
+
+## Playgrove implementation verified and merged (2026-11-08)
+
+- Playgrove v1 was developed on `feature/playgrove-homepage-v1`, with Fourcast gameplay and server untouched.
+- Unit/TypeScript/production build passed. Automated Chromium checks passed at 320px, 390px and desktop, including real two-session multiplayer, old invitations, separate guess histories, resume and rematch.
+- Merged PR #1 into `main` using squash commit `4f28ae9edfa4bbbe88f9dbc98e038237379e1423`.
+- Render currently serves the preceding Fourcast commit `16c76109e95b4ce108e370d4c50945b67ded76cd`; the new game hub requires a successful redeployment. The Render service reports auto-deploy enabled, but no commit-triggered deployment was observed.

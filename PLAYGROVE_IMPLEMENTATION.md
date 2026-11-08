@@ -1,6 +1,6 @@
 # Playgrove — Game Hub Homepage v1
 
-**Status:** Feature branch implementation; do not merge to `main` until checks and product review are complete.
+**Status:** Implemented on a separate branch, automated checks passed, and merged to `main` as PR #1.
 
 ## Scope
 
@@ -44,11 +44,19 @@
 - [x] Local route tests: homepage, Fourcast deep link, old invite redirect, sanitization and unknown routes.
 - [x] New component TypeScript syntax transpilation check.
 - [x] Scoped homepage CSS syntax check.
-- [ ] GitHub Actions: TypeScript, all engine and route tests, and Vite production build.
-- [ ] Branch preview smoke test in browsers: navigation, create/join from two independent sessions, turn taking, reconnect, sharing, rematch.
-- [ ] Review mobile at 320px / 390px and desktop layouts.
-- [ ] Only then merge into `main` and verify Render deployment.
+- [x] GitHub Actions: TypeScript, all engine and route tests, and Vite production build.
+- [x] Automated Chromium smoke test: route navigation, old invites, create/join from two independent sessions, repeated-digit guesses, per-player history, active-game navigation, resume and rematch.
+- [x] Automated browser layout checks at 320px, 390px and 1440px without horizontal overflow. A human visual review on physical phones remains optional.
+- [x] Merge to `main` after both workflows pass (squash commit `4f28ae9`).
+- [ ] Verify deployment of `4f28ae9` on Render; the previously-live commit is `16c7610`. Auto-deploy from this public-repo Render service has not been observed.
 
 ## Deployment precautions
 
 The existing Render web service is configured for `main`. Pushing this feature branch must not affect the live Fourcast app. Do not create or modify production databases for this homepage phase. The existing in-memory multiplayer rooms still reset on server restarts/sleep, so schedule production promotion when games are not active.
+
+## Verification links (2026-11-08)
+
+- Standard tests on `main`: https://github.com/HY0831/fourcast-number-duel/actions/runs/42439196050
+- Browser smoke suite on feature branch: https://github.com/HY0831/fourcast-number-duel/actions/runs/42439067601
+- Merged PR: https://github.com/HY0831/fourcast-number-duel/pull/1
+- Live web host: https://fourcast-number-duel.onrender.com (deployment of the new homepage still pending at the time of this update).
