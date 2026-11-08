@@ -1,12 +1,12 @@
 {
-  "name": "Fourcast \u2014 The Number Duel",
-  "short_name": "Fourcast",
-  "description": "Play a private four-digit guessing game with a friend, live on your phones.",
+  "name": "Playgrove — Online Games",
+  "short_name": "Playgrove",
+  "description": "A cozy online multiplayer game library. Play Fourcast with friends from anywhere.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#392525",
-  "theme_color": "#683226",
+  "theme_color": "#392525",
   "icons": [
     {
       "src": "/icon-192.png",

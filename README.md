@@ -1,4 +1,19 @@
-# Fourcast — The Number Duel
+# Playgrove — Online Multiplayer Game Hub
+
+**Playgrove** is a mobile-first library of private multiplayer games for friends in different places. Fourcast is our first game; its real-time multiplayer mechanics are preserved.
+
+## Explore Playgrove
+
+- `/` — Playgrove Game Library: available Fourcast card, game introduction, coming-soon panel and saved-session prompt.
+- `/games/fourcast` — the existing Fourcast create/join and gameplay experience.
+- `/games/fourcast?room=ABC123` — a direct Fourcast invitation that pre-fills the join code.
+- `/?room=ABC123` — **old Fourcast invitation links still work** and are automatically redirected to the game route.
+
+The `All games` navigation on Fourcast returns to Playgrove. If a match is active, the player receives a warning and can return later using the saved session. The client retains the existing local session key and server-side game rules.
+
+See [PLAYGROVE_IMPLEMENTATION.md](PLAYGROVE_IMPLEMENTATION.md) for implementation decisions and the branch testing checklist.
+
+## Fourcast — The Number Duel
 
 A polished, mobile-first **real-time multiplayer number-guessing game**. Players join a private room from two phones, each choose a secret four-digit code, then alternate guesses. Only digits in the **correct position** count. First to get **4/4 exact matches** wins.
 
