@@ -150,3 +150,10 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - While playing, one tap on an unmarked number immediately sends `bingo:call`; server marks both players on success. Remove the extra "Call number" confirmation control.
 - Add pure unit tests for sequential entry, clearing and number reuse, and update Chromium two-player end-to-end tests for the revised interaction.
 - Implement on feature branch `feature/bingo-tap-to-fill-and-call-20261109`; run all tests before merge, and verify Render separately afterward.
+
+## Sudoku highlight contrast fix and proposed fourth game (2026-11-09)
+
+- Confirmed Sudoku used translucent row/column/box highlight backgrounds on the dark board and dark reddish text, which produced poor text contrast; wrong cells had the same issue.
+- Replace related, matching, wrong and selected-wrong backgrounds with opaque, high-contrast light tones. Game rules and saved data remain unchanged.
+- Added Chromium browser regression test that fills a Sudoku row and checks computed text/background contrast (at least 4.5:1) in incorrect and selected states.
+- Separate design-only proposal for Playgrove's fourth game: `MINESWEEPER_PROPOSAL.md`. No Minesweeper implementation until approval.

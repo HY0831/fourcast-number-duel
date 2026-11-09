@@ -78,3 +78,52 @@ test('Sudoku completes with hints and displays the results', async ({ page }) =>
   await page.getByRole('button', {name:/New puzzle/}).first().click()
   await expect(page.locator('.sdk-cell.sdk-given')).toHaveCount(43)
 })
+test('Sudoku filled rows and incorrect entries keep readable text on opaque highlights', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/games/sudoku')
+  const row = page.locator('.sdk-board-row').first()
+  const editable = row.locator('.sdk-cell.sdk-editable')
+  const count = await editable.count()
+  expect(count).toBeGreaterThan(0)
+
+  // Fill every editable square in one row, including incorrect entries.
+  for (let i = 0; i < count; i++) {
+    await editable.nth(i).click()
+    await page.getByRole('button', { name: 'Digit 1' }).click()
+  }
+  await expect(row.locator('.sdk-cell')).toHaveCount(9)
+  await expect(row.locator('.sdk-cell.sdk-wrong').first()).toBeVisible()
+
+  // Selecting an incorrect cell exercises the combined selected + wrong state.
+  await row.locator('.sdk-cell.sdk-wrong').first().click()
+  await expect(row.locator('.sdk-cell.sdk-selected.sdk-wrong')).toHaveCount(1)
+
+  // Check actual computed colours rather than brittle CSS strings.
+  const samples = await page.locator('.sdk-cell').evaluateAll(cells => cells
+    .filter(cell => /: [1-9]/.test(cell.getAttribute('aria-label') ?? ''))
+    .map(cell => {
+      const style = getComputedStyle(cell)
+      return { label: cell.getAttribute('aria-label'), background: style.backgroundColor, foreground: style.color }
+    }))
+  expect(samples.length).toBeGreaterThanOrEqual(43)
+
+  const parse = (color: string) => {
+    const values = color.match(/[0-9.]+/g)?.map(Number) ?? []
+    if (values.length < 3) throw new Error(`Unexpected colour ${color}`)
+    return { rgb: values.slice(0, 3), alpha: values.length > 3 ? values[3] : 1 }
+  }
+  const luminance = (rgb: number[]) => {
+    const linear = rgb.map(v => {
+      const x = v / 255
+      return x <= 0.04045 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
+    })
+    return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722
+  }
+  for (const sample of samples) {
+    const background = parse(sample.background), foreground = parse(sample.foreground)
+    expect(background.alpha, `Opaque background on ${sample.label}`).toBe(1)
+    const a = luminance(background.rgb), b = luminance(foreground.rgb)
+    const contrast = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+    expect(contrast, `Contrast on ${sample.label}: ${sample.foreground} / ${sample.background}`).toBeGreaterThanOrEqual(4.5)
+  }
+})
