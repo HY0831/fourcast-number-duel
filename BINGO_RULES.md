@@ -30,3 +30,9 @@
 - Unit tests: 25 unique cells, line counting, privacy, correct turns, rejecting reused/out-of-range calls, offline pause, win/draw, rematch alternation, expiration.
 - Browser tests: homepage/routes, manual entry, number uniqueness/erase, two-player join, call and marking on both boards, room resume, winner and rematch, 320/390/768/1440px responsive layout.
 - GitHub Actions must pass the TypeScript/unit/build workflow and Chromium smoke tests before merge to main.
+
+## Published code verification
+
+- Implemented, tested and merged in [Playgrove PR #3](https://github.com/HY0831/fourcast-number-duel/pull/3) on 2026-11-09.
+- Bingo-specific unit and Chromium browser tests passed, with prior Fourcast and Sudoku regression tests unchanged.
+- Deployment is independent of the GitHub merge. Check Render's running commit before treating Bingo as live.

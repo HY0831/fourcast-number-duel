@@ -125,3 +125,12 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - Bingo-specific `bingo:*` Socket.IO events, separate room/session store; original Fourcast engine and Sudoku remain unchanged.
 - Route `/games/bingo`; old Fourcast invitation URLs remain compatible. Playgrove homepage has 3 games.
 - Branch `feature/playgrove-bingo-manual-v1`; check unit + browser tests before merge. See `BINGO_RULES.md`.
+
+## Bingo Duel — verified and merged (2026-11-09)
+
+- Drafted on `feature/playgrove-bingo-manual-v1`, reviewed under PR #3 and squash-merged to `main` as `2647ba7545089637f9c4041ff1d4bd8f55434d4b`.
+- GitHub TypeScript, all unit tests, and Vite build passed on both PR and merged main.
+- GitHub browser smoke tests passed across Bingo, Fourcast, Sudoku: manual number placement, duplicate rejection, two-player join, live calls, marks on both boards, reconnect/resume, five-line winner and rematch.
+- Main verification: https://github.com/HY0831/fourcast-number-duel/actions/runs/42571786503
+- Browser verification: https://github.com/HY0831/fourcast-number-duel/actions/runs/42571597948
+- Render still live on prior commit `cbff64c2` as last checked; Bingo becomes publicly playable only after successful deployment of latest `main`. Auto-deploy has historically not triggered even though the Render service displays it as enabled.
