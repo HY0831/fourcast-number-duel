@@ -108,7 +108,7 @@ test('Sudoku filled rows and incorrect entries keep readable text on opaque high
   expect(samples.length).toBeGreaterThanOrEqual(43)
 
   const parse = (color: string) => {
-    const values = color.match(/[\\d.]+/g)?.map(Number) ?? []
+    const values = color.match(/[0-9.]+/g)?.map(Number) ?? []
     if (values.length < 3) throw new Error(`Unexpected colour ${color}`)
     return { rgb: values.slice(0, 3), alpha: values.length > 3 ? values[3] : 1 }
   }
