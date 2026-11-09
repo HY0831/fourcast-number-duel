@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { Server } from 'socket.io';
 import { GameError, GameStore, publicRoom } from './game-engine.mjs';
+import { BingoStore, publicBingoRoom } from './bingo-engine.mjs';
 
 const app = express();
 const httpServer = createServer(app);
@@ -13,9 +14,10 @@ const io = new Server(httpServer, {
   pingTimeout: 20000,
 });
 const games = new GameStore();
+const bingos = new BingoStore();
 const here = dirname(fileURLToPath(import.meta.url));
 
-app.get('/health', (_req, res) => res.json({ status: 'ok', activeRooms: games.rooms.size }));
+app.get('/health', (_req, res) => res.json({ status: 'ok', activeRooms: games.rooms.size, activeBingoRooms: bingos.rooms.size }));
 if (process.env.NODE_ENV === 'production') {
   const dist = join(here, '..', 'dist');
   app.use(express.static(dist));
@@ -25,6 +27,12 @@ if (process.env.NODE_ENV === 'production') {
 function broadcast(room) {
   for (const player of room.players) {
     if (player.socketId) io.to(player.socketId).emit('room:update', publicRoom(room, player.id));
+  }
+}
+
+function broadcastBingo(room) {
+  for (const player of room.players) {
+    if (player.socketId) io.to(player.socketId).emit('bingo:update', publicBingoRoom(room, player.id));
   }
 }
 
@@ -48,6 +56,7 @@ io.on('connection', (socket) => {
   }
 
   function attach(room, player) {
+    detachBingo();
     if (socket.data.code && socket.data.code !== room.code) detach();
     if (player.socketId && player.socketId !== socket.id) {
       const previousSocket = io.sockets.sockets.get(player.socketId);
@@ -84,6 +93,94 @@ io.on('connection', (socket) => {
     if (result.player.socketId !== socket.id) throw new GameError('Your session moved to another device.');
     return result;
   }
+
+  function attachBingo(room, player) {
+    detach();
+    if (socket.data.bingoCode && socket.data.bingoCode !== room.code) detachBingo();
+    if (player.socketId && player.socketId !== socket.id) {
+      const oldSocket = io.sockets.sockets.get(player.socketId);
+      oldSocket?.leave(`bingo:${room.code}`);
+      if (oldSocket) {
+        oldSocket.data.bingoCode = null;
+        oldSocket.data.bingoToken = null;
+      }
+    }
+    player.socketId = socket.id;
+    socket.data.bingoCode = room.code;
+    socket.data.bingoToken = player.token;
+    socket.join(`bingo:${room.code}`);
+    room.updatedAt = Date.now();
+  }
+
+  function detachBingo() {
+    const code = socket.data.bingoCode;
+    const token = socket.data.bingoToken;
+    if (!code || !token) return;
+    try {
+      const { room, player } = bingos.authorize(code, token);
+      if (player.socketId === socket.id) {
+        player.socketId = null;
+        room.updatedAt = Date.now();
+        broadcastBingo(room);
+      }
+    } catch { /* expired room */ }
+    socket.leave(`bingo:${code}`);
+    socket.data.bingoCode = null;
+    socket.data.bingoToken = null;
+  }
+
+  function ownBingoRoom() {
+    if (!socket.data.bingoCode || !socket.data.bingoToken) throw new GameError('Join a Bingo room first.');
+    const result = bingos.authorize(socket.data.bingoCode, socket.data.bingoToken);
+    if (result.player.socketId !== socket.id) throw new GameError('Your session moved to another device.');
+    return result;
+  }
+
+  socket.on('bingo:create', safely(({ name }) => {
+    detachBingo();
+    const { room, player } = bingos.create(name);
+    attachBingo(room, player);
+    broadcastBingo(room);
+    return { code: room.code, token: player.token, room: publicBingoRoom(room, player.id) };
+  }));
+
+  socket.on('bingo:join', safely(({ code, name }) => {
+    detachBingo();
+    const { room, player } = bingos.join(code, name);
+    attachBingo(room, player);
+    broadcastBingo(room);
+    return { code: room.code, token: player.token, room: publicBingoRoom(room, player.id) };
+  }));
+
+  socket.on('bingo:resume', safely(({ code, token }) => {
+    const { room, player } = bingos.join(code, null, token);
+    attachBingo(room, player);
+    broadcastBingo(room);
+    return { code: room.code, token: player.token, room: publicBingoRoom(room, player.id) };
+  }));
+
+  socket.on('bingo:board', safely(({ board }) => {
+    const { room } = ownBingoRoom();
+    bingos.lockBoard(room.code, socket.data.bingoToken, board);
+    broadcastBingo(room);
+    return {};
+  }));
+
+  socket.on('bingo:call', safely(({ number }) => {
+    const { room } = ownBingoRoom();
+    bingos.callNumber(room.code, socket.data.bingoToken, number);
+    broadcastBingo(room);
+    return {};
+  }));
+
+  socket.on('bingo:rematch', safely(() => {
+    const { room } = ownBingoRoom();
+    bingos.rematch(room.code, socket.data.bingoToken);
+    broadcastBingo(room);
+    return {};
+  }));
+
+  socket.on('bingo:leave', safely(() => { detachBingo(); return {}; }));
 
   socket.on('room:create', safely(({ name, mode }) => {
     detach();
@@ -137,10 +234,10 @@ io.on('connection', (socket) => {
   }));
 
   socket.on('room:leave', safely(() => { detach(); return {}; }));
-  socket.on('disconnect', detach);
+  socket.on('disconnect', () => { detach(); detachBingo(); });
 });
 
-const interval = setInterval(() => games.cleanup(), 10 * 60 * 1000);
+const interval = setInterval(() => { games.cleanup(); bingos.cleanup(); }, 10 * 60 * 1000);
 interval.unref();
 
 const port = Number(process.env.PORT || 3001);

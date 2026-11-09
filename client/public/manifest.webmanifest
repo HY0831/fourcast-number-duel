@@ -1,7 +1,7 @@
 {
   "name": "Playgrove — Online Games",
   "short_name": "Playgrove",
-  "description": "Playgrove offers quick games for every mood: online Fourcast duels and solo Sudoku puzzles.",
+  "description": "Playgrove games: challenge friends in Fourcast or Bingo, and play solo Sudoku.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
