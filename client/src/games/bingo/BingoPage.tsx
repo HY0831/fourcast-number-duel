@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, Eraser, Gamepad2, Grid3X3, LockKeyhole, RotateCcw, Share2, ShieldCheck, Trophy, Users, Wifi, WifiOff, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, Gamepad2, Grid3X3, LockKeyhole, RotateCcw, Share2, ShieldCheck, Trophy, Users, Wifi, WifiOff, X } from 'lucide-react'
 import { io, type Socket } from 'socket.io-client'
 import { randomBingoBoard } from './board-random.mjs'
+import { nextUnplacedNumber, toggleBoardCell } from './board-entry.mjs'
 import './bingo.css'
 
 type Phase = 'lobby' | 'setup' | 'playing' | 'finished'
@@ -65,8 +66,6 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
   const [tab, setTab] = useState<'create' | 'join'>(() => inviteCode() ? 'join' : 'create')
   const [joinCode, setJoinCode] = useState(inviteCode)
   const [board, setBoard] = useState<CellValue[]>(blankBoard)
-  const [selectedCell, setSelectedCell] = useState(0)
-  const [selectedCall, setSelectedCall] = useState<number | null>(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -91,7 +90,7 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
       })
     })
     socket.on('disconnect', () => setConnected(false))
-    socket.on('bingo:update', (next: BingoRoom) => { setRoom(next); setError(''); setSelectedCall(null) })
+    socket.on('bingo:update', (next: BingoRoom) => { setRoom(next); setError('') })
     socket.on('connect_error', () => setError('Cannot connect to the game server.'))
     return () => { socket.disconnect(); socketRef.current = null }
   }, [])
@@ -107,8 +106,6 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
     if (keyRef.current !== current) {
       keyRef.current = current
       setBoard(room.yourBoard ? [...room.yourBoard] : readDraft(room.code, room.round))
-      setSelectedCell(0)
-      setSelectedCall(null)
     } else if (room.yourBoard) setBoard([...room.yourBoard])
   }, [room?.code, room?.round, room?.yourBoard])
 
@@ -123,30 +120,16 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
   const completedIndices = new Set(completeLines.flat())
   const filled = board.filter(n => n !== null).length
   const complete = filled === 25 && new Set(board).size === 25
+  const nextNumber = nextUnplacedNumber(board)
 
   const updateBoard = (next: CellValue[]) => {
     setBoard(next)
     if (room) localStorage.setItem(`bingo:draft:${room.code}:${room.round}`, JSON.stringify(next))
   }
-  const selectNumber = (number: number) => {
-    if (me?.ready || busy || board.some((n, index) => n === number && index !== selectedCell)) return
-    const next = [...board]
-    next[selectedCell] = number
-    updateBoard(next)
-    const nextEmpty = next.findIndex((n, index) => n === null && index > selectedCell)
-    setSelectedCell(nextEmpty !== -1 ? nextEmpty : next.findIndex(n => n === null) !== -1 ? next.findIndex(n => n === null) : selectedCell)
-  }
   const fillRandomBoard = () => {
     if (!room || room.phase !== 'setup' || me?.ready || busy) return
     if (filled > 0 && !window.confirm('Replace your current board with a random arrangement? Your manual numbers will be replaced.')) return
     updateBoard(randomBingoBoard())
-    setSelectedCell(0)
-  }
-  const clearCell = () => {
-    if (me?.ready || busy) return
-    const next = [...board]
-    next[selectedCell] = null
-    updateBoard(next)
   }
 
   const request = useCallback((event: string, payload: unknown): Promise<RoomAck> => {
@@ -188,7 +171,7 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
     localStorage.removeItem(SESSION)
     sessionRef.current = null
     keyRef.current = ''
-    setRoom(null); setBoard(blankBoard()); setSelectedCell(0); setSelectedCall(null); setError('')
+    setRoom(null); setBoard(blankBoard()); setError('')
   }
   const copyLink = async () => {
     if (!room) return
@@ -203,13 +186,18 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
     } else await copyLink()
   }
   const chooseCell = (index: number) => {
-    if (!room) return
-    if (room.phase === 'setup' && !me?.ready) setSelectedCell(index)
-    if (room.phase === 'playing' && isTurn && bothOnline && !calledSet.has(ownBoard[index] as number)) setSelectedCall(ownBoard[index] as number)
-  }
-  const call = () => {
-    if (selectedCall === null) return
-    void act('bingo:call', { number: selectedCall }, () => setSelectedCall(null))
+    if (!room || busy) return
+    if (room.phase === 'setup' && !me?.ready) {
+      updateBoard(toggleBoardCell(board, index))
+      return
+    }
+    if (room.phase === 'playing' && isTurn && bothOnline && connected) {
+      const number = ownBoard[index]
+      if (number !== null && !calledSet.has(number)) {
+        // One tap calls and marks this number on both boards through the server.
+        void act('bingo:call', { number })
+      }
+    }
   }
   const lastCall = room?.calls.at(-1)
   const caller = room?.players.find(p => p.id === lastCall?.by)
@@ -249,32 +237,26 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
         {room.phase === 'lobby' && <section className="bgo-card bgo-waiting"><div className="bgo-icon"><Users size={28}/></div><h2>Battle with a friend</h2><p>Send your invite link or room code. When your friend joins, each of you can fill your own board.</p><span className="bgo-eyebrow">YOUR ROOM CODE</span><div className="bgo-invite-code" aria-label={`Room code ${room.code}`}>{room.code.split('').map((char,i)=><span key={i}>{char}</span>)}</div><div className="bgo-waiting-actions"><button type="button" className="bgo-primary" onClick={()=>void copyLink()}>{copied?<Check size={18}/>:<Copy size={18}/>} {copied?'Copied!':'Copy invite link'}</button><button type="button" className="bgo-outline" onClick={()=>void shareLink()}><Share2 size={17}/> Share</button></div><div className="bgo-waiting-notice"><span className="bgo-pulse"/> Waiting for another player…</div></section>}
 
         {(room.phase === 'setup' || room.phase === 'playing' || room.phase === 'finished') && <div className="bgo-play-columns"><div className="bgo-card bgo-board-card">
-          {room.phase==='setup' ? <div className="bgo-status"><span className="bgo-status-icon"><LockKeyhole size={20}/></span><div><strong>{me?.ready?'Your board is locked':'Your own board, your choice.'}</strong><span>{me?.ready?'Waiting for your friend to finish their board.':'Arrange numbers 1–25 yourself, or tap Random to fill the board instantly.'}</span></div></div>
-            : room.phase==='playing' ? <div className={`bgo-status ${isTurn&&bothOnline?'bgo-status-active':''}`}><span className="bgo-status-icon">{!bothOnline?<WifiOff size={20}/>:isTurn?<CheckCircle2 size={20}/>:<RotateCcw size={20}/>}</span><div><strong>{!bothOnline?'Waiting for reconnection':isTurn?'Your turn — call a number!':`${opponent?.name||'Opponent'} is choosing`}</strong><span>{!bothOnline?'Both players must be online.':isTurn?'Tap an unmarked number, then confirm your call.':'Every called number is marked for both players.'}</span></div></div>
+          {room.phase==='setup' ? <div className="bgo-status"><span className="bgo-status-icon"><LockKeyhole size={20}/></span><div><strong>{me?.ready?'Your board is locked':'Your own board, your choice.'}</strong><span>{me?.ready?'Waiting for your friend to finish their board.':'Tap empty squares to place 1–25 in order. Tap a filled square to clear it, or choose Random.'}</span></div></div>
+            : room.phase==='playing' ? <div className={`bgo-status ${isTurn&&bothOnline?'bgo-status-active':''}`}><span className="bgo-status-icon">{!bothOnline?<WifiOff size={20}/>:isTurn?<CheckCircle2 size={20}/>:<RotateCcw size={20}/>}</span><div><strong>{!bothOnline?'Waiting for reconnection':isTurn?'Your turn — call a number!':`${opponent?.name||'Opponent'} is choosing`}</strong><span>{!bothOnline?'Both players must be online.':isTurn?'Tap an unmarked number to call and mark it immediately.':'Every called number is marked for both players.'}</span></div></div>
             : <div className="bgo-status bgo-status-active"><span className="bgo-status-icon"><Trophy size={21}/></span><div><strong>{room.draw?"It's a draw!":room.winnerId===room.you?'You got BINGO!':`${opponent?.name||'Opponent'} got BINGO!`}</strong><span>Five completed lines. Round {room.round} is finished.</span></div></div>}
           <div className="bgo-board-heading"><span>YOUR 5 × 5 BOARD</span><span>{room.phase==='setup'?(me?.ready?'25 / 25 filled':`${filled} / 25 filled`):`${called.length} numbers called`}</span></div>
           <div className="bgo-board" role="grid" aria-label="Your Bingo board">
             {ownBoard.map((n, index)=>{
               const marked=n!==null&&calledSet.has(n)
-              const locked=room.phase!=='setup'||!!me?.ready
-              const selected=room.phase==='setup'?!me?.ready&&selectedCell===index:room.phase==='playing'&&n===selectedCall
               const interactive=room.phase==='setup'&&!me?.ready||room.phase==='playing'&&isTurn&&bothOnline&&!marked
-              return <button key={index} role="gridcell" type="button" className={`bgo-cell ${selected?'bgo-selected':''} ${marked?'bgo-marked':''} ${marked&&completedIndices.has(index)?'bgo-complete':''} ${n===null?'bgo-blank':''}`} onClick={()=>chooseCell(index)} disabled={!interactive||busy} aria-selected={selected} aria-label={`Row ${Math.floor(index/5)+1} column ${index%5+1}: ${n===null?'empty':n}${marked?', called':''}`}>
+              return <button key={index} role="gridcell" type="button" className={`bgo-cell ${marked?'bgo-marked':''} ${marked&&completedIndices.has(index)?'bgo-complete':''} ${n===null?'bgo-blank':''}`} onClick={()=>chooseCell(index)} disabled={!interactive||busy} aria-label={`Row ${Math.floor(index/5)+1} column ${index%5+1}: ${n===null?'empty':n}${marked?', called':''}`}>
                 {n??<span aria-hidden="true">·</span>}
                 {marked&&<span className="bgo-cell-cross" aria-hidden="true"/>}
               </button>
             })}
           </div>
           {room.phase==='setup'&&!me?.ready && <>
-            <div className="bgo-board-note"><span><CheckCircle2 size={16}/> Select a cell to enter a number, or choose Random.</span><span>{25-filled} remaining</span></div>
-            <div className="bgo-number-picker" role="group" aria-label="Numbers to place on your board">
-              {Array.from({length:25},(_,i)=>i+1).map(n=><button type="button" key={n} aria-label={`Place ${n}`} className={board.includes(n)?'bgo-number-used':''} onClick={()=>selectNumber(n)} disabled={busy||board.some((v,i)=>v===n&&i!==selectedCell)}>{n}</button>)}
-            </div>
-            <div className="bgo-setup-controls"><button type="button" className="bgo-outline bgo-random" onClick={fillRandomBoard} disabled={busy}><Grid3X3 size={17}/> Random</button><button type="button" className="bgo-outline" onClick={clearCell} disabled={busy}><Eraser size={17}/> Clear cell</button><button type="button" className="bgo-outline" disabled={busy} onClick={()=>{if(window.confirm('Clear every number from your board?')){updateBoard(blankBoard());setSelectedCell(0)}}}><RotateCcw size={16}/> Reset board</button></div>
+            <div className="bgo-board-note"><span><CheckCircle2 size={16}/> Tap an empty square to add the next number. Tap a filled square to erase it.</span><span>{nextNumber === null ? 'Ready to lock' : `Next: ${nextNumber}`}</span></div>
+            <div className="bgo-setup-controls"><button type="button" className="bgo-outline bgo-random" onClick={fillRandomBoard} disabled={busy}><Grid3X3 size={17}/> Random</button><button type="button" className="bgo-outline" disabled={busy} onClick={()=>{if(window.confirm('Clear every number from your board?')) updateBoard(blankBoard())}}><RotateCcw size={16}/> Reset board</button></div>
             <button type="button" className="bgo-primary bgo-lock" disabled={!connected||busy||!complete} onClick={()=>void act('bingo:board',{board},()=>{if(room)localStorage.removeItem(`bingo:draft:${room.code}:${room.round}`)})}>Lock my board <LockKeyhole size={18}/></button>
           </>}
           {room.phase==='setup'&&me?.ready&&<div className="bgo-waiting-notice"><span className="bgo-pulse"/> Waiting for your opponent to lock their board…</div>}
-          {room.phase==='playing'&&<div className="bgo-call-controls"><button type="button" className="bgo-primary bgo-call-button" disabled={!isTurn||!bothOnline||busy||!connected||selectedCall===null} onClick={call}>{selectedCall===null?'Select a number to call':`Call number ${selectedCall}`}<ArrowRight size={18}/></button></div>}
           {room.phase==='finished'&&<div className="bgo-finished-actions">{me?.isHost?<button type="button" className="bgo-primary" disabled={busy||!connected} onClick={()=>void act('bingo:rematch',{})}>Play another round <RotateCcw size={18}/></button>:<div className="bgo-waiting-notice"><span className="bgo-pulse"/> Waiting for the host to start a rematch…</div>}</div>}
         </div>
         <aside className="bgo-side">

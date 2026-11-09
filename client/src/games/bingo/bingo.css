@@ -95,10 +95,6 @@
 .bgo-cell-cross { position:absolute; width:55%; height:2px; background:currentColor; opacity:.5; transform:rotate(-35deg); pointer-events:none; }
 .bgo-board-note { display:flex;justify-content:space-between;align-items:center;gap:8px;margin:15px 0 12px;color:#796A5D;font-size:11px; }
 .bgo-board-note span:first-child { display:flex;align-items:center;gap:6px; }
-.bgo-number-picker { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;max-width:500px;margin:0 auto; }
-.bgo-number-picker button { min-width:0; min-height:46px; border:1px solid #CEBBA9; border-radius:9px; background:#FFF; color:#392525; font-size:16px!important; font-weight:800!important; }
-.bgo-number-picker button:not(:disabled):hover { background:#E3E890; border-color:#728383; }
-.bgo-number-picker .bgo-number-used { background:#E0DCD1; color:#A7A096; border-color:#E0DCD1; }
 .bgo-setup-controls { display:flex; gap:8px;justify-content:space-between; margin-top:13px; }
 .bgo-lock, .bgo-call-button { width:100%; margin-top:18px; }
 .bgo-side { display:flex;flex-direction:column;gap:14px; }
@@ -120,7 +116,6 @@
   .bgo-entry { gap:28px; }
   .bgo-play-columns { grid-template-columns:minmax(0,1fr) minmax(210px,275px);gap:13px; }
   .bgo-board-card,.bgo-side .bgo-card { padding:17px; }
-  .bgo-number-picker { gap:5px; }
 }
 @media(max-width:640px) {
   .bgo-frame { padding:0 16px; }
@@ -149,7 +144,6 @@
   .bgo-side { width:100%; }
   .bgo-board { gap:4px; }
   .bgo-cell { border-radius:8px;font-size:23px!important; }
-  .bgo-number-picker button { min-height:43px; }
   .bgo-waiting { padding:28px 15px; }
   .bgo-side .bgo-card { padding:17px; }
 }
@@ -166,7 +160,6 @@
   .bgo-cell { font-size:19px!important; }
   .bgo-status { padding:10px; }
   .bgo-status strong { font-size:12px; }
-  .bgo-number-picker button { min-height:39px;font-size:14px!important; }
   .bgo-setup-controls .bgo-outline { padding:9px; font-size:11px!important; }
 }
 @media(prefers-reduced-motion:reduce) { .bgo-primary,.bgo-cell { transition:none; } }
@@ -174,9 +167,15 @@
 /* Optional Bingo auto-arrangement; manual entry remains available after randomising. */
 .bgo-setup-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
 .bgo-setup-controls .bgo-outline { width:100%; min-width:0; }
-.bgo-setup-controls .bgo-random { grid-column:1 / -1; background:#E3E890; border-color:#7E7B62; color:#392525; font-weight:800!important; min-height:46px; }
 .bgo-setup-controls .bgo-random:not(:disabled):hover { background:#D6DF73; }
 .bgo-setup-controls .bgo-outline:disabled { opacity:.5; cursor:not-allowed; }
 @media(max-width:370px) {
   .bgo-setup-controls .bgo-outline { gap:5px; font-size:11px!important; padding:9px 6px; }
 }
+
+/* Direct-tap Bingo setup: two simple actions under the board, no number picker. */
+.bgo-board-note { flex-wrap:wrap; align-items:flex-start; line-height:1.5; }
+.bgo-board-note span:first-child { flex:1 1 200px; min-width:0; }
+.bgo-board-note span:last-child { white-space:nowrap; font-weight:800; color:#3E4734; }
+.bgo-setup-controls .bgo-random { grid-column:auto; }
+.bgo-setup-controls .bgo-outline { min-height:46px; }
