@@ -108,3 +108,61 @@ test('Bingo requires manual board entry, enforces unique numbers, calls both boa
     await guestContext.close()
   }
 })
+
+
+test('Bingo Random fills all numbers 1–25, asks before replacing manual entries, and stays editable', async ({page,browser}) => {
+  await page.setViewportSize({width:320,height:800})
+  const guestContext=await browser.newContext()
+  const guest=await guestContext.newPage()
+  try {
+    await page.goto('/games/bingo')
+    await page.getByLabel('YOUR NICKNAME').fill('Alex')
+    await page.getByRole('button',{name:'Create Bingo room'}).click()
+    const room=(await page.locator('.bgo-invite-code span').allTextContents()).join('')
+    await guest.goto(`/games/bingo?room=${room}`)
+    await guest.getByLabel('YOUR NICKNAME').fill('Blair')
+    await guest.getByRole('button',{name:'Join Bingo room'}).click()
+    await expect(page.getByRole('heading',{name:'Build your board.'})).toBeVisible()
+    await expect(page.getByRole('button',{name:'Random'})).toBeVisible()
+
+    // Manual placement is still supported, and Random never overwrites it without warning.
+    await page.getByRole('button',{name:'Place 1',exact:true}).click()
+    await expect(page.getByText('1 / 25 filled')).toBeVisible()
+    page.once('dialog', dialog => dialog.dismiss())
+    await page.getByRole('button',{name:'Random'}).click()
+    await expect(page.getByText('1 / 25 filled')).toBeVisible()
+
+    page.once('dialog', dialog => dialog.accept())
+    await page.getByRole('button',{name:'Random'}).click()
+    await expect(page.getByText('25 / 25 filled')).toBeVisible()
+    const values=await page.locator('.bgo-board .bgo-cell').allTextContents()
+    expect(values.map(Number).sort((a,b)=>a-b)).toEqual(Array.from({length:25},(_,i)=>i+1))
+    await expect(page.getByRole('button',{name:'Lock my board'})).toBeEnabled()
+
+    // An automatically generated board can be edited manually before locking.
+    const original=Number(values[0])
+    await page.getByRole('gridcell',{name:new RegExp('Row 1 column 1: '+original+'$')}).click()
+    await page.getByRole('button',{name:'Clear cell'}).click()
+    await expect(page.getByText('24 / 25 filled')).toBeVisible()
+    await expect(page.getByRole('button',{name:'Lock my board'})).toBeDisabled()
+    await page.getByRole('button',{name:`Place ${original}`,exact:true}).click()
+    await expect(page.getByText('25 / 25 filled')).toBeVisible()
+
+    // Random boards use the existing draft persistence and server validation.
+    await page.reload()
+    await expect(page.getByText('25 / 25 filled')).toBeVisible()
+    await expect(page.getByRole('button',{name:'Lock my board'})).toBeEnabled()
+    await page.getByRole('button',{name:'Lock my board'}).click()
+    await expect(page.getByText('Your board is locked')).toBeVisible()
+    await expect(page.getByRole('button',{name:'Random'})).toHaveCount(0)
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false)
+
+    // The opponent can independently randomize and lock a distinct board.
+    await guest.getByRole('button',{name:'Random'}).click()
+    await expect(guest.getByText('25 / 25 filled')).toBeVisible()
+    await guest.getByRole('button',{name:'Lock my board'}).click()
+    await expect(page.getByRole('heading',{name:'The numbers are calling.'})).toBeVisible()
+  } finally {
+    await guestContext.close()
+  }
+})
