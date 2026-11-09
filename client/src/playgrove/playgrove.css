@@ -149,3 +149,13 @@
   .pg-coming-soon h3 { margin-bottom:12px; }
   .pg-coming-label { margin-top:14px; }
 }
+/* Third Playgrove game — Bingo Duel. Overrides only the library, not other games. */
+.pg-bingo-symbol { background:var(--pg-terracotta); color:var(--pg-seedling); }
+.pg-bingo-card { border-top:5px solid var(--pg-terracotta); }
+.pg-bingo-play { background:var(--pg-redwood); }
+.pg-bingo-play:hover { background:var(--pg-terracotta); }
+@media(min-width:960px) {
+  .pg-games-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .pg-game-card { padding:22px; }
+  .pg-game-features { flex-wrap:wrap; gap:8px; }
+}

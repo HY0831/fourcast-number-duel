@@ -33,3 +33,9 @@ test('Sudoku has its own route without changing legacy Fourcast invites', () => 
   assert.deepEqual(resolveHubRoute('/games/fourcast?room=ABC123', ''), { page: 'hub', redirect: '/' });
   assert.deepEqual(resolveHubRoute('/', '?room=ABC123'), { page: 'fourcast', redirect: '/games/fourcast?room=ABC123' });
 });
+test('Bingo has a standalone route without overriding Fourcast or Sudoku invitations', () => {
+  assert.deepEqual(resolveHubRoute('/games/bingo'), { page: 'bingo', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/bingo/', '?room=XY2345'), { page: 'bingo', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/sudoku'), { page: 'sudoku', redirect: null });
+  assert.deepEqual(resolveHubRoute('/', '?room=AB2345'), { page: 'fourcast', redirect: '/games/fourcast?room=AB2345' });
+});

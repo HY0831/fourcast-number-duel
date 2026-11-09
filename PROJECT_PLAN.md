@@ -115,3 +115,13 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - Saved progress and per-level best times in browser localStorage; a new puzzle can be started on demand.
 - Fourcast game engine, server Socket.IO events, existing room links and gameplay behavior remain unchanged.
 - New Sudoku unit tests and Playwright browser tests must pass on GitHub before merging to `main`.
+
+## Third game — Bingo Duel (2026-11-09)
+
+- Approved rules: 2-player private-room Bingo; **five completed lines wins** (rows, columns and both diagonals), simultaneous five lines is a **draw**.
+- **Fully manual board setup**: users select any cell and enter all unique numbers from 1 to 25; no auto-fill/shuffle; errors and duplicates blocked; drafts saved locally; both players lock valid boards before playing.
+- Players take turns calling unused numbers; each call marks both boards automatically. Server checks whose turn it is, online status, call uniqueness, line completion and winner.
+- Private board positions until game ends. Own board visible, opponent line progress visible, rematch boards reset, next round alternates first player.
+- Bingo-specific `bingo:*` Socket.IO events, separate room/session store; original Fourcast engine and Sudoku remain unchanged.
+- Route `/games/bingo`; old Fourcast invitation URLs remain compatible. Playgrove homepage has 3 games.
+- Branch `feature/playgrove-bingo-manual-v1`; check unit + browser tests before merge. See `BINGO_RULES.md`.

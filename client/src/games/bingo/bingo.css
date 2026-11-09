@@ -1,0 +1,172 @@
+/* Bingo Duel — isolated Playgrove gameplay styles, no Fourcast or Sudoku overrides. */
+.bgo-shell {
+  --bgo-dark: #392525; --bgo-brown: #683226; --bgo-clay: #B25D3E;
+  --bgo-cream: #FAF5E9; --bgo-green: #3E4734; --bgo-lime: #E3E890;
+  --bgo-slate: #728383; --bgo-mist: #B6B7A5;
+  position: relative; min-height: 100vh; background: var(--bgo-dark); color: var(--bgo-cream);
+  font-family: 'DM Sans', sans-serif; isolation: isolate;
+}
+.bgo-shell * { box-sizing: border-box; }
+.bgo-shell button { font: inherit; cursor: pointer; }
+.bgo-shell button:disabled { cursor: not-allowed; }
+.bgo-shell button:focus-visible,.bgo-shell input:focus-visible { outline: 3px solid var(--bgo-lime); outline-offset: 3px; }
+.bgo-frame { width: min(1120px, 100%); margin: 0 auto; padding: 0 30px; display:flex; flex-direction:column; min-height:100vh; }
+.bgo-topbar { height: 88px; border-bottom: 1px solid #87726555; display:flex; justify-content:space-between; align-items:center; gap:14px; }
+.bgo-back { display:flex; align-items:center; gap:7px; padding:10px 0; border:0; background:transparent; color:var(--bgo-cream); font-size:13px!important; font-weight:700!important; }
+.bgo-back:hover { color:var(--bgo-lime); }
+.bgo-brand { display:flex; align-items:center; gap:9px; font:700 21px 'Space Grotesk',sans-serif; letter-spacing:-.7px; }
+.bgo-brand svg { color:var(--bgo-lime); }
+.bgo-brand span { color:var(--bgo-lime); }
+.bgo-connection { white-space:nowrap; font-size:12px; color:var(--bgo-mist); display:flex; align-items:center; gap:7px; }
+.bgo-connection>span { display:block; width:7px; height:7px; background:var(--bgo-clay); border-radius:50%; }
+.bgo-online>span { background:var(--bgo-lime); }
+.bgo-eyebrow { font-size:11px; font-weight:800; letter-spacing:1.6px; color:var(--bgo-clay); display:flex; align-items:center; gap:6px; }
+.bgo-primary { display:inline-flex; align-items:center; justify-content:center; gap:10px; border:0; border-radius:11px; min-height:49px; padding:12px 18px; color:#FAF5E9; background:var(--bgo-brown); font-size:14px!important; font-weight:750!important; transition:background .15s, transform .15s; }
+.bgo-primary:not(:disabled):hover { background:var(--bgo-clay); transform:translateY(-1px); }
+.bgo-primary:disabled { opacity:.43; }
+.bgo-outline { display:inline-flex; justify-content:center; align-items:center; gap:7px; padding:10px 14px; min-height:41px; border-radius:10px; border:1px solid #B6B7A5; background:transparent; color:var(--bgo-brown); font-size:13px!important; font-weight:700!important; }
+.bgo-outline:not(:disabled):hover { background:#FAF5E9; }
+.bgo-card { background:var(--bgo-cream); color:var(--bgo-dark); border-radius:20px; padding:26px; box-shadow:0 16px 42px #1c14143a; }
+.bgo-alert { width:100%; display:flex; justify-content:space-between; align-items:center; gap:14px; background:#FBE7DB; color:#7A321B; border:1px solid #F3B894; border-radius:10px; padding:12px 15px; font-size:13px; margin-top:15px; }
+.bgo-alert button { flex-shrink:0; display:grid;place-items:center; border:0; background:none; color:#7A321B; padding:3px; }
+.bgo-entry { display:grid; grid-template-columns:1.08fr .92fr; gap:50px; align-items:center; flex:1; padding:80px 0 100px; }
+.bgo-intro h1 { font:700 clamp(43px,5.3vw,69px)/1.08 'Space Grotesk', sans-serif; letter-spacing:-2.8px; margin:21px 0 22px; }
+.bgo-intro h1 em { font-style:normal; color:var(--bgo-lime); }
+.bgo-intro>p { color:var(--bgo-mist); font-size:16px; line-height:1.7; max-width:430px; margin-bottom:22px; }
+.bgo-intro .bgo-eyebrow { color:var(--bgo-lime); }
+.bgo-chips { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:33px; }
+.bgo-chips>span { display:flex;align-items:center;gap:6px; font-size:12px; color:var(--bgo-cream); border:1px solid #8A7A7355; padding:8px 10px; border-radius:20px; }
+.bgo-rule-mini { border-top:1px solid #8A7A7355; padding-top:25px; display:flex; flex-direction:column; gap:8px; }
+.bgo-rule-mini strong { font-size:13px; color:var(--bgo-lime); }
+.bgo-rule-mini span { font-size:13px; line-height:1.6; color:var(--bgo-mist); }
+.bgo-join-card { padding:0; overflow:hidden; }
+.bgo-tabs { display:flex; border-bottom:1px solid #E4DDCD; padding:0 20px; }
+.bgo-tabs button { flex:1; background:transparent; border:0; border-bottom:3px solid transparent; padding:20px 12px 17px; color:#877871; font-size:14px!important; font-weight:700!important; }
+.bgo-tabs button.active { color:var(--bgo-brown); border-color:var(--bgo-clay); }
+.bgo-form { padding:28px; display:flex;flex-direction:column; gap:10px; }
+.bgo-form h2 { font:700 26px 'Space Grotesk',sans-serif; margin:0 0 12px; letter-spacing:-1px; }
+.bgo-form label { color:#6C6258; font-size:11px; font-weight:800; letter-spacing:.9px; margin-top:12px; }
+.bgo-form input { width:100%; background:#FFFFFF; color:var(--bgo-dark); border:1px solid #DCD5C8; height:51px; border-radius:10px; padding:0 15px; font:600 15px 'DM Sans',sans-serif; }
+.bgo-form .bgo-code-input { letter-spacing:4px; text-transform:uppercase; }
+.bgo-form .bgo-primary { margin-top:20px; width:100%; }
+.bgo-game { width:100%; flex:1; padding:33px 0 65px; }
+.bgo-room-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; }
+.bgo-room-heading .bgo-eyebrow { color:var(--bgo-lime); }
+.bgo-room-heading h1 { font:700 clamp(25px,3.4vw,38px)/1.1 'Space Grotesk',sans-serif; letter-spacing:-1.1px; margin:10px 0 0; }
+.bgo-exit { color:var(--bgo-cream); border-color:#9E8D84; flex-shrink:0; }
+.bgo-exit:hover { color:var(--bgo-dark); }
+.bgo-scoreboard { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; margin-bottom:20px; }
+.bgo-player { background:#FAF5E9; border:2px solid transparent; border-radius:14px; padding:17px 19px; display:flex; flex-direction:column; gap:9px; color:var(--bgo-dark); min-width:0; }
+.bgo-player-turn { border-color:var(--bgo-lime); }
+.bgo-player-placeholder { background:#DAD6C8; }
+.bgo-player-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.bgo-player-top>span { font-weight:800; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bgo-player-top>small { font-size:9px; font-weight:900; letter-spacing:.7px; white-space:nowrap; }
+.bgo-letters { display:flex; gap:5px; }
+.bgo-letters>span { font:700 clamp(14px,2.8vw,23px) 'Space Grotesk',sans-serif; width:30px; height:32px; display:grid;place-items:center; border-radius:6px; color:#9C9990; background:#E4DFD1; }
+.bgo-letters .bgo-earned { color:var(--bgo-cream); background:var(--bgo-green); }
+.bgo-progress-text { color:#776A5E; font-size:11px; font-weight:700; }
+.bgo-waiting { display:flex;flex-direction:column;align-items:center;text-align:center; max-width:620px; margin:30px auto 0; gap:13px; padding:38px; }
+.bgo-waiting .bgo-icon { display:grid;place-items:center; width:65px;height:65px;border-radius:18px;background:#E3E890;color:#3E4734; }
+.bgo-waiting h2 { font:700 28px 'Space Grotesk',sans-serif; margin:4px 0 0; }
+.bgo-waiting p { font-size:14px; color:#74665B; line-height:1.6; max-width:420px; }
+.bgo-waiting .bgo-eyebrow { margin-top:13px; }
+.bgo-invite-code { display:flex;gap:6px; justify-content:center;flex-wrap:wrap; }
+.bgo-invite-code span { background:#FFF; border:1px solid #D9CDBE; border-radius:8px; display:grid;place-items:center; font:800 clamp(19px,4vw,29px) 'Space Grotesk',sans-serif; width:clamp(35px,9vw,55px); height:clamp(40px,10vw,59px); }
+.bgo-waiting-actions { display:flex;justify-content:center;flex-wrap:wrap; gap:9px; }
+.bgo-waiting-notice { width:100%; display:flex;justify-content:center;align-items:center;gap:9px;color:#74665B;font-size:12px;font-weight:650;padding:16px 0 1px; }
+.bgo-pulse { width:9px;height:9px; border-radius:100%;background:#728383;box-shadow:0 0 0 4px #72838324; }
+.bgo-play-columns { display:grid; grid-template-columns:minmax(0,1fr) minmax(250px,330px); align-items:start; gap:18px; }
+.bgo-board-card { padding:22px; }
+.bgo-status { display:flex;align-items:center;gap:11px; padding:13px; border-radius:12px; background:#E8E4D8; color:var(--bgo-dark); margin-bottom:21px; }
+.bgo-status-active { background:var(--bgo-lime); }
+.bgo-status-icon { flex-shrink:0; display:grid;place-items:center; width:37px;height:37px;border-radius:11px;background:var(--bgo-cream);color:var(--bgo-brown); }
+.bgo-status>div { display:flex; flex-direction:column; gap:4px; }
+.bgo-status strong { font-size:13px; }
+.bgo-status div span { color:#6B6358; font-size:11px; line-height:1.45; }
+.bgo-board-heading { display:flex;justify-content:space-between;align-items:center;gap:10px; color:#817466; font-size:11px; font-weight:800; letter-spacing:.6px; margin-bottom:11px; }
+.bgo-board { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:5px; max-width:500px; margin:0 auto; }
+.bgo-cell { aspect-ratio:1; min-width:0; display:grid;place-items:center; position:relative; border-radius:10px; border:1.5px solid #D9CCBC; background:#FFFFFF; color:var(--bgo-dark); font:750 clamp(18px,3vw,27px) 'Space Grotesk',sans-serif!important; padding:0; transition:background .12s,border-color .12s; }
+.bgo-cell:not(:disabled):hover { border-color:var(--bgo-clay); }
+.bgo-cell.bgo-selected { border-color:var(--bgo-brown); box-shadow:inset 0 0 0 2px var(--bgo-brown); background:#FFF7E8; }
+.bgo-cell.bgo-marked { background:#E3E890; border-color:#B6BB75; color:#392525; }
+.bgo-cell.bgo-complete { background:#3E4734; border-color:#3E4734; color:#FAF5E9; }
+.bgo-cell.bgo-blank { color:#B6B7A5; }
+.bgo-cell-cross { position:absolute; width:55%; height:2px; background:currentColor; opacity:.5; transform:rotate(-35deg); pointer-events:none; }
+.bgo-board-note { display:flex;justify-content:space-between;align-items:center;gap:8px;margin:15px 0 12px;color:#796A5D;font-size:11px; }
+.bgo-board-note span:first-child { display:flex;align-items:center;gap:6px; }
+.bgo-number-picker { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;max-width:500px;margin:0 auto; }
+.bgo-number-picker button { min-width:0; min-height:46px; border:1px solid #CEBBA9; border-radius:9px; background:#FFF; color:#392525; font-size:16px!important; font-weight:800!important; }
+.bgo-number-picker button:not(:disabled):hover { background:#E3E890; border-color:#728383; }
+.bgo-number-picker .bgo-number-used { background:#E0DCD1; color:#A7A096; border-color:#E0DCD1; }
+.bgo-setup-controls { display:flex; gap:8px;justify-content:space-between; margin-top:13px; }
+.bgo-lock, .bgo-call-button { width:100%; margin-top:18px; }
+.bgo-side { display:flex;flex-direction:column;gap:14px; }
+.bgo-side .bgo-card { padding:21px; }
+.bgo-side h3 { font:700 20px 'Space Grotesk',sans-serif;letter-spacing:-.5px;margin:8px 0 12px; }
+.bgo-side p { font-size:12px;line-height:1.65;color:#706458;margin:0 0 12px; }
+.bgo-rule-badge { display:flex;align-items:start; gap:8px; background:#E5E7CF; border-radius:9px; padding:12px; color:#3E4734; font-size:11px;font-weight:700;line-height:1.55; }
+.bgo-rule-badge svg { flex-shrink:0; }
+.bgo-calls { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px; max-height:320px;overflow:auto; }
+.bgo-call-history { display:flex;align-items:center;gap:8px;background:#FFFFFF;border:1px solid #E8E2D9;border-radius:9px;padding:7px;min-width:0; }
+.bgo-call-history strong { display:grid;place-items:center;min-width:33px;height:33px;background:#E3E890;border-radius:8px;font:700 15px 'Space Grotesk',sans-serif; }
+.bgo-call-history span { font-size:10px;color:#72685D;line-height:1.3; }
+.bgo-result-player { display:flex;justify-content:space-between;gap:10px;border-top:1px solid #E0DACD;padding:10px 0;font-size:13px; }
+.bgo-finished-actions>.bgo-primary { width:100%; margin-top:18px; }
+.bgo-footer { display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;border-top:1px solid #87726555;padding:24px 0;color:var(--bgo-lime);font:800 13px 'Space Grotesk',sans-serif; }
+.bgo-footer>span:last-child { color:var(--bgo-mist);font:500 11px 'DM Sans',sans-serif; }
+@media(max-width:850px) {
+  .bgo-frame { padding:0 20px; }
+  .bgo-entry { gap:28px; }
+  .bgo-play-columns { grid-template-columns:minmax(0,1fr) minmax(210px,275px);gap:13px; }
+  .bgo-board-card,.bgo-side .bgo-card { padding:17px; }
+  .bgo-number-picker { gap:5px; }
+}
+@media(max-width:640px) {
+  .bgo-frame { padding:0 16px; }
+  .bgo-topbar { height:70px; }
+  .bgo-brand { font-size:16px;gap:4px; }
+  .bgo-brand svg { width:17px; }
+  .bgo-back { font-size:12px!important; }
+  .bgo-connection { font-size:10px; }
+  .bgo-entry { display:flex; flex-direction:column;align-items:stretch;gap:31px;padding:43px 0 60px; }
+  .bgo-intro h1 { font-size:46px;letter-spacing:-1.7px; }
+  .bgo-intro>p { font-size:14px; }
+  .bgo-join-card { max-width:520px; width:100%; margin:0 auto; }
+  .bgo-game { padding:23px 0 45px; }
+  .bgo-room-heading h1 { font-size:25px; }
+  .bgo-room-heading .bgo-eyebrow { font-size:10px; }
+  .bgo-exit { padding:8px; font-size:11px!important; }
+  .bgo-scoreboard { gap:8px; margin-bottom:12px; }
+  .bgo-player { padding:12px;gap:7px; }
+  .bgo-player-top>span { font-size:13px; }
+  .bgo-player-top>small { font-size:8px; }
+  .bgo-letters { gap:3px; }
+  .bgo-letters>span { width:25px;height:29px;font-size:16px; }
+  .bgo-progress-text { font-size:10px; }
+  .bgo-play-columns { display:flex;flex-direction:column; }
+  .bgo-board-card { width:100%;padding:16px; }
+  .bgo-side { width:100%; }
+  .bgo-board { gap:4px; }
+  .bgo-cell { border-radius:8px;font-size:23px!important; }
+  .bgo-number-picker button { min-height:43px; }
+  .bgo-waiting { padding:28px 15px; }
+  .bgo-side .bgo-card { padding:17px; }
+}
+@media(max-width:370px) {
+  .bgo-frame { padding:0 12px; }
+  .bgo-topbar { gap:6px; }
+  .bgo-brand { font-size:14px; }
+  .bgo-entry { padding-top:30px; }
+  .bgo-form { padding:20px; }
+  .bgo-chips { gap:6px; }
+  .bgo-chips>span { font-size:11px;padding:6px 8px; }
+  .bgo-letters>span { width:22px;height:27px;font-size:14px; }
+  .bgo-player { padding:10px; }
+  .bgo-cell { font-size:19px!important; }
+  .bgo-status { padding:10px; }
+  .bgo-status strong { font-size:12px; }
+  .bgo-number-picker button { min-height:39px;font-size:14px!important; }
+  .bgo-setup-controls .bgo-outline { padding:9px; font-size:11px!important; }
+}
+@media(prefers-reduced-motion:reduce) { .bgo-primary,.bgo-cell { transition:none; } }

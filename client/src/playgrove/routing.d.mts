@@ -1,3 +1,3 @@
-export type PlaygrovePage = 'hub' | 'fourcast' | 'sudoku';
+export type PlaygrovePage = 'hub' | 'fourcast' | 'sudoku' | 'bingo';
 export type RouteResolution = { page: PlaygrovePage; redirect: string | null };
 export function resolveHubRoute(pathname: string, search?: string): RouteResolution;

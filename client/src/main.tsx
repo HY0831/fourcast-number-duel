@@ -11,6 +11,7 @@ import './style.css'
 import './theme.css'
 import PlaygroveHome from './playgrove/PlaygroveHome'
 import SudokuPage from './games/sudoku/SudokuPage'
+import BingoPage from './games/bingo/BingoPage'
 import { resolveHubRoute } from './playgrove/routing.mjs'
 import './playgrove/playgrove.css'
 
@@ -321,6 +322,13 @@ function FourcastApp({ onBack, onActivityChange }: { onBack: () => void; onActiv
   </div>
 }
 
+function hasSavedBingoSession(): boolean {
+  try {
+    const saved = JSON.parse(localStorage.getItem('bingo:session') || 'null') as Session | null
+    return typeof saved?.code === 'string' && saved.code.length === 6 && typeof saved.token === 'string' && saved.token.length > 0
+  } catch { return false }
+}
+
 function hasSavedFourcastSession(): boolean {
   try {
     const saved = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null') as Session | null
@@ -328,7 +336,11 @@ function hasSavedFourcastSession(): boolean {
   } catch { return false }
 }
 
-const ACTIVE_ROOM_WARNING = 'Return to Playgrove? Your room stays saved, but the game pauses while you are away. You can resume it from the Game Library.'
+function activeRoomWarning(page: 'fourcast' | 'bingo') {
+  return page === 'bingo'
+    ? 'Return to Playgrove? Your Bingo room stays saved, but the game pauses while you are away. You can resume from the Game Library.'
+    : 'Return to Playgrove? Your room stays saved, but the game pauses while you are away. You can resume it from the Game Library.'
+}
 
 function currentPage() {
   const route = resolveHubRoute(window.location.pathname, window.location.search)
@@ -337,13 +349,13 @@ function currentPage() {
 }
 
 function App() {
-  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku'>(currentPage)
+  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo'>(currentPage)
   const pageRef = useRef(page)
   const activeMatchRef = useRef(false)
   const onActivityChange = useCallback((active: boolean) => { activeMatchRef.current = active }, [])
 
   const goTo = useCallback((path: string) => {
-    if (pageRef.current === 'fourcast' && path === '/' && activeMatchRef.current && !window.confirm(ACTIVE_ROOM_WARNING)) return
+    if ((pageRef.current === 'fourcast' || pageRef.current === 'bingo') && path === '/' && activeMatchRef.current && !window.confirm(activeRoomWarning(pageRef.current))) return
     window.history.pushState(null, '', path)
     const next = currentPage()
     pageRef.current = next
@@ -354,8 +366,8 @@ function App() {
   useEffect(() => {
     const onPopState = () => {
       const next = resolveHubRoute(window.location.pathname, window.location.search)
-      if (pageRef.current === 'fourcast' && next.page === 'hub' && activeMatchRef.current && !window.confirm(ACTIVE_ROOM_WARNING)) {
-        window.history.pushState(null, '', '/games/fourcast')
+      if ((pageRef.current === 'fourcast' || pageRef.current === 'bingo') && next.page === 'hub' && activeMatchRef.current && !window.confirm(activeRoomWarning(pageRef.current))) {
+        window.history.pushState(null, '', `/games/${pageRef.current}`)
         return
       }
       const resolved = currentPage()
@@ -368,7 +380,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
+    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
   }, [page])
 
   if (page === 'hub') return <PlaygroveHome
@@ -376,8 +388,12 @@ function App() {
     onPlayFourcast={() => goTo('/games/fourcast')}
     onResumeFourcast={() => goTo('/games/fourcast')}
     onPlaySudoku={() => goTo('/games/sudoku')}
+    onPlayBingo={() => goTo('/games/bingo')}
+    hasSavedBingo={hasSavedBingoSession()}
+    onResumeBingo={() => goTo('/games/bingo')}
   />
   if (page === 'sudoku') return <SudokuPage onBack={() => goTo('/')} />
+  if (page === 'bingo') return <BingoPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
   return <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
 }
 
