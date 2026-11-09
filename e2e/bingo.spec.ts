@@ -160,8 +160,13 @@ test('Bingo Random fills all numbers 1–25, asks before replacing manual entrie
 
     // An automatically generated board can be edited manually before locking.
     const original=Number(values[0])
-    await page.getByRole('gridcell',{name:new RegExp('Row 1 column 1: '+original+'
-
+    await page.getByRole('gridcell',{name:new RegExp('Row 1 column 1: '+original+'$')}).click()
+    await expect(page.getByText('24 / 25 filled')).toBeVisible()
+    await expect(page.getByRole('button',{name:'Lock my board'})).toBeDisabled()
+    await expect(page.getByText(`Next: ${original}`)).toBeVisible()
+    await page.getByRole('gridcell',{name:/Row 1 column 1: empty/}).click()
+    await expect(page.getByRole('gridcell',{name:new RegExp('Row 1 column 1: '+original+'$')})).toBeVisible()
+    await expect(page.getByText('25 / 25 filled')).toBeVisible()
     // Random boards use the existing draft persistence and server validation.
     await page.reload()
     await expect(page.getByText('25 / 25 filled')).toBeVisible()
