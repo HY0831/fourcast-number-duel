@@ -134,3 +134,11 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - Main verification: https://github.com/HY0831/fourcast-number-duel/actions/runs/42571786503
 - Browser verification: https://github.com/HY0831/fourcast-number-duel/actions/runs/42571597948
 - Render still live on prior commit `cbff64c2` as last checked; Bingo becomes publicly playable only after successful deployment of latest `main`. Auto-deploy has historically not triggered even though the Render service displays it as enabled.
+
+## Bingo board setup improvement — Random option (2026-11-09)
+
+- Keep **Manual** placement as the default; introduce an optional **Random** button in Bingo's editable setup controls.
+- Random generates a fresh Fisher–Yates shuffle of 1–25, each number exactly once. It asks permission before replacing any existing manual or randomized arrangement.
+- Players can clear/replace individual entries after randomizing; existing client-side draft persistence, lock validation, match rules and server code remain unchanged.
+- Added deterministic unit coverage of valid random layouts and Playwright two-player coverage for Random, cancel/confirm, manual edits after Random, draft reload and lock.
+- Implement in feature branch `feature/bingo-random-board-20261109`, verify CI and browser tests, and merge only when checks pass.

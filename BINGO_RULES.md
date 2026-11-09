@@ -2,12 +2,12 @@
 
 **Game:** 2-player real-time Bingo Duel · **Win:** complete at least **5 lines**.
 
-## Manual board setup
-- Each player creates a fully manual **5×5** board with numbers **1 through 25**, each used **exactly once**.
-- **No automatic arrangement**, no prefilled numbers, no free central space.
+## Board setup — Manual or Random
+- Each player creates their own **5×5** board with numbers **1 through 25**, each used **exactly once**. They may type the arrangement manually or select **Random**.
+- Boards start empty with no free centre square. The optional **Random** button instantly fills all 25 cells with a Fisher–Yates shuffled arrangement. It is not mandatory.
 - Tap any board square, then select a number from the 1–25 number picker. Used numbers are disabled until erased or replaced. The cursor advances to the next empty square for convenience; the user can still tap any cell and edit it.
-- Clear Cell deletes the selected entry; Reset Board clears everything with confirmation.
-- Board drafts are saved locally on the same device to avoid losing work when navigating away. This is **not** a synchronized server draft.
+- **Random** is available only during editable setup; it asks for confirmation before replacing a partially or fully populated board. Players may still manually edit any automatically arranged cell, or tap Random again.\n- Clear Cell deletes the selected entry; Reset Board clears everything with confirmation.
+- Board drafts (manual or randomized) are saved locally on the same device to avoid losing work when navigating away. This is **not** a synchronized server draft.
 - **Lock My Board** becomes available only when all 25 numbers are present and unique. The server revalidates everything, stores the board privately, and waits for the other player to lock theirs.
 
 ## Gameplay
@@ -28,7 +28,7 @@
 
 ## Validation
 - Unit tests: 25 unique cells, line counting, privacy, correct turns, rejecting reused/out-of-range calls, offline pause, win/draw, rematch alternation, expiration.
-- Browser tests: homepage/routes, manual entry, number uniqueness/erase, two-player join, call and marking on both boards, room resume, winner and rematch, 320/390/768/1440px responsive layout.
+- Browser tests: homepage/routes, manual entry, optional Random generation, overwrite cancellation/confirmation, number uniqueness/erase, board editing, draft restore, two-player join, call and marking on both boards, room resume, winner and rematch, 320/390/768/1440px responsive layout.
 - GitHub Actions must pass the TypeScript/unit/build workflow and Chromium smoke tests before merge to main.
 
 ## Published code verification
@@ -36,3 +36,11 @@
 - Implemented, tested and merged in [Playgrove PR #3](https://github.com/HY0831/fourcast-number-duel/pull/3) on 2026-11-09.
 - Bingo-specific unit and Chromium browser tests passed, with prior Fourcast and Sudoku regression tests unchanged.
 - Deployment is independent of the GitHub merge. Check Render's running commit before treating Bingo as live.
+
+## Optional Random board button (2026-11-09)
+
+- Choosing **Random** fills a valid 1–25 board immediately, with no duplicate numbers.
+- It never disables manual entry; players can select a cell and replace or clear its number before locking.
+- If any cells are already filled, the app asks before overwriting them. Cancel preserves the current draft.
+- Randomized arrangements use the same lock validation, saved draft, gameplay rules and five-line victory conditions as manual boards.
+- There are no changes to the Bingo server protocol, Fourcast or Sudoku.

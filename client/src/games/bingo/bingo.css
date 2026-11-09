@@ -170,3 +170,13 @@
   .bgo-setup-controls .bgo-outline { padding:9px; font-size:11px!important; }
 }
 @media(prefers-reduced-motion:reduce) { .bgo-primary,.bgo-cell { transition:none; } }
+
+/* Optional Bingo auto-arrangement; manual entry remains available after randomising. */
+.bgo-setup-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+.bgo-setup-controls .bgo-outline { width:100%; min-width:0; }
+.bgo-setup-controls .bgo-random { grid-column:1 / -1; background:#E3E890; border-color:#7E7B62; color:#392525; font-weight:800!important; min-height:46px; }
+.bgo-setup-controls .bgo-random:not(:disabled):hover { background:#D6DF73; }
+.bgo-setup-controls .bgo-outline:disabled { opacity:.5; cursor:not-allowed; }
+@media(max-width:370px) {
+  .bgo-setup-controls .bgo-outline { gap:5px; font-size:11px!important; padding:9px 6px; }
+}
