@@ -142,3 +142,11 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - Players can clear/replace individual entries after randomizing; existing client-side draft persistence, lock validation, match rules and server code remain unchanged.
 - Added deterministic unit coverage of valid random layouts and Playwright two-player coverage for Random, cancel/confirm, manual edits after Random, draft reload and lock.
 - Implement in feature branch `feature/bingo-random-board-20261109`, verify CI and browser tests, and merge only when checks pass.
+
+## Bingo simplified board interactions — tap-to-fill and immediate call (2026-11-09)
+
+- Replace Bingo's numeric picker with tap-only board editing. An empty square receives the lowest missing number from 1–25, and a filled square is cleared by tapping it again.
+- Retain optional Random generation, reset-with-confirmation, local board draft persistence, server-side validation, private board layout, and the existing five-line rule.
+- While playing, one tap on an unmarked number immediately sends `bingo:call`; server marks both players on success. Remove the extra "Call number" confirmation control.
+- Add pure unit tests for sequential entry, clearing and number reuse, and update Chromium two-player end-to-end tests for the revised interaction.
+- Implement on feature branch `feature/bingo-tap-to-fill-and-call-20261109`; run all tests before merge, and verify Render separately afterward.

@@ -9,12 +9,20 @@ const spread=(() => {
   return values
 })()
 async function fillManualBoard(page: Page, layout: number[]) {
-  for(const number of layout) await page.getByRole('button',{name:`Place ${number}`,exact:true}).click()
+  // The first empty-square click places 1, second places 2, etc.
+  // Tap cells in the desired number order to produce any manual layout.
+  for (let number=1; number<=25; number++) {
+    const index=layout.indexOf(number)
+    expect(index).toBeGreaterThanOrEqual(0)
+    await page.locator('.bgo-board .bgo-cell').nth(index).click()
+  }
   await expect(page.getByText('25 / 25 filled')).toBeVisible()
 }
 async function callNumber(page: Page, n: number) {
-  await page.getByRole('gridcell',{name:new RegExp(`: ${n}(,|$)`)}).click()
-  await page.getByRole('button',{name:`Call number ${n}`}).click()
+  const cell=page.getByRole('gridcell',{name:new RegExp(`: ${n}(,|$)`)})
+  await cell.click()
+  // One click submits directly: wait for the server to mark it.
+  await expect(cell).toHaveClass(/bgo-marked/)
 }
 
 test('Playgrove lists Bingo and all three game routes still work', async ({page}) => {
@@ -46,7 +54,7 @@ test('Bingo page and Playgrove library have no horizontal overflow at phone and 
   }
 })
 
-test('Bingo requires manual board entry, enforces unique numbers, calls both boards, determines winner and rematches',async ({page,browser})=>{
+test('Bingo fills manual boards with sequential taps, calls both boards immediately, determines winner and rematches',async ({page,browser})=>{
   test.setTimeout(180_000)
   const guestContext=await browser.newContext()
   const guest=await guestContext.newPage()
@@ -65,14 +73,23 @@ test('Bingo requires manual board entry, enforces unique numbers, calls both boa
     await expect(guest.getByRole('heading',{name:'Build your board.'})).toBeVisible()
     await expect(page.locator('.bgo-cell')).toHaveCount(25)
     await expect(page.getByRole('button',{name:'Lock my board'})).toBeDisabled()
-    // Player can pick any cell manually, not just follow a prescribed arrangement.
+    // Tap an empty cell to place 1; a different empty cell places 2.
+    // Tapping an occupied cell clears its number and reuses the missing number.
+    await expect(page.getByRole('group',{name:'Numbers to place on your board'})).toHaveCount(0)
+    await expect(page.getByText('Next: 1')).toBeVisible()
     await page.getByRole('gridcell',{name:/Row 2 column 5: empty/}).click()
-    await page.getByRole('button',{name:'Place 1',exact:true}).click()
-    await expect(page.getByRole('button',{name:'Place 1',exact:true})).toBeDisabled()
-    await page.getByRole('gridcell',{name:/Row 2 column 5: 1/}).click()
-    await page.getByRole('button',{name:'Clear cell'}).click()
-    await expect(page.getByRole('button',{name:'Place 1',exact:true})).toBeEnabled()
+    await expect(page.getByRole('gridcell',{name:/Row 2 column 5: 1/})).toBeVisible()
     await page.getByRole('gridcell',{name:/Row 1 column 1: empty/}).click()
+    await expect(page.getByRole('gridcell',{name:/Row 1 column 1: 2/})).toBeVisible()
+    await page.getByRole('gridcell',{name:/Row 2 column 5: 1/}).click()
+    await expect(page.getByRole('gridcell',{name:/Row 2 column 5: empty/})).toBeVisible()
+    await expect(page.getByText('Next: 1')).toBeVisible()
+    await page.getByRole('gridcell',{name:/Row 3 column 2: empty/}).click()
+    await expect(page.getByRole('gridcell',{name:/Row 3 column 2: 1/})).toBeVisible()
+    // Reset and build the complete board in number order using only cell taps.
+    page.once('dialog',dialog=>dialog.accept())
+    await page.getByRole('button',{name:'Reset board'}).click()
+    await expect(page.getByText('Next: 1')).toBeVisible()
     await fillManualBoard(page,ascending)
     await page.getByRole('button',{name:'Lock my board'}).click()
     await expect(page.getByText('Your board is locked')).toBeVisible()
@@ -82,6 +99,7 @@ test('Bingo requires manual board entry, enforces unique numbers, calls both boa
     await expect(guest.getByText('Alex is choosing')).toBeVisible()
     // Server view shows only each player's own layout during play.
     expect(await page.locator('.bgo-board .bgo-cell').allTextContents()).toHaveLength(25)
+    await expect(page.getByRole('button',{name:/Call number/})).toHaveCount(0)
     await callNumber(page,1)
     await expect(page.getByRole('gridcell',{name:/Row 1 column 1: 1, called/})).toHaveClass(/bgo-marked/)
     await expect(guest.getByRole('gridcell',{name:/Row 1 column 2: 1, called/})).toHaveClass(/bgo-marked/)
@@ -126,8 +144,9 @@ test('Bingo Random fills all numbers 1–25, asks before replacing manual entrie
     await expect(page.getByRole('button',{name:'Random'})).toBeVisible()
 
     // Manual placement is still supported, and Random never overwrites it without warning.
-    await page.getByRole('button',{name:'Place 1',exact:true}).click()
+    await page.getByRole('gridcell',{name:/Row 1 column 1: empty/}).click()
     await expect(page.getByText('1 / 25 filled')).toBeVisible()
+    await expect(page.getByRole('gridcell',{name:/Row 1 column 1: 1/})).toBeVisible()
     page.once('dialog', dialog => dialog.dismiss())
     await page.getByRole('button',{name:'Random'}).click()
     await expect(page.getByText('1 / 25 filled')).toBeVisible()
@@ -142,12 +161,12 @@ test('Bingo Random fills all numbers 1–25, asks before replacing manual entrie
     // An automatically generated board can be edited manually before locking.
     const original=Number(values[0])
     await page.getByRole('gridcell',{name:new RegExp('Row 1 column 1: '+original+'$')}).click()
-    await page.getByRole('button',{name:'Clear cell'}).click()
     await expect(page.getByText('24 / 25 filled')).toBeVisible()
     await expect(page.getByRole('button',{name:'Lock my board'})).toBeDisabled()
-    await page.getByRole('button',{name:`Place ${original}`,exact:true}).click()
+    await expect(page.getByText(`Next: ${original}`)).toBeVisible()
+    await page.getByRole('gridcell',{name:/Row 1 column 1: empty/}).click()
+    await expect(page.getByRole('gridcell',{name:new RegExp('Row 1 column 1: '+original+'$')})).toBeVisible()
     await expect(page.getByText('25 / 25 filled')).toBeVisible()
-
     // Random boards use the existing draft persistence and server validation.
     await page.reload()
     await expect(page.getByText('25 / 25 filled')).toBeVisible()
