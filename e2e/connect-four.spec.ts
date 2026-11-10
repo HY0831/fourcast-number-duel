@@ -48,6 +48,7 @@ test('Connect Four uses mobile-friendly cells without horizontal overflow on pho
     await page.getByRole('button',{name:'Create Connect Four room'}).click()
     expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), `Waiting overflow at ${width}`).toBe(false)
     await page.getByRole('button',{name:'Exit room'}).click()
+    await expect(page.getByLabel('YOUR NICKNAME')).toBeVisible()
   }
 })
 
