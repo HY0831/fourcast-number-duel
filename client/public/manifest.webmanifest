@@ -1,7 +1,7 @@
 {
   "name": "Playgrove — Online Games",
   "short_name": "Playgrove",
-  "description": "Playgrove: Fourcast and Bingo multiplayer duels, plus solo Sudoku and Minesweeper.",
+  "description": "Playgrove: five games — Fourcast, Sudoku, Bingo, Minesweeper and Connect Four.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

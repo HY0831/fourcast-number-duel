@@ -165,3 +165,12 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - Added game route `/games/minesweeper` and fourth Playgrove card, with responsive scroll/zoom board, touch Reveal/Flag toggle, desktop right-click and keyboard shortcuts, pause, timer, local per-difficulty game saves and best times.
 - Added engine unit tests and Playwright browser tests for route/size, mobile controls, resume, loss, and victory. Existing Fourcast, Sudoku and Bingo gameplay/server code untouched.
 - Work developed on branch `feature/playgrove-minesweeper-v1-20261110`. See `MINESWEEPER_IMPLEMENTATION.md` and `MINESWEEPER_PROPOSAL.md` for rules and checks. GitHub verification and Render deployment are separate release gates.
+
+## Fifth game — Connect Four (2026-11-10)
+
+- Approved v1: online 2-player Connect Four with 7×6 board, gravity, alternating turns, horizontal/vertical/diagonal four-in-a-row, full-board draws, no timer, separate private rooms.
+- Players join by shareable six-character room code; game starts automatically with both present. Creator starts round 1, starting player alternates on accepted rematches.
+- Isolated `ConnectFourStore`, server-owned board/turn/winner state, `connect4:*` Socket.IO events, robust disconnect/resume, both players consent to rematch.
+- `/games/connect-four` with Playgrove fifth card, mobile-first tap-any-column board, last disc highlight and unmistakable winning-line outline, active room return warning, saved room session.
+- All existing Fourcast, Bingo, Sudoku and Minesweeper functionality preserved and tested.
+- Implemented on `feature/playgrove-connect-four-v1-20261110` and verified with unit tests, build and Chromium two-player browser regression suite prior to merging. See `CONNECT_FOUR_RULES.md`.

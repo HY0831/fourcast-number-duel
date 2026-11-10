@@ -46,3 +46,10 @@ test('Minesweeper is standalone and keeps Fourcast and Bingo invitation routes',
   assert.deepEqual(resolveHubRoute('/games/bingo','?room=XY2345'), { page: 'bingo', redirect: null });
   assert.deepEqual(resolveHubRoute('/', '?room=AB2345'), { page: 'fourcast', redirect: '/games/fourcast?room=AB2345' });
 });
+
+test('Connect Four has its own route without changing existing game rooms', () => {
+  assert.deepEqual(resolveHubRoute('/games/connect-four'), { page: 'connect-four', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/connect-four/','?room=AB2345'), { page: 'connect-four', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/bingo','?room=XY2345'), { page: 'bingo', redirect: null });
+  assert.deepEqual(resolveHubRoute('/', '?room=AB2345'), { page: 'fourcast', redirect: '/games/fourcast?room=AB2345' });
+});

@@ -1,4 +1,4 @@
-import { ArrowRight, Bomb, Gamepad2, Grid3X3, Hash, LayoutGrid, RotateCcw, ShieldCheck, Sprout, Users, Wifi } from 'lucide-react'
+import { ArrowRight, Bomb, CircleDot, Gamepad2, Grid3X3, Hash, LayoutGrid, RotateCcw, ShieldCheck, Sprout, Users, Wifi } from 'lucide-react'
 
 type Props = {
   hasSavedSession: boolean
@@ -6,12 +6,15 @@ type Props = {
   onPlaySudoku: () => void
   onPlayBingo: () => void
   onPlayMinesweeper: () => void
+  onPlayConnectFour: () => void
+  hasSavedConnectFour: boolean
+  onResumeConnectFour: () => void
   hasSavedBingo: boolean
   onResumeBingo: () => void
   onResumeFourcast: () => void
 }
 
-export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlaySudoku, onPlayBingo, onPlayMinesweeper, hasSavedBingo, onResumeBingo, onResumeFourcast }: Props) {
+export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlaySudoku, onPlayBingo, onPlayMinesweeper, onPlayConnectFour, hasSavedBingo, hasSavedConnectFour, onResumeBingo, onResumeFourcast, onResumeConnectFour }: Props) {
   return <div className="pg-shell">
     <div className="pg-background-orb pg-orb-one" aria-hidden="true" />
     <div className="pg-background-orb pg-orb-two" aria-hidden="true" />
@@ -65,13 +68,19 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
           <button className="pg-resume-button" type="button" onClick={onResumeBingo}>Resume Bingo <ArrowRight size={16}/></button>
         </section>}
 
+        {hasSavedConnectFour && <section className="pg-resume" aria-label="Saved Connect Four room">
+          <div className="pg-resume-mark"><RotateCcw size={20}/></div>
+          <div className="pg-resume-copy"><strong>Have an unfinished Connect Four room?</strong><span>Return to your saved session while it is still available.</span></div>
+          <button className="pg-resume-button" type="button" onClick={onResumeConnectFour}>Resume Connect Four <ArrowRight size={16}/></button>
+        </section>}
+
         <section className="pg-library" aria-labelledby="pg-library-title">
           <div className="pg-section-heading">
             <div>
               <span className="pg-section-eyebrow">THE GAME LIBRARY</span>
               <h2 id="pg-library-title">Explore games</h2>
             </div>
-            <span className="pg-game-count">04 GAMES AVAILABLE</span>
+            <span className="pg-game-count">05 GAMES AVAILABLE</span>
           </div>
           <div className="pg-games-grid">
             <article className="pg-game-card">
@@ -141,6 +150,22 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
                 <span><Grid3X3 size={16}/> 3 difficulty levels</span>
               </div>
               <button className="pg-play-button pg-minesweeper-play" type="button" onClick={onPlayMinesweeper}>Play Minesweeper <ArrowRight size={18}/></button>
+            </article>
+            <article className="pg-game-card pg-connect-four-card">
+              <div className="pg-card-top">
+                <div className="pg-game-symbol pg-connect-four-symbol"><CircleDot size={37} strokeWidth={2.1}/></div>
+                <span className="pg-availability"><span className="pg-availability-dot"/> Available</span>
+              </div>
+              <div className="pg-game-description">
+                <span className="pg-card-kicker">THE FOUR-IN-A-ROW DUEL</span>
+                <h3>Connect Four</h3>
+                <p>Drop discs, block your friend's moves and connect four in a row to win.</p>
+              </div>
+              <div className="pg-game-features">
+                <span><Users size={16}/> 2 players</span>
+                <span><Wifi size={16}/> Online multiplayer</span>
+              </div>
+              <button className="pg-play-button pg-connect-four-play" type="button" onClick={onPlayConnectFour}>Play Connect Four <ArrowRight size={18}/></button>
             </article>
             <div className="pg-coming-soon">
               <div className="pg-coming-icon"><Sprout size={30} strokeWidth={1.8} /></div>
