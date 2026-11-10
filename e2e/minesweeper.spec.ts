@@ -30,6 +30,7 @@ test('three classic difficulty sizes are scrollable and mobile has no horizontal
   for (const width of [320,390,768,1440]) {
     await page.setViewportSize({ width, height:844 })
     await page.goto('/games/minesweeper')
+    await page.getByRole('button',{name:'Easy, 9 by 9, 10 mines'}).click()
     await expect(page.locator('.msw-cell')).toHaveCount(81)
     expect(await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth),`Page overflow at ${width}px`).toBe(false)
     await page.getByRole('button',{name:'Medium, 16 by 16, 40 mines'}).click()
@@ -69,7 +70,7 @@ test('desktop right-click flags; mobile flag mode, safe first click, pause and l
   expect(saved.field![0]).toBe(0)
   for (const i of [0,1,9,10]) expect(saved.field![i]).not.toBe(-1)
   await page.getByRole('button',{name:'Pause',exact:true}).click()
-  await expect(page.getByText('Game paused')).toBeVisible()
+  await expect(page.locator('.msw-pause-overlay strong')).toHaveText('Game paused')
   await expect(first).toBeDisabled()
   const pausedTime = await page.getByLabel('Elapsed time').textContent()
   await page.waitForTimeout(1250)
