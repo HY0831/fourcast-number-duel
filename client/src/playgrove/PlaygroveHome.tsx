@@ -1,16 +1,17 @@
-import { ArrowRight, Gamepad2, Grid3X3, Hash, LayoutGrid, RotateCcw, ShieldCheck, Sprout, Users, Wifi } from 'lucide-react'
+import { ArrowRight, Bomb, Gamepad2, Grid3X3, Hash, LayoutGrid, RotateCcw, ShieldCheck, Sprout, Users, Wifi } from 'lucide-react'
 
 type Props = {
   hasSavedSession: boolean
   onPlayFourcast: () => void
   onPlaySudoku: () => void
   onPlayBingo: () => void
+  onPlayMinesweeper: () => void
   hasSavedBingo: boolean
   onResumeBingo: () => void
   onResumeFourcast: () => void
 }
 
-export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlaySudoku, onPlayBingo, hasSavedBingo, onResumeBingo, onResumeFourcast }: Props) {
+export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlaySudoku, onPlayBingo, onPlayMinesweeper, hasSavedBingo, onResumeBingo, onResumeFourcast }: Props) {
   return <div className="pg-shell">
     <div className="pg-background-orb pg-orb-one" aria-hidden="true" />
     <div className="pg-background-orb pg-orb-two" aria-hidden="true" />
@@ -70,7 +71,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
               <span className="pg-section-eyebrow">THE GAME LIBRARY</span>
               <h2 id="pg-library-title">Explore games</h2>
             </div>
-            <span className="pg-game-count">03 GAMES AVAILABLE</span>
+            <span className="pg-game-count">04 GAMES AVAILABLE</span>
           </div>
           <div className="pg-games-grid">
             <article className="pg-game-card">
@@ -124,6 +125,22 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
                 <span><Wifi size={16}/> Online multiplayer</span>
               </div>
               <button className="pg-play-button pg-bingo-play" type="button" onClick={onPlayBingo}>Play Bingo <ArrowRight size={18}/></button>
+            </article>
+            <article className="pg-game-card pg-minesweeper-card">
+              <div className="pg-card-top">
+                <div className="pg-game-symbol pg-minesweeper-symbol"><Bomb size={37} strokeWidth={2.1}/></div>
+                <span className="pg-availability"><span className="pg-availability-dot"/> Available</span>
+              </div>
+              <div className="pg-game-description">
+                <span className="pg-card-kicker">THE CLASSIC MINEFIELD PUZZLE</span>
+                <h3>Minesweeper</h3>
+                <p>Reveal safe squares, flag the hidden mines, and clear the field before they find you.</p>
+              </div>
+              <div className="pg-game-features">
+                <span><Users size={16}/> Solo play</span>
+                <span><Grid3X3 size={16}/> 3 difficulty levels</span>
+              </div>
+              <button className="pg-play-button pg-minesweeper-play" type="button" onClick={onPlayMinesweeper}>Play Minesweeper <ArrowRight size={18}/></button>
             </article>
             <div className="pg-coming-soon">
               <div className="pg-coming-icon"><Sprout size={30} strokeWidth={1.8} /></div>

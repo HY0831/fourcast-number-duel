@@ -159,3 +159,13 @@
   .pg-game-card { padding:22px; }
   .pg-game-features { flex-wrap:wrap; gap:8px; }
 }
+
+/* Fourth Playgrove game: Minesweeper; existing game styles remain untouched. */
+.pg-minesweeper-card { border-top:5px solid var(--pg-foliage); }
+.pg-minesweeper-symbol { background:var(--pg-foliage); color:var(--pg-seedling); }
+.pg-minesweeper-card .pg-card-kicker { color:var(--pg-foliage); }
+.pg-minesweeper-play { background:var(--pg-foliage); }
+.pg-minesweeper-play:hover { background:var(--pg-redwood); }
+@media(min-width:960px) {
+  .pg-games-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+}

@@ -5,6 +5,7 @@
 ## Available Games
 
 - **Fourcast** — 2-player real-time online number duel, with private room invitations, distinct secret-code modes, per-player guess histories and rematches.
+- **Minesweeper** — classic solo puzzle with Easy (9×9, 10 mines), Medium (16×16, 40 mines), and Hard (30×16, 99 mines). First-click safety, reveal/flag controls, timer, pause, local progress saving and best times. Play at `/games/minesweeper`.
 - **Bingo Duel** — 2-player turn-based online Bingo, with **tap-to-fill or optional Random 5×5 boards**, numbers 1–25 without repeats, **5 lines to win**, private layouts, line scoring, simultaneous-draw handling, private room invitations and rematches. Play at `/games/bingo`. See [BINGO_RULES.md](BINGO_RULES.md).
 - **Sudoku** — single-player 9×9 number puzzle, featuring **Easy, Medium and Hard** levels. Includes pencil notes, hints, undo, pause, timer, mistake indicators, local progress save/resume and best-time tracking. Each puzzle has exactly one solution. Play at `/games/sudoku`.
 
@@ -13,6 +14,7 @@ Fourcast is unchanged: its current real-time server, URL and existing invitation
 ## Explore Playgrove
 
 - `/` — Playgrove Game Library: available Fourcast card, game introduction, coming-soon panel and saved-session prompt.
+- `/games/minesweeper` — solo Minesweeper with three classic difficulty levels.
 - `/games/bingo` — multiplayer Bingo Duel, private invites at `/games/bingo?room=ABC123`.\n- `/games/sudoku` — single-player Sudoku (Easy / Medium / Hard).\n- `/games/fourcast` — the existing Fourcast create/join and gameplay experience.
 - `/games/fourcast?room=ABC123` — a direct Fourcast invitation that pre-fills the join code.
 - `/?room=ABC123` — **old Fourcast invitation links still work** and are automatically redirected to the game route.
