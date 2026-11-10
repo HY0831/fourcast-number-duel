@@ -39,3 +39,10 @@ test('Bingo has a standalone route without overriding Fourcast or Sudoku invitat
   assert.deepEqual(resolveHubRoute('/games/sudoku'), { page: 'sudoku', redirect: null });
   assert.deepEqual(resolveHubRoute('/', '?room=AB2345'), { page: 'fourcast', redirect: '/games/fourcast?room=AB2345' });
 });
+
+test('Minesweeper is standalone and keeps Fourcast and Bingo invitation routes', () => {
+  assert.deepEqual(resolveHubRoute('/games/minesweeper'), { page: 'minesweeper', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/minesweeper/'), { page: 'minesweeper', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/bingo','?room=XY2345'), { page: 'bingo', redirect: null });
+  assert.deepEqual(resolveHubRoute('/', '?room=AB2345'), { page: 'fourcast', redirect: '/games/fourcast?room=AB2345' });
+});

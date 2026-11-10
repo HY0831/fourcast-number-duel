@@ -12,6 +12,7 @@ import './theme.css'
 import PlaygroveHome from './playgrove/PlaygroveHome'
 import SudokuPage from './games/sudoku/SudokuPage'
 import BingoPage from './games/bingo/BingoPage'
+import MinesweeperPage from './games/minesweeper/MinesweeperPage'
 import { resolveHubRoute } from './playgrove/routing.mjs'
 import './playgrove/playgrove.css'
 
@@ -349,7 +350,7 @@ function currentPage() {
 }
 
 function App() {
-  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo'>(currentPage)
+  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper'>(currentPage)
   const pageRef = useRef(page)
   const activeMatchRef = useRef(false)
   const onActivityChange = useCallback((active: boolean) => { activeMatchRef.current = active }, [])
@@ -380,7 +381,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
+    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : page === 'minesweeper' ? 'Minesweeper — Easy, Medium & Hard | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
   }, [page])
 
   if (page === 'hub') return <PlaygroveHome
@@ -389,11 +390,13 @@ function App() {
     onResumeFourcast={() => goTo('/games/fourcast')}
     onPlaySudoku={() => goTo('/games/sudoku')}
     onPlayBingo={() => goTo('/games/bingo')}
+    onPlayMinesweeper={() => goTo('/games/minesweeper')}
     hasSavedBingo={hasSavedBingoSession()}
     onResumeBingo={() => goTo('/games/bingo')}
   />
   if (page === 'sudoku') return <SudokuPage onBack={() => goTo('/')} />
   if (page === 'bingo') return <BingoPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
+  if (page === 'minesweeper') return <MinesweeperPage onBack={() => goTo('/')} />
   return <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
 }
 

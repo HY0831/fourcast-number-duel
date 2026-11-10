@@ -1,6 +1,6 @@
 # Playgrove — Minesweeper (proposed fourth game)
 
-**Status: Design proposal only. No Minesweeper code has been implemented or merged.**
+**Status: Approved; implementation on feature branch, subject to automated tests. See `MINESWEEPER_IMPLEMENTATION.md`.**
 **First release: single-player; no server or room changes.**
 
 ## Goal
@@ -39,7 +39,7 @@ These are the common classic Minesweeper board dimensions. Because a 30-column b
 - Result panel: victory or loss, level, elapsed time, and replay.
 - Local progress autosave and best time per level in browser localStorage, as with Sudoku.
 
-## Technical architecture (after approval)
+## Technical architecture (approved and implemented)
 - Route `/games/minesweeper` and a fourth game-library card.
 - `client/src/games/minesweeper/MinesweeperPage.tsx` for UI and input handling.
 - `client/src/games/minesweeper/minesweeper-engine.mjs` for seedable generation, neighbors, first-reveal safety, flood reveal, flags, win/loss, and reset.

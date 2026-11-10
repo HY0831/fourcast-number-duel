@@ -157,3 +157,11 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - Replace related, matching, wrong and selected-wrong backgrounds with opaque, high-contrast light tones. Game rules and saved data remain unchanged.
 - Added Chromium browser regression test that fills a Sudoku row and checks computed text/background contrast (at least 4.5:1) in incorrect and selected states.
 - Separate design-only proposal for Playgrove's fourth game: `MINESWEEPER_PROPOSAL.md`. No Minesweeper implementation until approval.
+
+## Fourth game — Minesweeper (2026-11-10)
+
+- Approved: classic single-player Minesweeper at Easy 9×9/10 mines, Medium 16×16/40, and Hard 30×16/99.
+- Implemented an independent minefield engine: mine generation on first reveal, safe opening 3×3 area, adjacent counts, zero flood reveal, optional flags, win on all safe cells, loss on a mine.
+- Added game route `/games/minesweeper` and fourth Playgrove card, with responsive scroll/zoom board, touch Reveal/Flag toggle, desktop right-click and keyboard shortcuts, pause, timer, local per-difficulty game saves and best times.
+- Added engine unit tests and Playwright browser tests for route/size, mobile controls, resume, loss, and victory. Existing Fourcast, Sudoku and Bingo gameplay/server code untouched.
+- Work developed on branch `feature/playgrove-minesweeper-v1-20261110`. See `MINESWEEPER_IMPLEMENTATION.md` and `MINESWEEPER_PROPOSAL.md` for rules and checks. GitHub verification and Render deployment are separate release gates.
