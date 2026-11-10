@@ -110,3 +110,8 @@
 @media(max-width:670px){.c4-frame{padding:0 16px}.c4-topbar{min-height:74px;gap:6px}.c4-brand{font-size:15px}.c4-brand svg{width:16px}.c4-back{font-size:11px!important}.c4-entry{grid-template-columns:1fr;padding:30px 0;gap:25px}.c4-intro h1{font-size:39px}.c4-intro p{font-size:13px}.c4-form{padding:21px}.c4-game{padding:21px 0}.c4-room-heading h1{font-size:25px}.c4-players{gap:7px}.c4-player{padding:10px 8px;gap:7px}.c4-player small{font-size:9px;white-space:normal}.c4-player strong{font-size:11px}.c4-player span{font-size:8px}.c4-disc{width:29px;height:29px;font-size:12px}.c4-board-panel{padding:11px}.c4-board{gap:3px;padding:5px;border-width:3px;border-radius:12px}.c4-column{gap:3px}.c4-slot{border-width:1.5px}.c4-slot-winning{border-width:2px}.c4-slot>span{font-size:10px}.c4-column-label{font-size:9px!important;height:20px}.c4-exit{padding:10px 8px;font-size:10px!important}.c4-waiting{padding:25px 15px}.c4-invite-code span{width:34px;height:46px;font-size:17px}}
 @media(max-width:355px){.c4-brand{font-size:13px}.c4-connection{font-size:9px}.c4-player{flex-wrap:wrap}.c4-player small{width:100%;margin:0}}
 @media(prefers-reduced-motion:reduce){.c4-slot,.c4-primary{transition:none}}
+
+/* Animate only newly dropped discs, respecting reduced motion preferences. */
+.c4-slot-last { animation:c4-drop-in .25s cubic-bezier(.22,.68,.28,1.1) both; }
+@keyframes c4-drop-in { from { transform:translateY(-24px); opacity:.35; } to { transform:translateY(0); opacity:1; } }
+@media(prefers-reduced-motion:reduce){.c4-slot-last{animation:none}}
