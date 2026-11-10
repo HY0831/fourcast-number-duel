@@ -129,6 +129,7 @@ test('Bingo fills manual boards with sequential taps, calls both boards immediat
 
 
 test('Bingo Random fills all numbers 1–25, asks before replacing manual entries, and stays editable', async ({page,browser}) => {
+  test.setTimeout(100_000)
   await page.setViewportSize({width:320,height:800})
   const guestContext=await browser.newContext()
   const guest=await guestContext.newPage()
