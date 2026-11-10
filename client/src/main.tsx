@@ -12,6 +12,7 @@ import './theme.css'
 import PlaygroveHome from './playgrove/PlaygroveHome'
 import SudokuPage from './games/sudoku/SudokuPage'
 import BingoPage from './games/bingo/BingoPage'
+import ConnectFourPage from './games/connect-four/ConnectFourPage'
 import MinesweeperPage from './games/minesweeper/MinesweeperPage'
 import { resolveHubRoute } from './playgrove/routing.mjs'
 import './playgrove/playgrove.css'
@@ -323,6 +324,13 @@ function FourcastApp({ onBack, onActivityChange }: { onBack: () => void; onActiv
   </div>
 }
 
+function hasSavedConnectFourSession(): boolean {
+  try {
+    const saved = JSON.parse(localStorage.getItem('connect4:session') || 'null') as Session | null
+    return typeof saved?.code === 'string' && saved.code.length === 6 && typeof saved?.token === 'string' && saved.token.length >= 32
+  } catch { return false }
+}
+
 function hasSavedBingoSession(): boolean {
   try {
     const saved = JSON.parse(localStorage.getItem('bingo:session') || 'null') as Session | null
@@ -337,7 +345,8 @@ function hasSavedFourcastSession(): boolean {
   } catch { return false }
 }
 
-function activeRoomWarning(page: 'fourcast' | 'bingo') {
+function activeRoomWarning(page: 'fourcast' | 'bingo' | 'connect-four') {
+  if (page === 'connect-four') return 'Return to Playgrove? Your Connect Four room stays saved and you can resume when you return.'
   return page === 'bingo'
     ? 'Return to Playgrove? Your Bingo room stays saved, but the game pauses while you are away. You can resume from the Game Library.'
     : 'Return to Playgrove? Your room stays saved, but the game pauses while you are away. You can resume it from the Game Library.'
@@ -350,13 +359,13 @@ function currentPage() {
 }
 
 function App() {
-  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper'>(currentPage)
+  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four'>(currentPage)
   const pageRef = useRef(page)
   const activeMatchRef = useRef(false)
   const onActivityChange = useCallback((active: boolean) => { activeMatchRef.current = active }, [])
 
   const goTo = useCallback((path: string) => {
-    if ((pageRef.current === 'fourcast' || pageRef.current === 'bingo') && path === '/' && activeMatchRef.current && !window.confirm(activeRoomWarning(pageRef.current))) return
+    if ((pageRef.current === 'fourcast' || pageRef.current === 'bingo' || pageRef.current === 'connect-four') && path === '/' && activeMatchRef.current && !window.confirm(activeRoomWarning(pageRef.current))) return
     window.history.pushState(null, '', path)
     const next = currentPage()
     pageRef.current = next
@@ -367,7 +376,7 @@ function App() {
   useEffect(() => {
     const onPopState = () => {
       const next = resolveHubRoute(window.location.pathname, window.location.search)
-      if ((pageRef.current === 'fourcast' || pageRef.current === 'bingo') && next.page === 'hub' && activeMatchRef.current && !window.confirm(activeRoomWarning(pageRef.current))) {
+      if ((pageRef.current === 'fourcast' || pageRef.current === 'bingo' || pageRef.current === 'connect-four') && next.page === 'hub' && activeMatchRef.current && !window.confirm(activeRoomWarning(pageRef.current))) {
         window.history.pushState(null, '', `/games/${pageRef.current}`)
         return
       }
@@ -381,7 +390,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : page === 'minesweeper' ? 'Minesweeper — Easy, Medium & Hard | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
+    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : page === 'minesweeper' ? 'Minesweeper — Easy, Medium & Hard | Playgrove' : page === 'connect-four' ? 'Connect Four — Playgrove' : 'Fourcast — The Number Duel | Playgrove'
   }, [page])
 
   if (page === 'hub') return <PlaygroveHome
@@ -391,12 +400,16 @@ function App() {
     onPlaySudoku={() => goTo('/games/sudoku')}
     onPlayBingo={() => goTo('/games/bingo')}
     onPlayMinesweeper={() => goTo('/games/minesweeper')}
+    onPlayConnectFour={() => goTo('/games/connect-four')}
+    hasSavedConnectFour={hasSavedConnectFourSession()}
+    onResumeConnectFour={() => goTo('/games/connect-four')}
     hasSavedBingo={hasSavedBingoSession()}
     onResumeBingo={() => goTo('/games/bingo')}
   />
   if (page === 'sudoku') return <SudokuPage onBack={() => goTo('/')} />
   if (page === 'bingo') return <BingoPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
   if (page === 'minesweeper') return <MinesweeperPage onBack={() => goTo('/')} />
+  if (page === 'connect-four') return <ConnectFourPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
   return <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
 }
 

@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test'
 
-test('Playgrove shows four playable games; Sudoku opens and returns to library', async ({ page }) => {
+test('Playgrove shows five playable games; Sudoku opens and returns to library', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', {name: 'Fourcast'})).toBeVisible()
   await expect(page.getByRole('heading', {name: 'Sudoku'})).toBeVisible()
-  await expect(page.getByText('04 GAMES AVAILABLE')).toBeVisible()
+  await expect(page.getByText('05 GAMES AVAILABLE')).toBeVisible()
   await page.getByRole('button', {name: 'Play Sudoku'}).click()
   await expect(page).toHaveURL(/\/games\/sudoku$/)
   await expect(page.getByRole('heading', {name: 'Sudoku.'})).toBeVisible()

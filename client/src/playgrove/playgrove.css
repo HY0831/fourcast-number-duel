@@ -169,3 +169,13 @@
 @media(min-width:960px) {
   .pg-games-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
 }
+
+/* Fifth Playgrove game: Connect Four. Use a readable three-column desktop grid. */
+.pg-connect-four-card { border-top:5px solid var(--pg-terracotta); }
+.pg-connect-four-symbol { background:var(--pg-rainfall); color:var(--pg-seedling); }
+.pg-connect-four-card .pg-card-kicker { color:var(--pg-redwood); }
+.pg-connect-four-play { background:var(--pg-redwood); }
+.pg-connect-four-play:hover { background:var(--pg-terracotta); }
+@media (min-width:960px) {
+  .pg-games-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}

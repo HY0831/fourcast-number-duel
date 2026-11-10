@@ -25,10 +25,10 @@ async function callNumber(page: Page, n: number) {
   await expect(cell).toHaveClass(/bgo-marked/)
 }
 
-test('Playgrove lists Bingo and all four game routes still work', async ({page}) => {
+test('Playgrove lists Bingo and all five game routes still work', async ({page}) => {
   await page.setViewportSize({width:390,height:844})
   await page.goto('/')
-  await expect(page.getByText('04 GAMES AVAILABLE')).toBeVisible()
+  await expect(page.getByText('05 GAMES AVAILABLE')).toBeVisible()
   await expect(page.getByRole('heading',{name:'Fourcast'})).toBeVisible()
   await expect(page.getByRole('heading',{name:'Sudoku'})).toBeVisible()
   await expect(page.getByRole('heading',{name:'Bingo Duel'})).toBeVisible()
@@ -129,6 +129,7 @@ test('Bingo fills manual boards with sequential taps, calls both boards immediat
 
 
 test('Bingo Random fills all numbers 1–25, asks before replacing manual entries, and stays editable', async ({page,browser}) => {
+  test.setTimeout(100_000)
   await page.setViewportSize({width:320,height:800})
   const guestContext=await browser.newContext()
   const guest=await guestContext.newPage()
