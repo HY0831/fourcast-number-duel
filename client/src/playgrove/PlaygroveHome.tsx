@@ -81,9 +81,9 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
           <div className="pg-hero-art" aria-hidden="true">
             <div className="pg-art-glow" />
             <div className="pg-art-swatch pg-art-swatch-one">0</div>
-            <div className="pg-art-swatch pg-art-swatch-two">4</div>
-            <div className="pg-art-swatch pg-art-swatch-three">2</div>
-            <div className="pg-art-swatch pg-art-swatch-four">9</div>
+            <div className="pg-art-swatch pg-art-swatch-two">8</div>
+            <div className="pg-art-swatch pg-art-swatch-three">1</div>
+            <div className="pg-art-swatch pg-art-swatch-four">3</div>
             <span className="pg-art-sparkle pg-art-sparkle-one">✳</span>
             <span className="pg-art-sparkle pg-art-sparkle-two">✦</span>
             <p>Same room.<br />Different places.</p>
