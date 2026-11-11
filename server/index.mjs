@@ -57,7 +57,7 @@ function snapshotSocketSessions() {
   }));
 }
 
-app.get('/health', (_req, res) => res.json({ status: 'ok', activeRooms: games.rooms.size, activeBingoRooms: bingos.rooms.size, activeConnectFourRooms: connectFours.rooms.size }));
+app.get('/health', (_req, res) => res.status(persistenceFailed ? 503 : 200).json({ status: persistenceFailed ? 'unavailable' : 'ok', storage: persistence ? 'postgresql' : 'memory', activeRooms: games.rooms.size, activeBingoRooms: bingos.rooms.size, activeConnectFourRooms: connectFours.rooms.size }));
 if (process.env.NODE_ENV === 'production') {
   const dist = join(here, '..', 'dist');
   app.use(express.static(dist));
