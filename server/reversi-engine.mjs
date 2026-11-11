@@ -25,6 +25,8 @@ export function publicReversiRoom(room,viewerId){
     turnPlayerId:room.phase==='playing'?room.players[room.turnIndex].id:null,
     legalMoves:room.phase==='playing'?legalMoves(room.board,playerDisc(room,room.turnIndex)):[],
     winnerId:room.winnerId,draw:room.draw,moveCount:room.moveCount,
+    resignedBy:room.resignedBy||null,
+    history:(room.history||[]).map(move=>({...move,flipped:[...move.flipped],board:[...move.board]})),
     passedPlayerId:room.passedPlayerId,
     lastMove:room.lastMove?{...room.lastMove,flipped:[...room.lastMove.flipped]}:null,
     players:room.players.map((p,index)=>({
@@ -41,7 +43,7 @@ export class ReversiStore {
     const host=createPlayer(name,true),code=makeCode(this.rooms);
     const room={code,phase:'lobby',round:1,players:[host],
       board:startingBoard(),blackIndex:0,turnIndex:0,
-      winnerId:null,draw:false,moveCount:0,lastMove:null,passedPlayerId:null,updatedAt:Date.now()};
+      winnerId:null,draw:false,resignedBy:null,history:[],moveCount:0,lastMove:null,passedPlayerId:null,updatedAt:Date.now()};
     this.rooms.set(code,room);
     return {room,player:host};
   }
@@ -82,6 +84,7 @@ export class ReversiStore {
     room.board=move.board;
     room.moveCount++;
     room.lastMove={index,by:player.id,disc,flipped:move.flipped};
+    room.history.push({...room.lastMove,board:[...room.board]});
     const nextIndex=1-room.turnIndex;
     const nextDisc=playerDisc(room,nextIndex);
     if(legalMoves(room.board,nextDisc).length){
@@ -99,6 +102,14 @@ export class ReversiStore {
     room.updatedAt=Date.now();
     return room;
   }
+  resign(code,token){
+    const {room,player}=this.authorize(code,token);
+    if(room.phase!=='playing')throw new GameError('Only an active round can be resigned.');
+    if(room.players.length!==2)throw new GameError('Wait for the second player to join.');
+    room.phase='finished';room.draw=false;room.winnerId=room.players.find(p=>p.id!==player.id).id;
+    room.resignedBy=player.id;room.passedPlayerId=null;room.updatedAt=Date.now();
+    return room;
+  }
   requestRematch(code,token){
     const {room,player}=this.authorize(code,token);
     if(room.phase!=='finished')throw new GameError('Finish the round before requesting a rematch.');
@@ -110,7 +121,7 @@ export class ReversiStore {
       room.board=startingBoard();
       room.blackIndex=(room.round-1)%2;
       room.turnIndex=room.blackIndex;
-      room.phase='playing';room.winnerId=null;room.draw=false;
+      room.phase='playing';room.winnerId=null;room.draw=false;room.resignedBy=null;room.history=[];
       room.moveCount=0;room.lastMove=null;room.passedPlayerId=null;
       for(const p of room.players)p.rematchReady=false;
     }
