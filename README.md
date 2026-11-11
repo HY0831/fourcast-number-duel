@@ -17,6 +17,13 @@
 
 Fourcast is unchanged: its current real-time server, URL and existing invitation links still work. Sudoku runs entirely on the client and does not need an account or a multiplayer room. See [SUDOKU_DESIGN.md](SUDOKU_DESIGN.md) for difficulty validation and technical details.
 
+## Playgrove V1 quality improvements
+
+- **Find the right game:** the homepage offers **All games / Solo / Multiplayer** filters and a live game search. Current filters are preserved when you return from a game in the same browser tab.
+- **Faster first visit:** non-Fourcast game screens are code-split and loaded only when opened. The lobby remains responsive while the selected game loads.
+- **Accessible controls:** filter buttons expose their pressed state; search has an explicit label and results are announced; an accessible loading state and reduced-motion preferences are respected.
+- **Safer scope:** game rules, online room protocols, saved game formats and URLs are not changed by the polish pass. See [PLAYGROVE_V1_POLISH.md](PLAYGROVE_V1_POLISH.md).
+
 ## Explore Playgrove
 
 - `/` — Playgrove Game Library: available Fourcast card, game introduction, coming-soon panel and saved-session prompt.

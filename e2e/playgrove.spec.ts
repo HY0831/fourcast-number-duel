@@ -103,3 +103,74 @@ test('two online players can guess, view separate histories, resume and rematch'
     await guestContext.close()
   }
 })
+
+test('game library filters Solo and Multiplayer without hiding or renaming existing games', async ({ page }) => {
+  await page.goto('/')
+  const cards = page.locator('.pg-game-card:visible')
+  const filters = page.getByRole('group', { name: 'Filter games by mode' })
+  await expect(cards).toHaveCount(7)
+  await expect(page.getByText('7 games shown')).toBeVisible()
+
+  await filters.getByRole('button', { name: 'Solo' }).click()
+  await expect(filters.getByRole('button', { name: 'Solo' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(cards).toHaveCount(4)
+  for (const name of ['Sudoku', 'Minesweeper', '2048', 'Nonogram']) {
+    await expect(page.getByRole('heading', { name, exact: true })).toBeVisible()
+  }
+  for (const name of ['Fourcast', 'Bingo Duel', 'Connect Four']) {
+    await expect(page.getByRole('heading', { name, exact: true })).toBeHidden()
+  }
+  await expect(page.getByText('4 games shown')).toBeVisible()
+
+  await filters.getByRole('button', { name: 'Multiplayer' }).click()
+  await expect(cards).toHaveCount(3)
+  await expect(page.getByText('3 games shown')).toBeVisible()
+  for (const name of ['Fourcast', 'Bingo Duel', 'Connect Four']) {
+    await expect(page.getByRole('heading', { name, exact: true })).toBeVisible()
+  }
+
+  await filters.getByRole('button', { name: 'All games' }).click()
+  await expect(cards).toHaveCount(7)
+  await expect(page.getByText('07 GAMES AVAILABLE')).toBeVisible()
+})
+
+test('library name search, empty state and filter reset are functional and accessible', async ({ page }) => {
+  await page.goto('/')
+  const search = page.getByRole('searchbox', { name: 'Search games' })
+  await search.fill('picture')
+  await expect(page.locator('.pg-game-card:visible')).toHaveCount(1)
+  await expect(page.getByRole('heading', { name: 'Nonogram', exact: true })).toBeVisible()
+  await expect(page.getByText('1 game shown')).toBeVisible()
+  await search.fill('unlisted-123456')
+  await expect(page.locator('.pg-game-card:visible')).toHaveCount(0)
+  await expect(page.getByText('No games found.')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Clear filters' })).toBeVisible()
+  await page.getByRole('button', { name: 'Clear filters' }).click()
+  await expect(search).toHaveValue('')
+  await expect(page.locator('.pg-game-card:visible')).toHaveCount(7)
+})
+
+test('library filters survive returning from a lazily loaded game; small screens have no overflow', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 780 })
+  await page.goto('/')
+  const filters = page.getByRole('group', { name: 'Filter games by mode' })
+  await filters.getByRole('button', { name: 'Solo' }).click()
+  await expect(page.locator('.pg-game-card:visible')).toHaveCount(4)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false)
+
+  await page.getByRole('button', { name: 'Play Sudoku' }).click()
+  await expect(page).toHaveURL(/\/games\/sudoku$/)
+  await expect(page.getByRole('gridcell')).toHaveCount(81)
+  await page.getByRole('button', { name: 'All games' }).click()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(filters.getByRole('button', { name: 'Solo' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('.pg-game-card:visible')).toHaveCount(4)
+  await page.reload()
+  await expect(page.locator('.pg-game-card:visible')).toHaveCount(4)
+
+  for (const width of [390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 844 })
+    await expect(filters.getByRole('button', { name: 'Solo' })).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), `Overflow at ${width}px`).toBe(false)
+  }
+})
