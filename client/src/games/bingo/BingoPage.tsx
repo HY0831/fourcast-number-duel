@@ -1,3 +1,4 @@
+import { safeLocalStorage } from '../../playgrove/safeStorage'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, Gamepad2, Grid3X3, LockKeyhole, RotateCcw, Share2, ShieldCheck, Trophy, Users, Wifi, WifiOff, X } from 'lucide-react'
 import { io, type Socket } from 'socket.io-client'
@@ -27,14 +28,14 @@ function inviteCode() {
 }
 function readSession(): BingoSession | null {
   try {
-    const item = JSON.parse(localStorage.getItem(SESSION) || 'null') as BingoSession | null
+    const item = JSON.parse(safeLocalStorage.getItem(SESSION) || 'null') as BingoSession | null
     if (!item || typeof item.token !== 'string' || typeof item.code !== 'string' || item.code.length !== 6) return null
     return inviteCode() && item.code !== inviteCode() ? null : item
   } catch { return null }
 }
 function readDraft(code: string, round: number) {
   try {
-    const value = JSON.parse(localStorage.getItem(`bingo:draft:${code}:${round}`) || 'null') as CellValue[] | null
+    const value = JSON.parse(safeLocalStorage.getItem(`bingo:draft:${code}:${round}`) || 'null') as CellValue[] | null
     if (Array.isArray(value) && value.length === 25 && value.every(n => n === null || Number.isInteger(n) && n >= 1 && n <= 25) && new Set(value.filter(n => n !== null)).size === value.filter(n => n !== null).length) return value
   } catch { /* ignore invalid local draft */ }
   return blankBoard()
@@ -62,7 +63,7 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
   const [room, setRoom] = useState<BingoRoom | null>(null)
   const socketRef = useRef<Socket | null>(null)
   const sessionRef = useRef<BingoSession | null>(readSession())
-  const [name, setName] = useState(() => localStorage.getItem(NAME) || '')
+  const [name, setName] = useState(() => safeLocalStorage.getItem(NAME) || '')
   const [tab, setTab] = useState<'create' | 'join'>(() => inviteCode() ? 'join' : 'create')
   const [joinCode, setJoinCode] = useState(inviteCode)
   const [board, setBoard] = useState<CellValue[]>(blankBoard)
@@ -82,7 +83,7 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
         if (err) { setError('Connection timed out. Try again.'); return }
         if (res?.ok && res.room) { setRoom(res.room); setError('') }
         else {
-          localStorage.removeItem(SESSION)
+          safeLocalStorage.removeItem(SESSION)
           sessionRef.current = null
           setRoom(null)
           setError(res?.error || 'That Bingo room is no longer available.')
@@ -124,7 +125,7 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
 
   const updateBoard = (next: CellValue[]) => {
     setBoard(next)
-    if (room) localStorage.setItem(`bingo:draft:${room.code}:${room.round}`, JSON.stringify(next))
+    if (room) safeLocalStorage.setItem(`bingo:draft:${room.code}:${room.round}`, JSON.stringify(next))
   }
   const fillRandomBoard = () => {
     if (!room || room.phase !== 'setup' || me?.ready || busy) return
@@ -158,8 +159,8 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
     await act(event, tab === 'create' ? { name: clean } : { name: clean, code: joinCode }, res => {
       if (!res.code || !res.token || !res.room) return
       const session = { code: res.code, token: res.token }
-      localStorage.setItem(SESSION, JSON.stringify(session))
-      localStorage.setItem(NAME, clean)
+      safeLocalStorage.setItem(SESSION, JSON.stringify(session))
+      safeLocalStorage.setItem(NAME, clean)
       sessionRef.current = session
       setRoom(res.room)
       window.history.replaceState(null, '', '/games/bingo')
@@ -168,7 +169,7 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
   const leaveRoom = async () => {
     if (room && (room.phase === 'setup' || room.phase === 'playing') && !window.confirm('Leave this Bingo room permanently? Your opponent will need to wait or create another room.')) return
     try { await request('bingo:leave', {}) } catch { /* local leave is allowed */ }
-    localStorage.removeItem(SESSION)
+    safeLocalStorage.removeItem(SESSION)
     sessionRef.current = null
     keyRef.current = ''
     setRoom(null); setBoard(blankBoard()); setError('')
@@ -254,7 +255,7 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
           {room.phase==='setup'&&!me?.ready && <>
             <div className="bgo-board-note"><span><CheckCircle2 size={16}/> Tap an empty square to add the next number. Tap a filled square to erase it.</span><span>{nextNumber === null ? 'Ready to lock' : `Next: ${nextNumber}`}</span></div>
             <div className="bgo-setup-controls"><button type="button" className="bgo-outline bgo-random" onClick={fillRandomBoard} disabled={busy}><Grid3X3 size={17}/> Random</button><button type="button" className="bgo-outline" disabled={busy} onClick={()=>{if(window.confirm('Clear every number from your board?')) updateBoard(blankBoard())}}><RotateCcw size={16}/> Reset board</button></div>
-            <button type="button" className="bgo-primary bgo-lock" disabled={!connected||busy||!complete} onClick={()=>void act('bingo:board',{board},()=>{if(room)localStorage.removeItem(`bingo:draft:${room.code}:${room.round}`)})}>Lock my board <LockKeyhole size={18}/></button>
+            <button type="button" className="bgo-primary bgo-lock" disabled={!connected||busy||!complete} onClick={()=>void act('bingo:board',{board},()=>{if(room)safeLocalStorage.removeItem(`bingo:draft:${room.code}:${room.round}`)})}>Lock my board <LockKeyhole size={18}/></button>
           </>}
           {room.phase==='setup'&&me?.ready&&<div className="bgo-waiting-notice"><span className="bgo-pulse"/> Waiting for your opponent to lock their board…</div>}
           {room.phase==='finished'&&<div className="bgo-finished-actions">{me?.isHost?<button type="button" className="bgo-primary" disabled={busy||!connected} onClick={()=>void act('bingo:rematch',{})}>Play another round <RotateCcw size={18}/></button>:<div className="bgo-waiting-notice"><span className="bgo-pulse"/> Waiting for the host to start a rematch…</div>}</div>}
