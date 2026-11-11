@@ -265,8 +265,8 @@ All seven published games are retained. Work on `polish/playgrove-v4-accessibili
 - [x] Enforce one active game server writer with PostgreSQL advisory lock; no multi-instance deployment is claimed.
 - [x] Add defensive schema/version validation and avoid exposing the room database URI or private state in public health responses.
 - [x] Add 4 room snapshot/restore/diff unit tests and isolated real PostgreSQL server process restart/recovery test on GitHub Actions.
-- [x] **Backend gate:** TypeScript, 99 Node tests and Vite build passed ([GitHub CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43039488266)).\n- [x] **Database gate:** Real PostgreSQL restart/recovery and exclusive-writer integration passed ([GitHub CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43039488097)).\n- [ ] **Browser gate:** full Chromium seven-game browser regression must pass before merging.
-- [ ] **Merge gate:** only squash-merge when all CI checks pass.
+- [x] **Backend gate:** TypeScript, 99 Node tests and Vite build passed ([GitHub CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43039488266)).\n- [x] **Database gate:** Real PostgreSQL restart/recovery and exclusive-writer integration passed ([GitHub CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43039488097)).\n- [x] **Browser gate:** 45 Chromium tests passed without retries ([GitHub CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43040555783)).
+- [x] **Merge gate:** PR #17 squash-merged after all three checks passed; code commit `a1432818`.
 - [ ] **Production activation gate:** use a dedicated Playgrove database and a single Render instance; explicitly select the Render workspace, confirm provisioning/costs, migration and downtime window; do not deploy over existing active rooms.
 - [ ] **Operations gate:** TLS, least-privilege database credentials, backups, restore drills, monitoring and actual phone recovery tests before claiming production room durability.
 

@@ -1,6 +1,6 @@
 # Playgrove V5 — Durable Multiplayer Room Recovery
 
-Status: **implementation on feature branch, production activation pending** (2026-11-11)
+Status: **implemented and merged into `main` via PR #17, production activation pending** (2026-11-11)
 Branch: `feature/playgrove-v5-persistent-rooms-20261111`
 
 ## Purpose
@@ -75,7 +75,7 @@ The database setting is opt-in; **a merge by itself is not a production activati
 
 - [x] TypeScript + 99 Node tests + Vite build passed ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43039488266)).
 - [x] Real PostgreSQL restart/recovery and exclusive-writer workflow passed ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43039488097)).
-- [ ] All seven-game Chromium Playwright tests pass.
-- [ ] Squash-merge to `main` only when all applicable gates pass.
+- [x] All 45 Chromium Playwright tests passed, no retries ([GitHub CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43040555783)).
+- [x] PR #17 squash-merged to `main` after all three CI gates passed (commit `a1432818`).
 - [ ] Provision database and enable environment variable in a separate approved Render release, outside active multiplayer sessions.
 - [ ] Test on real phones and verify monitoring/backups before claiming production durability.
