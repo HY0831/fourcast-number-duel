@@ -248,7 +248,7 @@ All seven published games are retained. Work on `polish/playgrove-v4-accessibili
 - [x] Add clear create/join and Fourcast mode pressed states, and describe Connect Four column occupancy.
 - [x] Improve 320px Sudoku keypad touch height, Bingo outline button height and Nonogram search focus ring.
 - [x] Add five Chromium accessibility regression tests covering all seven game experiences.
-- [ ] **Release gate:** TypeScript, Node suite, production build, full Chromium seven-game regression pass.
-- [ ] **Merge gate:** merge PR only after both checks pass.
+- [x] **Release gate:** TypeScript + 95 Node tests + Vite build passed ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43031520739)); all 45 Chromium tests passed with no retries ([browser CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43031520575)).
+- [x] **Merge gate:** PR #15 squash-merged into `main` at `140b1254` after all checks passed.
 - [ ] **Device QA:** VoiceOver, TalkBack, NVDA and real mobile touch validation are still required; don't claim full WCAG compliance.
 - [ ] **Deploy gate:** Render release separately to protect active server-memory multiplayer rooms.
