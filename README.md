@@ -78,6 +78,14 @@ See **[ONLINE_SETUP.md](ONLINE_SETUP.md)** for step-by-step public deployment an
 
 After it is hosted, the host creates a private room and sends an invite link or six-character room code to the other player. Players can connect from different cities or countries.
 
+## V5 — Optional persistent multiplayer rooms
+
+Playgrove now supports an **opt-in PostgreSQL persistence mode** for Fourcast, Bingo Duel and Connect Four. Without a configured database, all three online games continue using the original in-memory room storage. With a dedicated `PLAYGROVE_DATABASE_URL`, moves and room changes are committed to PostgreSQL before the server acknowledges them. After a restart, existing room codes/tokens can restore unexpired matches; players reconnect to reclaim their seats, and both players must be online to continue.
+
+**Production activation has not been performed.** The database contains private game content and bearer session tokens; never expose it to the browser or reuse another project's database. Before enabling this on Render, arrange an idle-room deployment window, a single running server instance, backups and a separate database. See [PLAYGROVE_V5_PERSISTENCE.md](PLAYGROVE_V5_PERSISTENCE.md) for migration, security, rollback and recovery-test details.
+
+The new CI workflow runs real PostgreSQL restart and recovery checks against an isolated disposable database.
+
 ## Local development
 
 Requires **Node.js 22.x** and npm.
@@ -119,16 +127,16 @@ PROJECT_PLAN.md     Roadmap, decisions, game specification
 
 ## Current MVP constraints
 
-- Room state is stored **in server memory**. A server restart clears active rooms. Rooms expire after 3 hours without activity. **On Render Free, a service with no incoming HTTP/WebSocket activity may spin down after 15 minutes and reset in-memory rooms**; play continuously or use persistent storage before wider release.
+- By default, multiplayer rooms are **in server memory** and are lost on restart. Optional PostgreSQL snapshots can recover active rooms after restart **only when configured and activated**. Rooms still expire after 3 hours without activity; database activation cannot rescue rooms from an earlier in-memory-only server.
 - Maximum **two players per room**. Many separate matches can play simultaneously.
-- Single server instance. Multi-instance scaling requires a shared room store and Socket.IO adapter.
+- Single server instance. PostgreSQL mode enforces an exclusive writer lock; multi-instance scaling still requires a distributed Socket.IO architecture.
 - Basic invite-code security; not intended for sensitive data, prizes, or money stakes.
 - Users must keep the room open or reconnect during games. No push notifications.
 - This is a responsive **mobile web app**, not a published native Android/iOS app. It runs directly in the browser without an app-store account.
 
 ## Safety and fairness
 
-Server checks the room session, host permissions, turn ownership, room phase, both players' online status, game mode, and guess format. Guesses and matching results are computed on the server; there is no client-provided score or secret reveal. Player sessions are opaque random tokens stored locally. In-memory room data is intentionally temporary.
+Server checks the room session, host permissions, turn ownership, room phase, both players' online status, game mode, and guess format. Guesses and matching results are computed on the server; there is no client-provided score or secret reveal. Player sessions are opaque random tokens stored locally. By default, room data is intentionally in-memory; with PostgreSQL enabled, private token/secret data is stored in the protected server database for the room TTL.
 
 ## License
 

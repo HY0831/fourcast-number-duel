@@ -26,7 +26,10 @@ jobs:
       - name: Install Playwright for browser verification
         run: npm install --no-save --no-audit --no-fund @playwright/test@1.65.0
       - name: Install Chromium browser
-        run: npx playwright install --with-deps chromium
+        # GitHub-hosted ubuntu-24.04 already includes Chromium runtime system libraries.
+        # Avoid repeating apt system package installation on every PR; the browser
+        # smoke step itself still fails if a required runtime library is missing.
+        run: npx playwright install chromium
       - name: Build production web app
         run: npm run build
       - name: Run browser smoke tests
