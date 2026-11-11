@@ -294,8 +294,8 @@ See `HASHI_RULES.md` for rules, 45-puzzle inventory and acceptance criteria. Pre
 - [x] Mobile-first responsive Black/White board, legal move highlights, scoreboard, move history highlight and status banners.
 - [x] Ninth game hub card, /games/reversi route, resume control and navigation warnings.
 - [x] Node engine tests, real socket reconnection/seat-release tests and Chromium E2E (pairing, full match, rematch, mobile widths).
-- [ ] TypeScript, Node and Vite build gate green.
-- [ ] Entire nine-game Chromium browser gate green.
+- [x] **TypeScript, Node and Vite build:** 116/116 Node tests, TypeScript and production Vite build passed ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43061255200)).
+- [x] **Nine-game Chromium QA:** 60/60 browser tests passed with no retries, including full Reversi game/rematch and 320px mobile board ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43061255344)).
 - [ ] Squash-merge PR only after green CI and update backlog with the final test counts.
 - [ ] Verify a single Render Free release at exact main commit and inspect health/status.
 - [ ] Manual iOS/Android touch, invite sharing, VoiceOver/TalkBack checks still needed.
