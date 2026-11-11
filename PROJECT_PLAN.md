@@ -41,8 +41,8 @@ Build a simple, good-looking mobile-first, online multiplayer four-digit guessin
 
 - [x] Dedicated GitHub repository created by user: `HY0831/fourcast-number-duel`
 - [x] All 21 source/project files pushed to `main` on GitHub
-- [ ] Approve and deploy the Render Blueprint (public Node/WebSocket service) and test from two phones on different networks
-- [ ] Activate persistent multiplayer room storage on the production web service (opt-in PostgreSQL implementation and recovery tests are developed in V5; dedicated database provisioning and safe deployment still pending)
+- [x] Original seven-game Playgrove web service deployed on Render Free in Singapore; latest polish release is a separate deployment step.\n- [ ] Final real-phone check from two separate networks following the latest release.
+- [x] Confirm personal-use hosting: no database, Redis, or extra paid services needed; multiplayer rooms intentionally reset when Render restarts or sleeps.
 - [ ] Install frontend dependencies, perform the full typecheck/build, and test on Android and iOS browsers (npm registry blocked in current workspace)
 - [x] Mobile web-app manifest and install icons (HTTPS host required for home-screen installation)
 
@@ -204,7 +204,7 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - [x] **Release gate:** GitHub TypeScript, unit tests, production build and full seven-game Playwright suite passed for PR #11.
 - [ ] **Deployment gate:** deploy separately, avoiding restarts while multiplayer rooms are active.
 
-**Post-V1 product backlog (not changed in this pass):** consider resumable multiplayer room persistence across server restarts, optional cloud sync for solo progress, network throttling/slow-device performance measurement, and structured multi-browser accessibility testing. These require separate design/QA before implementation.
+**Post-V1 ideas (superseded where relevant):** network throttling/slow-device performance measurement and structured multi-browser accessibility testing remain useful. Database-backed rooms and cloud sync are explicitly out of scope for this personal-use game collection.
 
 See `PLAYGROVE_V1_POLISH.md`.
 
@@ -235,7 +235,7 @@ Scope: Fourcast, Bingo Duel, Connect Four. Working branch `polish/playgrove-v3-m
 - [x] **Merge gate:** PR #13 squash-merged into `main` as `933c8196` after successful checks.
 - [ ] **Deployment gate:** release independently on Render when multiplayer rooms can be safely interrupted; live deployment not assumed.
 
-Next: mobile network-flap tests on a separate preview, accessibility, then design of persisted server room state.
+Next: mobile network-flap tests and accessibility checks. Persisted server room state was subsequently deemed unnecessary for this two-player project.
 
 
 ## V4 accessibility and mobile UX quality pass — 2026-11-11
@@ -253,21 +253,16 @@ All seven published games are retained. Work on `polish/playgrove-v4-accessibili
 - [ ] **Device QA:** VoiceOver, TalkBack, NVDA and real mobile touch validation are still required; don't claim full WCAG compliance.
 - [ ] **Deploy gate:** Render release separately to protect active server-memory multiplayer rooms.
 
+## Personal-use infrastructure simplification — 2026-11-11
 
-## V5 optional PostgreSQL-backed multiplayer room recovery — 2026-11-11
+**Decision:** Playgrove is primarily for the owner and their girlfriend. Do not provision a PostgreSQL database, Neon, Redis, additional API service, or paid hosting. Keep the current Singapore Render Free Node/WebSocket service and the existing seven-game product/UI.
 
-**Current phase:** feature branch `feature/playgrove-v5-persistent-rooms-20261111`. See `PLAYGROVE_V5_PERSISTENCE.md` for the architecture, schema, rollout and security design. No changes to solo games, existing Socket.IO messages, room codes or browser tokens.
+- [x] Roll back V5 optional PostgreSQL persistence introduced in PR #17, retaining V1–V4 user experience and V3 safe same-process multiplayer reconnect.
+- [x] Restore `server/index.mjs`, `package.json`, and `.env.example` to their verified pre-V5 content; remove `pg` dependency, persistence module, related integration tests, PostgreSQL CI workflow, and superseded database rollout documentation.
+- [x] Update README and this backlog for a **memory-only** multiplayer architecture. Fourcast, Bingo Duel and Connect Four room codes and game rules are unchanged.
+- [ ] **Verification gate:** run TypeScript, Node unit/integration tests, Vite build, and complete 45-test Chromium browser suite for all seven games.
+- [ ] **Merge gate:** squash-merge to `main` only after all CI checks pass.
+- [ ] **Release gate:** inspect current Render service and active room count; only publish to Render when a restart will not disrupt a match, verify new commit and `/health`.
+- [ ] **Manual QA:** two-device mobile WebSocket lobby/create/join, reconnect while the process remains alive, and solo-game local progress recovery.
 
-- [x] Audit current in-memory room engines, restart behavior, 3-hour TTL, lock/secret privacy and frontend saved session format.
-- [x] Implement optional PostgreSQL snapshots for Fourcast, Bingo Duel and Connect Four; **unset** `PLAYGROVE_DATABASE_URL` retains current in-memory behavior.
-- [x] Restore room state on server startup, discard stale socket IDs, keep expired room removal and existing session-token-based recovery.
-- [x] Serialize mutations, acknowledge and broadcast only after PostgreSQL transaction success, and fail closed on uncertain write outcomes.
-- [x] Enforce one active game server writer with PostgreSQL advisory lock; no multi-instance deployment is claimed.
-- [x] Add defensive schema/version validation and avoid exposing the room database URI or private state in public health responses.
-- [x] Add 4 room snapshot/restore/diff unit tests and isolated real PostgreSQL server process restart/recovery test on GitHub Actions.
-- [x] **Backend gate:** TypeScript, 99 Node tests and Vite build passed ([GitHub CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43039488266)).\n- [x] **Database gate:** Real PostgreSQL restart/recovery and exclusive-writer integration passed ([GitHub CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43039488097)).\n- [x] **Browser gate:** 45 Chromium tests passed without retries ([GitHub CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43040555783)).
-- [x] **Merge gate:** PR #17 squash-merged after all three checks passed; code commit `a1432818`.
-- [ ] **Production activation gate:** use a dedicated Playgrove database and a single Render instance; explicitly select the Render workspace, confirm provisioning/costs, migration and downtime window; do not deploy over existing active rooms.
-- [ ] **Operations gate:** TLS, least-privilege database credentials, backups, restore drills, monitoring and actual phone recovery tests before claiming production room durability.
-
-**Important:** merging V5 code to `main` with `PLAYGROVE_DATABASE_URL` unset does **not** protect existing live rooms from restarts. Production persistence is a separate, deliberate activation.
+**Expected trade-off:** Free-tier server sleep, manual restarts, or deploys erase active multiplayer room states; starting a new room is acceptable. No further infrastructure investment is planned. Original V5 development remains traceable in the merged GitHub history (PR #17), but its database implementation is removed from the current codebase.
