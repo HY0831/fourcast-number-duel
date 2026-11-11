@@ -186,3 +186,10 @@
 .pg-2048-card .pg-card-kicker { color:var(--pg-foliage); }
 .pg-2048-play { background:var(--pg-foliage); }
 .pg-2048-play:hover { background:var(--pg-redwood); }
+
+/* Seventh Playgrove game: Nonogram. Scoped homepage card styling. */
+.pg-nonogram-card { border-top:5px solid var(--pg-rainfall); }
+.pg-nonogram-symbol { background:var(--pg-rainfall); color:var(--pg-seedling); }
+.pg-nonogram-card .pg-card-kicker { color:var(--pg-foliage); }
+.pg-nonogram-play { background:var(--pg-foliage); }
+.pg-nonogram-play:hover { background:var(--pg-redwood); }

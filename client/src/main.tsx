@@ -15,6 +15,7 @@ import BingoPage from './games/bingo/BingoPage'
 import ConnectFourPage from './games/connect-four/ConnectFourPage'
 import MinesweeperPage from './games/minesweeper/MinesweeperPage'
 import Twenty48Page from './games/twenty48/Twenty48Page'
+import NonogramPage from './games/nonogram/NonogramPage'
 import { resolveHubRoute } from './playgrove/routing.mjs'
 import './playgrove/playgrove.css'
 
@@ -360,7 +361,7 @@ function currentPage() {
 }
 
 function App() {
-  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048'>(currentPage)
+  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048' | 'nonogram'>(currentPage)
   const pageRef = useRef(page)
   const activeMatchRef = useRef(false)
   const onActivityChange = useCallback((active: boolean) => { activeMatchRef.current = active }, [])
@@ -391,7 +392,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : page === 'minesweeper' ? 'Minesweeper — Easy, Medium & Hard | Playgrove' : page === 'connect-four' ? 'Connect Four — Playgrove' : page === '2048' ? '2048 — Playgrove' : 'Fourcast — The Number Duel | Playgrove'
+    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : page === 'minesweeper' ? 'Minesweeper — Easy, Medium & Hard | Playgrove' : page === 'connect-four' ? 'Connect Four — Playgrove' : page === '2048' ? '2048 — Playgrove' : page === 'nonogram' ? 'Nonogram — 30 Picture Puzzles | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
   }, [page])
 
   if (page === 'hub') return <PlaygroveHome
@@ -403,6 +404,7 @@ function App() {
     onPlayMinesweeper={() => goTo('/games/minesweeper')}
     onPlayConnectFour={() => goTo('/games/connect-four')}
     onPlay2048={() => goTo('/games/2048')}
+    onPlayNonogram={() => goTo('/games/nonogram')}
     hasSavedConnectFour={hasSavedConnectFourSession()}
     onResumeConnectFour={() => goTo('/games/connect-four')}
     hasSavedBingo={hasSavedBingoSession()}
@@ -413,6 +415,7 @@ function App() {
   if (page === 'minesweeper') return <MinesweeperPage onBack={() => goTo('/')} />
   if (page === 'connect-four') return <ConnectFourPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
   if (page === '2048') return <Twenty48Page onBack={() => goTo('/')} />
+  if (page === 'nonogram') return <NonogramPage onBack={() => goTo('/')} />
   return <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
 }
 

@@ -4,6 +4,8 @@
 
 ## Available Games
 
+- **Nonogram (Picture Logic)** — 30 handcrafted, validated and uniquely solvable picture puzzles: 10 Easy 5×5, 10 Medium 10×10, 10 Hard 15×15. Browse pictures by difficulty, category and search; Fill/X marks, Undo, 3 hints, pause/timer, local progress and best times, completed artwork reveal. Play at `/games/nonogram`. See [NONOGRAM_RULES.md](NONOGRAM_RULES.md).
+
 - **2048** — single-player sliding tile puzzle with swipe/arrow controls, score, undo, browser autosave, and win/continue screens. Play at `/games/2048`. See [2048_RULES.md](2048_RULES.md).
 
 - **Connect Four** — online 2-player 7×6 disc-drop strategy game. Play in private rooms; four connected discs win, full board without a win is a draw. Both players approve rematches, and active sessions resume after reconnecting. Play at `/games/connect-four`. See [CONNECT_FOUR_RULES.md](CONNECT_FOUR_RULES.md).
@@ -18,6 +20,7 @@ Fourcast is unchanged: its current real-time server, URL and existing invitation
 ## Explore Playgrove
 
 - `/` — Playgrove Game Library: available Fourcast card, game introduction, coming-soon panel and saved-session prompt.
+- `/games/nonogram` — solo Nonogram picture library with 30 fixed designs.
 - `/games/2048` — solo number-sliding puzzle with local best score and undo.
 - `/games/connect-four` — real-time private Connect Four rooms (invites with `?room=ABC123`).
 - `/games/minesweeper` — solo Minesweeper with three classic difficulty levels.

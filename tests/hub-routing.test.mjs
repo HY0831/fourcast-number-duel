@@ -60,3 +60,11 @@ test('2048 has a standalone route without breaking any multiplayer invitations',
   assert.deepEqual(resolveHubRoute('/games/connect-four', '?room=ABC123'), { page: 'connect-four', redirect: null });
   assert.deepEqual(resolveHubRoute('/', '?room=ABC123'), { page: 'fourcast', redirect: '/games/fourcast?room=ABC123' });
 });
+
+test('Nonogram uses an independent route without changing any existing game invitations', () => {
+  assert.deepEqual(resolveHubRoute('/games/nonogram'), { page: 'nonogram', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/nonogram/'), { page: 'nonogram', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/2048'), { page: '2048', redirect: null });
+  assert.deepEqual(resolveHubRoute('/games/bingo','?room=XY2345'), { page: 'bingo', redirect: null });
+  assert.deepEqual(resolveHubRoute('/', '?room=AB2345'), { page: 'fourcast', redirect: '/games/fourcast?room=AB2345' });
+});
