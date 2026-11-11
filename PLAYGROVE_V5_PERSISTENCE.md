@@ -73,8 +73,8 @@ The database setting is opt-in; **a merge by itself is not a production activati
 
 ## Exit criteria
 
-- [ ] TypeScript + Node unit suite + Vite build pass.
-- [ ] Real PostgreSQL restart/recovery workflow passes.
+- [x] TypeScript + 99 Node tests + Vite build passed ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43039488266)).
+- [x] Real PostgreSQL restart/recovery and exclusive-writer workflow passed ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43039488097)).
 - [ ] All seven-game Chromium Playwright tests pass.
 - [ ] Squash-merge to `main` only when all applicable gates pass.
 - [ ] Provision database and enable environment variable in a separate approved Render release, outside active multiplayer sessions.
