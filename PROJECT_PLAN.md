@@ -41,7 +41,8 @@ Build a simple, good-looking mobile-first, online multiplayer four-digit guessin
 
 - [x] Dedicated GitHub repository created by user: `HY0831/fourcast-number-duel`
 - [x] All 21 source/project files pushed to `main` on GitHub
-- [x] Eight-game Playgrove web service live on Render Free in Singapore, with ninth-game Reversi release in progress.\n- [ ] Final real-phone check from two separate networks following the latest release.
+- [x] Eight-game Playgrove web service live on Render Free in Singapore, with ninth-game Reversi release in progress.
+- [ ] Final real-phone check from two separate networks following the latest release.
 - [x] Confirm personal-use hosting: no database, Redis, or extra paid services needed; multiplayer rooms intentionally reset when Render restarts or sleeps.
 - [ ] Install frontend dependencies, perform the full typecheck/build, and test on Android and iOS browsers (npm registry blocked in current workspace)
 - [x] Mobile web-app manifest and install icons (HTTPS host required for home-screen installation)
