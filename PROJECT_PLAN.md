@@ -236,3 +236,19 @@ Scope: Fourcast, Bingo Duel, Connect Four. Working branch `polish/playgrove-v3-m
 - [ ] **Deployment gate:** release independently on Render when multiplayer rooms can be safely interrupted; live deployment not assumed.
 
 Next: mobile network-flap tests on a separate preview, accessibility, then design of persisted server room state.
+
+
+## V4 accessibility and mobile UX quality pass — 2026-11-11
+
+All seven published games are retained. Work on `polish/playgrove-v4-accessibility-20261111`, details in `PLAYGROVE_V4_ACCESSIBILITY.md`.
+
+- [x] Fix Sudoku and 2048 keyboard shortcut conflicts with focused controls; synchronize Sudoku visual selection and DOM focus.
+- [x] Improve Sudoku notes and Nonogram clue screen-reader descriptions.
+- [x] Add concise accessible live announcements for board progress and multiplayer status; do not announce timers every second.
+- [x] Add clear create/join and Fourcast mode pressed states, and describe Connect Four column occupancy.
+- [x] Improve 320px Sudoku keypad touch height, Bingo outline button height and Nonogram search focus ring.
+- [x] Add five Chromium accessibility regression tests covering all seven game experiences.
+- [ ] **Release gate:** TypeScript, Node suite, production build, full Chromium seven-game regression pass.
+- [ ] **Merge gate:** merge PR only after both checks pass.
+- [ ] **Device QA:** VoiceOver, TalkBack, NVDA and real mobile touch validation are still required; don't claim full WCAG compliance.
+- [ ] **Deploy gate:** Render release separately to protect active server-memory multiplayer rooms.
