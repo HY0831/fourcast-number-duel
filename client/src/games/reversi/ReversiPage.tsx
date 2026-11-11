@@ -323,8 +323,16 @@ function OnlineReversiPage({onBack,onActivityChange,onLocal}:Props & {onLocal:()
   </div>
 }
 
+const MODE_KEY='playgrove:reversi:mode:v1'
 export default function ReversiPage(props:Props){
-  const [mode,setMode]=useState<'online'|'local'>('online')
-  return mode==='local'?<LocalReversiPage onBack={props.onBack} onOnline={()=>setMode('online')}/>:
-    <OnlineReversiPage {...props} onLocal={()=>setMode('local')}/>
+  const [mode,setMode]=useState<'online'|'local'>(()=>{
+    if(new URLSearchParams(window.location.search).has('room'))return 'online'
+    try{return sessionStorage.getItem(MODE_KEY)==='local'?'local':'online'}catch{return 'online'}
+  })
+  const choose=(next:'online'|'local')=>{
+    setMode(next)
+    try{sessionStorage.setItem(MODE_KEY,next)}catch{/* Local mode still works without storage. */}
+  }
+  return mode==='local'?<LocalReversiPage onBack={props.onBack} onOnline={()=>choose('online')}/>:
+    <OnlineReversiPage {...props} onLocal={()=>choose('local')}/>
 }
