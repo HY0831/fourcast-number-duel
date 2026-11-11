@@ -20,6 +20,7 @@ const MinesweeperPage = lazy(() => import('./games/minesweeper/MinesweeperPage')
 const Twenty48Page = lazy(() => import('./games/twenty48/Twenty48Page'))
 const NonogramPage = lazy(() => import('./games/nonogram/NonogramPage'))
 const HashiPage = lazy(() => import('./games/hashi/HashiPage'))
+const ReversiPage = lazy(() => import('./games/reversi/ReversiPage'))
 import { resolveHubRoute } from './playgrove/routing.mjs'
 import './playgrove/playgrove.css'
 
@@ -344,6 +345,13 @@ function hasSavedConnectFourSession(): boolean {
   } catch { return false }
 }
 
+function hasSavedReversiSession(): boolean {
+  try {
+    const saved = JSON.parse(safeLocalStorage.getItem('reversi:session') || 'null') as Session | null
+    return typeof saved?.code === 'string' && saved.code.length === 6 && typeof saved?.token === 'string' && saved.token.length >= 32
+  } catch { return false }
+}
+
 function hasSavedBingoSession(): boolean {
   try {
     const saved = JSON.parse(safeLocalStorage.getItem('bingo:session') || 'null') as Session | null
@@ -358,7 +366,8 @@ function hasSavedFourcastSession(): boolean {
   } catch { return false }
 }
 
-function activeRoomWarning(page: 'fourcast' | 'bingo' | 'connect-four') {
+function activeRoomWarning(page: 'fourcast' | 'bingo' | 'connect-four' | 'reversi') {
+  if (page === 'reversi') return 'Return to Playgrove? Your Reversi room stays saved. You can resume if the server remains running.'
   if (page === 'connect-four') return 'Return to Playgrove? Your Connect Four room stays saved and you can resume when you return.'
   return page === 'bingo'
     ? 'Return to Playgrove? Your Bingo room stays saved, but the game pauses while you are away. You can resume from the Game Library.'
@@ -372,13 +381,13 @@ function currentPage() {
 }
 
 function App() {
-  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048' | 'nonogram' | 'hashi'>(currentPage)
+  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048' | 'nonogram' | 'hashi' | 'reversi'>(currentPage)
   const pageRef = useRef(page)
   const activeMatchRef = useRef(false)
   const onActivityChange = useCallback((active: boolean) => { activeMatchRef.current = active }, [])
 
   const goTo = useCallback((path: string) => {
-    if ((pageRef.current === 'fourcast' || pageRef.current === 'bingo' || pageRef.current === 'connect-four') && path === '/' && activeMatchRef.current && !window.confirm(activeRoomWarning(pageRef.current))) return
+    if ((pageRef.current === 'fourcast' || pageRef.current === 'bingo' || pageRef.current === 'connect-four' || pageRef.current === 'reversi') && path === '/' && activeMatchRef.current && !window.confirm(activeRoomWarning(pageRef.current))) return
     window.history.pushState(null, '', path)
     const next = currentPage()
     pageRef.current = next
@@ -389,7 +398,7 @@ function App() {
   useEffect(() => {
     const onPopState = () => {
       const next = resolveHubRoute(window.location.pathname, window.location.search)
-      if ((pageRef.current === 'fourcast' || pageRef.current === 'bingo' || pageRef.current === 'connect-four') && next.page === 'hub' && activeMatchRef.current && !window.confirm(activeRoomWarning(pageRef.current))) {
+      if ((pageRef.current === 'fourcast' || pageRef.current === 'bingo' || pageRef.current === 'connect-four' || pageRef.current === 'reversi') && next.page === 'hub' && activeMatchRef.current && !window.confirm(activeRoomWarning(pageRef.current))) {
         window.history.pushState(null, '', `/games/${pageRef.current}`)
         return
       }
@@ -403,7 +412,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : page === 'minesweeper' ? 'Minesweeper — Easy, Medium & Hard | Playgrove' : page === 'connect-four' ? 'Connect Four — Playgrove' : page === '2048' ? '2048 — Playgrove' : page === 'nonogram' ? 'Nonogram — 30 Picture Puzzles | Playgrove' : page === 'hashi' ? 'Hashi Bridges — 45 Logic Puzzles | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
+    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : page === 'minesweeper' ? 'Minesweeper — Easy, Medium & Hard | Playgrove' : page === 'connect-four' ? 'Connect Four — Playgrove' : page === '2048' ? '2048 — Playgrove' : page === 'nonogram' ? 'Nonogram — 30 Picture Puzzles | Playgrove' : page === 'hashi' ? 'Hashi Bridges — 45 Logic Puzzles | Playgrove' : page === 'reversi' ? 'Reversi — Online Strategy Duel | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
   }, [page])
 
   if (page === 'hub') return <PlaygroveHome
@@ -417,9 +426,12 @@ function App() {
     onPlay2048={() => goTo('/games/2048')}
     onPlayNonogram={() => goTo('/games/nonogram')}
     onPlayHashi={() => goTo('/games/hashi')}
+    onPlayReversi={() => goTo('/games/reversi')}
     hasSavedConnectFour={hasSavedConnectFourSession()}
     onResumeConnectFour={() => goTo('/games/connect-four')}
     hasSavedBingo={hasSavedBingoSession()}
+    hasSavedReversi={hasSavedReversiSession()}
+    onResumeReversi={() => goTo('/games/reversi')}
     onResumeBingo={() => goTo('/games/bingo')}
   />
   const game = page === 'sudoku' ? <SudokuPage onBack={() => goTo('/')} />
@@ -429,6 +441,7 @@ function App() {
     : page === '2048' ? <Twenty48Page onBack={() => goTo('/')} />
     : page === 'nonogram' ? <NonogramPage onBack={() => goTo('/')} />
     : page === 'hashi' ? <HashiPage onBack={() => goTo('/')} />
+    : page === 'reversi' ? <ReversiPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
     : <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
 
   return <GameRouteBoundary key={page} onBack={() => goTo('/')}>
