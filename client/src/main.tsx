@@ -157,12 +157,19 @@ function FourcastApp({ onBack, onActivityChange }: { onBack: () => void; onActiv
   useEffect(() => {
     const socket = io({ reconnection: true, reconnectionDelay: 500, timeout: 10000 })
     socketRef.current = socket
-    const resume = async () => {
-      setConnected(true)
+    const resume = () => {
       const saved = sessionRef.current
+      // A TCP/WebSocket connection alone is not an authenticated room session.
+      setConnected(!saved)
       if (!saved) return
       socket.timeout(8000).emit('room:resume', saved, (err: Error | null, res: JoinResponse) => {
-        if (err) { setError('Could not reconnect. Check your internet connection.'); return }
+        if (!socket.connected) return // Ignore a late response from a lost connection.
+        setConnected(true)
+        if (err) {
+          setRoom(null)
+          setError('Could not restore the room. Refresh this page to retry; your saved session is kept.')
+          return
+        }
         if (res?.ok && res.room) { setRoom(res.room); setError('') }
         else {
           safeLocalStorage.removeItem(SESSION_KEY)
