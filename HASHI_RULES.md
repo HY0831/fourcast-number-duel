@@ -54,7 +54,7 @@ The e2e/hashi.spec.ts file covers the actual browser UI, gallery, filtering, tap
 - [x] Design approved.
 - [x] Code and 45-puzzle library authored in isolated feature branch.
 - [x] Automated unique-solution verification implemented.
-- [ ] Complete GitHub TypeScript/Node/build and all Chromium browser gates.
+- [x] TypeScript, Vite build and 103/103 Node tests passed (CI run 43053146641); all 53 Chromium tests passed (run 43053146775).
 - [ ] PR merge after green checks.
 - [ ] Release to existing Render Free service after verifying deployment status.
 - [ ] Manual real-phone touch/drag and TalkBack/VoiceOver QA (do not claim these as tested by CI).
