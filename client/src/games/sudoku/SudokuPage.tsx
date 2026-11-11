@@ -56,6 +56,7 @@ function elapsed(seconds: number) {
 export default function SudokuPage({ onBack }: { onBack: () => void }) {
   const [game, setGame] = useState<SudokuSession>(() => readSession(lastLevel()))
   const [selected, setSelected] = useState<number | null>(() => null)
+  const cellRefs = useRef<(HTMLButtonElement | null)[]>([])
   const [notesMode, setNotesMode] = useState(false)
   const [paused, setPaused] = useState(false)
   const [best, setBest] = useState<number | null>(() => savedBest(lastLevel()))
@@ -162,20 +163,24 @@ export default function SudokuPage({ onBack }: { onBack: () => void }) {
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
       if (event.ctrlKey || event.altKey || event.metaKey) return
-      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return
+      const target = event.target instanceof HTMLElement ? event.target : null
+      // Do not hijack arrow keys or number shortcuts while another control has focus.
+      if (target?.isContentEditable || target?.closest('input, textarea, select') ||
+          (target?.closest('button') && !target.closest('.sdk-board'))) return
       if (event.key >= '1' && event.key <= '9') { event.preventDefault(); enter(Number(event.key)); return }
       if (event.key === 'Backspace' || event.key === 'Delete' || event.key === '0') { event.preventDefault(); enter(0); return }
       if (event.key.toLowerCase() === 'n') { event.preventDefault(); setNotesMode(v => !v); return }
       const step: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -9, ArrowDown: 9 }
       if (!(event.key in step) || paused) return
       event.preventDefault()
-      setSelected(current => {
-        const from = current === null ? game.puzzle.indexOf('0') : current
-        const row = Math.floor(from / 9), col = from % 9
-        if (event.key === 'ArrowLeft') return row * 9 + Math.max(col - 1, 0)
-        if (event.key === 'ArrowRight') return row * 9 + Math.min(col + 1, 8)
-        return Math.max(0, Math.min(8, row + (event.key === 'ArrowUp' ? -1 : 1))) * 9 + col
-      })
+      const firstEmpty = game.puzzle.indexOf('0')
+      const from = selected === null ? Math.max(0, firstEmpty) : selected
+      const row = Math.floor(from / 9), col = from % 9
+      const next = event.key === 'ArrowLeft' ? row * 9 + Math.max(col - 1, 0)
+        : event.key === 'ArrowRight' ? row * 9 + Math.min(col + 1, 8)
+        : Math.max(0, Math.min(8, row + (event.key === 'ArrowUp' ? -1 : 1))) * 9 + col
+      setSelected(next)
+      if (target?.closest('.sdk-board')) cellRefs.current[next]?.focus()
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
@@ -209,7 +214,8 @@ export default function SudokuPage({ onBack }: { onBack: () => void }) {
               <div className="sdk-stat"><div className="sdk-stat-icon">!</div><div><span>MISTAKES</span><strong>{game.mistakes}</strong></div></div>
             </div>
             <div className="sdk-board-wrap">
-              <div className="sdk-board" role="grid" aria-label="Sudoku 9 by 9 board">
+              <p id="sdk-keyboard-help" className="pg-sr-only">Use arrow keys to move between squares, digits 1 through 9 to enter a value, Delete to erase, and N to toggle pencil notes.</p>
+              <div className="sdk-board" role="grid" aria-label="Sudoku 9 by 9 board" aria-describedby="sdk-keyboard-help">
                 {Array.from({length:9}, (_,row) => <div className="sdk-board-row" role="row" key={row}>
                   {Array.from({length:9},(_,col) => {
                     const i=row*9+col
@@ -219,13 +225,13 @@ export default function SudokuPage({ onBack }: { onBack: () => void }) {
                     const sameDigit=selected !== null && game.board[selected] !== '0' && value === game.board[selected]
                     const wrong=value !== '0' && !isGiven && value !== game.solution[i]
                     const classes=['sdk-cell',isGiven?'sdk-given':'sdk-editable',highlighted?'sdk-related':'',sameDigit?'sdk-matching':'',selected===i?'sdk-selected':'',wrong||conflicts.has(i)?'sdk-wrong':'',col%3===2&&col!==8?'sdk-block-right':'',row%3===2&&row!==8?'sdk-block-bottom':''].filter(Boolean).join(' ')
-                    return <button key={i} type="button" role="gridcell" aria-selected={selected===i} aria-label={`Row ${row+1}, column ${col+1}: ${value==='0'?'empty':value}${isGiven?', given':''}${wrong?', incorrect':''}`} className={classes} onClick={() => { if (!paused) setSelected(i) }} disabled={paused}>
+                    return <button key={i} type="button" role="gridcell" ref={node => { cellRefs.current[i] = node }} aria-selected={selected===i} aria-label={`Row ${row+1}, column ${col+1}: ${value==='0'?'empty':value}${value==='0' && game.notes[i].length ? `, notes ${game.notes[i].join(', ')}` : ''}${isGiven?', given':''}${wrong?', incorrect':''}`} className={classes} onClick={() => { if (!paused) setSelected(i) }} disabled={paused}>
                       {value!=='0' ? value : <div className="sdk-cell-notes" aria-hidden="true">{Array.from({length:9},(_,n) => <span key={n}>{game.notes[i].includes(n+1)?n+1:''}</span>)}</div>}
                     </button>
                   })}</div>)}
               </div>
               {paused && <div className="sdk-board-overlay"><Pause size={31}/><strong>Puzzle paused</strong><span>Your timer is stopped.</span><button type="button" onClick={() => setPaused(false)}>Resume puzzle <Play size={15}/></button></div>}
-              {game.completed && <div className="sdk-board-overlay sdk-success-overlay"><Trophy size={36}/><strong>You solved it!</strong><span>{LEVEL_META[game.level].label} · {elapsed(game.seconds)} · {game.mistakes} mistakes</span><button type="button" onClick={restart}>New puzzle <ArrowRight size={16}/></button></div>}
+              {game.completed && <div className="sdk-board-overlay sdk-success-overlay" role="status" aria-live="polite"><Trophy size={36}/><strong>You solved it!</strong><span>{LEVEL_META[game.level].label} · {elapsed(game.seconds)} · {game.mistakes} mistakes</span><button type="button" onClick={restart}>New puzzle <ArrowRight size={16}/></button></div>}
             </div>
             <div className="sdk-board-caption"><span><i className="sdk-legend-dot"/> Original numbers are fixed</span><span><i className="sdk-legend-dot sdk-legend-error"/> Red numbers need fixing</span></div>
           </section>

@@ -161,9 +161,9 @@ export default function ConnectFourPage({ onBack, onActivityChange }: Props) {
         <div className="c4-mini-rule"><strong>Easy to play</strong><span>7 columns × 6 rows · Alternate turns · Connect 4 to win</span></div>
       </section>
       <section className="c4-card c4-join-card">
-        <div className="c4-tabs" role="tablist" aria-label="Room action">
-          <button type="button" role="tab" aria-selected={tab === 'create'} className={tab === 'create' ? 'active' : ''} onClick={() => { setTab('create'); setError('') }}>Create room</button>
-          <button type="button" role="tab" aria-selected={tab === 'join'} className={tab === 'join' ? 'active' : ''} onClick={() => { setTab('join'); setError('') }}>Join room</button>
+        <div className="c4-tabs" role="group" aria-label="Room action">
+          <button type="button" aria-pressed={tab === 'create'} className={tab === 'create' ? 'active' : ''} onClick={() => { setTab('create'); setError('') }}>Create room</button>
+          <button type="button" aria-pressed={tab === 'join'} className={tab === 'join' ? 'active' : ''} onClick={() => { setTab('join'); setError('') }}>Join room</button>
         </div>
         <div className="c4-form">
           <span className="c4-eyebrow">{tab === 'create' ? 'YOUR NEXT CHALLENGE' : 'JOIN YOUR FRIEND'}</span>
@@ -204,7 +204,7 @@ export default function ConnectFourPage({ onBack, onActivityChange }: Props) {
 
       {room.phase !== 'lobby' && <section className="c4-play-layout">
         <div className="c4-card c4-board-panel">
-          <div className={`c4-turn-banner ${yourTurn && bothOnline ? 'active' : ''}`} role="status">
+          <div className={`c4-turn-banner ${yourTurn && bothOnline ? 'active' : ''}`} role="status" aria-live="polite" aria-atomic="true">
             {room.phase === 'finished' ? <><Trophy size={21}/><div><strong>{room.draw ? "It's a draw!" : isWinner ? 'You connected four!' : `${opponent?.name || 'Opponent'} wins!`}</strong><span>{room.draw ? 'All 42 spaces are full.' : 'The winning four discs are highlighted below.'}</span></div></>
               : !connected || !bothOnline ? <><WifiOff size={21}/><div><strong>Waiting for reconnection</strong><span>Both players must be online to continue.</span></div></>
               : yourTurn ? <><CircleDot size={21}/><div><strong>Your turn — drop a disc!</strong><span>Tap any non-full column. Your disc drops to the lowest open space.</span></div></>
@@ -215,8 +215,9 @@ export default function ConnectFourPage({ onBack, onActivityChange }: Props) {
             <div className="c4-board" role="grid" aria-label="Connect Four board">
               {Array.from({ length: 7 }, (_, column) => {
                 const full = room.board[column] !== 0
-                return <button key={column} type="button" role="gridcell" className={`c4-column ${canMove && !full ? 'c4-column-enabled' : ''}`} disabled={!canMove || full} aria-label={`Drop in column ${column+1}${full ? ', full' : ''}`} onClick={() => void act('connect4:drop', { column })}>
+                return <button key={column} type="button" role="gridcell" className={`c4-column ${canMove && !full ? 'c4-column-enabled' : ''}`} disabled={!canMove || full} aria-label={`Drop in column ${column+1}${full ? ', full' : ''}`} aria-describedby={`c4-column-${column}-contents`} onClick={() => void act('connect4:drop', { column })}>
                   <span className="c4-column-label" aria-hidden="true">{column+1} <span>↓</span></span>
+                   <span id={`c4-column-${column}-contents`} className="pg-sr-only">Bottom to top: {Array.from({length:6},(_,row) => room.board[(5-row)*7+column]).map(value => value === 0 ? 'empty' : value === 1 ? 'player one' : 'player two').join(', ')}.</span>
                   {Array.from({ length: 6 }, (_, row) => {
                     const index = row*7+column, owner=room.board[index]
                     const winner = room.winningCells.includes(index), last = room.lastMove?.index === index

@@ -56,13 +56,15 @@ export default function Twenty48Page({ onBack }: Props) {
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
       const target = event.target as HTMLElement | null
-      if (target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return
+      if (target?.isContentEditable || target?.closest('input, textarea, select, button, [role="button"]')) return
+      // Arrow shortcuts apply to the board, never to modal/finished states.
+      if (game.status !== 'playing') return
       const arrow: Record<string, Direction> = { ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right' }
       if (arrow[event.key]) { event.preventDefault(); slide(arrow[event.key]); }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [slide])
+  }, [slide, game.status])
 
   function undoMove() {
     if (!undo) return
@@ -108,7 +110,7 @@ export default function Twenty48Page({ onBack }: Props) {
               <div className="t48-stat t48-max"><span>TOP TILE</span><strong aria-label="Highest tile">{scoreText(topTile)}</strong></div>
             </div>
             <div className="t48-board-wrap">
-              <div className="t48-board" role="grid" aria-label="2048 4 by 4 board" tabIndex={0}
+              <div className="t48-board" role="grid" aria-label="2048 4 by 4 board" aria-describedby="t48-keyboard-help" tabIndex={0}
                 onTouchStart={event => { if (event.touches[0]) touch.current = { x:event.touches[0].clientX, y:event.touches[0].clientY } }}
                 onTouchEnd={handleTouchEnd}
                 onTouchCancel={() => { touch.current = null }}>
@@ -117,7 +119,7 @@ export default function Twenty48Page({ onBack }: Props) {
                   {n || ''}
                 </div>)}
               </div>
-              {overlay && <div className={`t48-overlay ${game.status==='won'?'t48-victory':'t48-loss'}`}>
+              {overlay && <div className={`t48-overlay ${game.status==='won'?'t48-victory':'t48-loss'}`} role="status" aria-live="polite">
                 <div className="t48-overlay-icon">{game.status==='won'?<Crown size={36}/>:<RotateCcw size={34}/>}</div>
                 <h2>{game.status==='won'?'You made 2048!':'No moves left.'}</h2>
                 <p>{game.status==='won'?'Congratulations! Keep playing for an even higher score or try a new board.':'Nice try! Start a new game to beat your best score.'}</p>
@@ -127,6 +129,8 @@ export default function Twenty48Page({ onBack }: Props) {
                 </div>
               </div>}
             </div>
+            <p id="t48-keyboard-help" className="pg-sr-only">Use arrow keys when the board is focused, swipe on a touch screen, or use the four movement buttons. Press Tab to reach other controls.</p>
+            <div className="pg-sr-only" role="status" aria-live="polite" aria-atomic="true">{game.moves ? `Move ${game.moves}; score ${game.score}; highest tile ${topTile}.` : 'New game ready.'}</div>
             <div className="t48-control-header"><span><Move size={17}/> Swipe on the board, or use arrow keys</span><span>{game.moves} moves · {empty} spaces</span></div>
             <div className="t48-direction-pad" role="group" aria-label="Move tiles">
               <button type="button" aria-label="Move left" disabled={overlay} onClick={()=>slide('left')}><ArrowLeft size={22}/></button>

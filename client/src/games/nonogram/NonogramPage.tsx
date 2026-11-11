@@ -165,7 +165,7 @@ export default function NonogramPage({ onBack }: Props) {
             <button type="button" className="ng-start" onClick={()=>pick(p.id)} aria-label={`${complete?'View / Replay':marked?'Continue':'Play'} ${p.title}`}>{complete?'View / Replay':marked?'Continue puzzle':'Play puzzle'} <span aria-hidden="true">→</span></button>
           </article>
         })}</div>
-        {library.length===0&&<div className="ng-empty-result"><Image size={27}/><p>No pictures match those filters.</p><button type="button" onClick={()=>{setDifficulty('All');setCategory('All');setQuery('')}}>Clear filters</button></div>}
+        {library.length===0&&<div className="ng-empty-result" role="status"><Image size={27}/><p>No pictures match those filters.</p><button type="button" onClick={()=>{setDifficulty('All');setCategory('All');setQuery('')}}>Clear filters</button></div>}
       </section>
     </main> : <main className="ng-main ng-play-main">
       <div className="ng-game-heading"><div>
@@ -189,7 +189,7 @@ export default function NonogramPage({ onBack }: Props) {
             <button type="button" aria-label="Zoom in" onClick={()=>zoomBy(1)} disabled={zoom==='large'}><Plus size={17}/></button>
           </div></div>
           <div className="ng-board-holder" ref={boardRef} aria-label="Scroll puzzle board to view hidden columns">
-            <div className="ng-board-grid" role="grid" aria-label={`${puzzle.title}, ${n} by ${n} Nonogram board`} data-size={n} data-zoom={zoom} style={boardStyle}>
+            <div className="ng-board-grid" role="grid" aria-label={`${puzzle.title}, ${n} by ${n} Nonogram board`} aria-describedby="ng-keyboard-help" data-size={n} data-zoom={zoom} style={boardStyle}>
               <div className="ng-corner" aria-hidden="true"><Grid3X3 size={17}/></div>
               {puzzle.colClues.map((clues,col) => <div key={`col-${col}`} className={`ng-col-clue ${clueCompleted(puzzle,game.marks,false,col)?'ng-clue-finished':''}`} aria-label={`Column ${col+1} clues: ${clues.join(' ')}`}>
                 {clues.map((value,i)=><span key={i}>{value}</span>)}
@@ -202,7 +202,7 @@ export default function NonogramPage({ onBack }: Props) {
                   const index=row*n+col, state=game.marks[index]
                   return <button key={`cell-${index}`} type="button" role="gridcell" ref={element=>{cellRefs.current[index]=element}}
                     disabled={paused || game.status==='completed'}
-                    aria-label={`Row ${row+1}, column ${col+1}: ${state===MARK.FILL?'filled':state===MARK.CROSS?'X mark':'empty'}`}
+                    aria-label={`Row ${row+1}, column ${col+1}: ${state===MARK.FILL?'filled':state===MARK.CROSS?'X mark':'empty'}. Row clues: ${puzzle.rowClues[row].join(', ')}. Column clues: ${puzzle.colClues[col].join(', ')}.`}
                     aria-selected={state===MARK.FILL}
                     className={`ng-cell ${state===MARK.FILL?'ng-cell-filled':state===MARK.CROSS?'ng-cell-cross':'ng-cell-empty'} ${col!==0&&col%5===0?'ng-cell-group-left':''} ${row!==0&&row%5===0?'ng-cell-group-top':''}`}
                     onClick={()=>mark(index)} onContextMenu={event=>cellContext(event,index)} onKeyDown={event=>cellKey(event,index)}>
@@ -226,12 +226,12 @@ export default function NonogramPage({ onBack }: Props) {
               <button type="button" onClick={()=>setPaused(value=>!value)} disabled={game.status==='ready'||game.status==='completed'}>{paused?<Play size={18}/>:<Pause size={18}/>} {paused?'Resume':'Pause'}</button>
               <button type="button" onClick={restart}><RotateCcw size={18}/> Restart</button>
             </div>
-            <span className="ng-helper">Desktop: right-click for X, press F to fill, X to cross, arrows to navigate.</span>
+            <span id="ng-keyboard-help" className="ng-helper">Keyboard: use arrows to move between cells, F to fill, X to mark empty, Enter or Space to apply the selected mode. Right-click also marks X.</span>
           </section>
           <section className="ng-side-card ng-progress-card"><span className="ng-side-eyebrow">YOUR PROGRESS</span>
             <div className="ng-progress-info"><strong>{game.status==='completed'?'Completed!':game.status==='ready'?'Not started':'In progress'}</strong><span>{game.hints} / {MAX_HINTS} hints used</span></div>
             <div className="ng-progress-track"><div style={{width:`${Math.round((filled+crosses)/(n*n)*100)}%`}}/></div>
-            <p>{filled+crosses} of {n*n} cells marked · X marks are optional.</p>
+            <p role="status" aria-live="polite" aria-atomic="true">{filled+crosses} of {n*n} cells marked · X marks are optional.</p>
             <div className="ng-best">{best===null?'Complete this picture to set your best time.':`Personal best: ${fmtTime(best)}`}</div>
           </section>
           {game.status==='completed'&&<section className="ng-side-card ng-unlocked-art"><span className="ng-side-eyebrow">COMPLETED ARTWORK</span><h2>{puzzle.title}</h2><PicturePixels puzzle={puzzle} className="ng-big-art"/>
