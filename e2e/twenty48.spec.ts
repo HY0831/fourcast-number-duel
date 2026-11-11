@@ -70,10 +70,11 @@ test('2048 responds to keyboard arrows, a touch swipe, and is usable at phone/de
 
 test('2048 recognises a winning merge, supports continuing, and shows game over', async ({page}) => {
   const b=blank();b[0]=1024;b[1]=1024
-  await page.addInitScript(({key,board}) => {
+  await page.goto('/games/2048')
+  await page.evaluate(({key,board}) => {
     localStorage.setItem(key,JSON.stringify({game:{board,score:0,moves:0,status:'playing',reached2048:false,spawnIndex:null},undo:null}))
   },{key:SAVE,board:b})
-  await page.goto('/games/2048')
+  await page.reload()
   await page.getByRole('button',{name:'Move left'}).click()
   await expect(page.getByRole('heading',{name:'You made 2048!'})).toBeVisible()
   await expect(page.getByTestId('2048-score')).toHaveText('2,048')
