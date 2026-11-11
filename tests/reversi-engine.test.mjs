@@ -107,21 +107,21 @@ test('when the other player has no move, their turn automatically passes',()=>{
 });
 test('a finished equal-score position is declared a draw',()=>{
   const {store,room,host}=pair();
-  // 31 Black, 32 White, one vacant square. Playing Black at 0 flips one White.
+  // 30 Black, 33 White, one vacant square. Playing Black at 0 flips one White.
   const board=Array(64).fill(BLACK);
   board[0]=0;board[1]=WHITE;board[2]=BLACK;
   // Remaining WHITE discs are placed far from the 0,0 capture rays.
   const distant=[];
   for(let row=3;row<8;row++)for(let col=0;col<8;col++)distant.push(row*8+col);
-  for(const idx of distant.slice(0,31))board[idx]=WHITE;
-  assert.deepEqual(discCounts(board),{black:31,white:32,empty:1});
+  for(const idx of distant.slice(0,32))board[idx]=WHITE;
+  assert.deepEqual(discCounts(board),{black:30,white:33,empty:1});
   // Because other flips can occur along the first column, construct a
   // rectangular arrangement with only the east line captured from a1.
   for(let row=1;row<8;row++)board[row*8]=BLACK;
   // Restore total whites by filling distant non-column cells.
   const whites=board.filter(v=>v===WHITE).length;
-  for(let i=63;i>=24&&board.filter(v=>v===WHITE).length<32;i--)if(i%8&&board[i]===BLACK)board[i]=WHITE;
-  assert.equal(discCounts(board).white,32);
+  for(let i=63;i>=24&&board.filter(v=>v===WHITE).length<33;i--)if(i%8&&board[i]===BLACK)board[i]=WHITE;
+  assert.equal(discCounts(board).white,33);
   const flips=flipsForMove(board,0,BLACK);
   if(flips.length!==1){
     // If an incidental diagonal matches, this fabricated board is not
