@@ -1,7 +1,9 @@
 import {useCallback,useEffect,useRef,useState} from 'react'
 import {io,type Socket} from 'socket.io-client'
-import {ArrowLeft,ArrowRight,Check,CircleDot,Copy,Gamepad2,RotateCcw,Share2,ShieldCheck,Sparkles,Trophy,Users,Wifi,WifiOff,X} from 'lucide-react'
+import {ArrowLeft,ArrowRight,Check,CircleDot,Copy,Flag,Gamepad2,History,RotateCcw,Share2,ShieldCheck,Sparkles,Trophy,Users,Wifi,WifiOff,X} from 'lucide-react'
 import {safeLocalStorage} from '../../playgrove/safeStorage'
+import LocalReversiPage from './LocalReversiPage'
+import {startingBoard} from './reversi-rules.mjs'
 import './reversi.css'
 
 type Phase='lobby'|'playing'|'finished'
@@ -13,6 +15,7 @@ type Room={
   blackPlayerId:string|null;turnPlayerId:string|null;legalMoves:number[];
   winnerId:string|null;draw:boolean;moveCount:number;passedPlayerId:string|null;
   lastMove:{index:number;by:string;disc:1|2;flipped:number[]}|null;players:Player[];
+  history:{index:number;by:string;disc:1|2;flipped:number[];board:Disc[]}[];resignedBy:string|null;
 }
 type Session={code:string;token:string}
 type Ack={ok:boolean;error?:string;code?:string;token?:string;room?:Room}
@@ -35,7 +38,7 @@ function DiscIcon({colour}:{colour:1|2}){
 function occupantName(value:Disc){
   return value===1?'Black':value===2?'White':'Empty'
 }
-export default function ReversiPage({onBack,onActivityChange}:Props){
+function OnlineReversiPage({onBack,onActivityChange,onLocal}:Props & {onLocal:()=>void}){
   const [connected,setConnected]=useState(false)
   const [room,setRoom]=useState<Room|null>(null)
   const [name,setName]=useState(()=>safeLocalStorage.getItem(NAME_KEY)||'')
@@ -44,6 +47,7 @@ export default function ReversiPage({onBack,onActivityChange}:Props){
   const [busy,setBusy]=useState(false)
   const [error,setError]=useState('')
   const [copied,setCopied]=useState(false)
+  const [review,setReview]=useState<number|null>(null)
   const socketRef=useRef<Socket|null>(null)
   const sessionRef=useRef<Session|null>(savedSession())
 
@@ -79,6 +83,8 @@ export default function ReversiPage({onBack,onActivityChange}:Props){
     onActivityChange(room?.phase==='lobby'||room?.phase==='playing')
     return ()=>onActivityChange(false)
   },[room?.phase,onActivityChange])
+
+  useEffect(()=>{setReview(null)},[room?.round])
 
   const request=useCallback((event:string,payload:unknown):Promise<Ack>=>{
     const socket=socketRef.current
@@ -148,7 +154,11 @@ export default function ReversiPage({onBack,onActivityChange}:Props){
   const white=room?.players.find(p=>p.disc===2)
   const myTurn=room?.phase==='playing'&&room.turnPlayerId===room.you
   const bothOnline=room?.players.length===2&&room.players.every(p=>p.online)
-  const canMove=Boolean(connected&&bothOnline&&myTurn&&!busy)
+  const viewing=review!==null
+  const viewedMove=review===null||review===0?null:room?.history?.[review-1]||null
+  const displayBoard=viewing?(review===0?startingBoard():viewedMove?.board||room?.board):room?.board
+  const displayedLast=viewing?viewedMove:room?.lastMove
+  const canMove=Boolean(connected&&bothOnline&&myTurn&&!busy&&!viewing)
   const yourWin=room?.winnerId===room?.you
   const otherName=opponent?.name||'Your friend'
   const playerLabel=(p:Player|undefined)=>!p?'Waiting for player':p.id===room?.you?'You':p.name
@@ -168,6 +178,7 @@ export default function ReversiPage({onBack,onActivityChange}:Props){
           <h1>Control the corners.<br/><em>Own the board.</em></h1>
           <p>Flip your rival's discs, protect key positions and think three moves ahead. A classic strategy game for two.</p>
           <div className="rv-chips"><span><Users size={16}/> 2 players</span><span><ShieldCheck size={16}/> Private rooms</span><span><Wifi size={16}/> Online together</span></div>
+          <button className="rv-local-switch rv-online-local-cta" type="button" onClick={onLocal}>Together on one device? <strong>Play local two-player</strong> <ArrowRight size={16}/></button>
           <div className="rv-rules"><strong>How to play</strong>
             <p>Black moves first. Place a disc to trap at least one opponent disc in a straight line, then flip every captured disc. If you cannot move, your turn passes automatically. When neither player can move, the player with more discs wins.</p>
             <div className="rv-mini-board" aria-hidden="true">{Array.from({length:16},(_,i)=><span key={i} className={i===5||i===10?'rv-mini-white':i===6||i===9?'rv-mini-black':''}/>)}</div>
@@ -226,7 +237,8 @@ export default function ReversiPage({onBack,onActivityChange}:Props){
         {room.phase!=='lobby'&&<section className="rv-layout">
           <div className="rv-card rv-board-panel">
             <div className={'rv-turn-banner '+(canMove?'active':'')} role="status" aria-live="polite" aria-atomic="true">
-              {room.phase==='finished'?<><Trophy size={22}/><div><strong>{room.draw?"It's a draw!":yourWin?'You win the board!':otherName+' wins!'}</strong>
+              {viewing?<><History size={22}/><div><strong>Reviewing {review===0?'the starting board':'move '+review}</strong><span>Review mode does not change your active game.</span></div></>:
+                room.phase==='finished'?<><Trophy size={22}/><div><strong>{room.draw?"It's a draw!":yourWin?'You win the board!':otherName+' wins!'}</strong>
                 <span>Black {room.scores.black} · White {room.scores.white}. {room.draw?'Equal discs.':'Most discs wins.'}</span></div></>:
                 !connected||!bothOnline?<><WifiOff size={22}/><div><strong>Waiting for reconnection</strong><span>Both players must be online to continue.</span></div></>:
                 myTurn?<><Sparkles size={22}/><div><strong>Your turn — place a disc!</strong>
@@ -241,10 +253,10 @@ export default function ReversiPage({onBack,onActivityChange}:Props){
               <div className="rv-board" role="grid" aria-label="Reversi board">
                 {Array.from({length:8},(_,row)=><div className="rv-board-row" role="row" key={row}>
                   {Array.from({length:8},(_,col)=>{
-                    const index=row*8+col,value=room.board[index]
+                    const index=row*8+col,value=displayBoard?.[index]??room.board[index]
                     const legal=canMove&&room.legalMoves.includes(index)
-                    const last=room.lastMove?.index===index
-                    const flipped=room.lastMove?.flipped.includes(index)
+                    const last=displayedLast?.index===index
+                    const flipped=displayedLast?.flipped.includes(index)
                     const label='Row '+(row+1)+', column '+(col+1)+': '+occupantName(value)+
                       (value===0?(legal?', legal move':', not a legal move'):'')+(last?', last move':'')
                     return <button key={index} type="button" role="gridcell" aria-label={label}
@@ -258,7 +270,7 @@ export default function ReversiPage({onBack,onActivityChange}:Props){
               </div>
             </div>
             <p className="rv-board-tip">
-              {room.phase==='finished'?'Round finished. Both players must agree to start another.':
+              {viewing?'Review mode: use Live board in Move history to return to the current turn.':room.phase==='finished'?'Round finished. Both players must agree to start another.':
                 !bothOnline?'Play resumes when your friend reconnects.':
                   'Place a disc to trap enemy discs horizontally, vertically, or diagonally. Corners are powerful.'}
             </p>
@@ -277,9 +289,22 @@ export default function ReversiPage({onBack,onActivityChange}:Props){
               {room.lastMove&&<p className="rv-move-info">Last move: {String.fromCharCode(97+room.lastMove.index%8)}{8-Math.floor(room.lastMove.index/8)}
                 {' · '+room.lastMove.flipped.length+' '+(room.lastMove.flipped.length===1?'disc':'discs')+' flipped'}</p>}
             </div>
+            <div className="rv-card rv-history">
+              <div className="rv-history-title"><History size={18}/><h2>Move history</h2></div>
+              <div className="rv-history-list" role="group" aria-label="Review moves">
+                <button type="button" aria-pressed={review===0} onClick={()=>setReview(0)}>Start · 2–2</button>
+                {(room.history||[]).map((move,i)=><button type="button" key={i} aria-pressed={review===i+1} onClick={()=>setReview(i+1)}>
+                  {i+1}. {move.disc===1?'Black':'White'} · {String.fromCharCode(97+move.index%8)}{8-Math.floor(move.index/8)} · {move.flipped.length} flipped
+                </button>)}
+              </div>
+              <button type="button" className="rv-live" onClick={()=>setReview(null)} disabled={!viewing}>Live board <ArrowRight size={15}/></button>
+            </div>
             {room.phase==='playing'?<div className="rv-card rv-tip">
               <CircleDot size={23}/><h3>Think ahead</h3>
               <p>Taking the most discs immediately is not always the best move. Corners cannot be flipped, so controlling them matters.</p>
+              <button type="button" className="rv-resign" disabled={busy||!connected||!bothOnline} onClick={()=>{
+                if(window.confirm('Resign this Reversi round? Your opponent will win.'))void act('reversi:resign',{})
+              }}><Flag size={16}/> Resign round</button>
             </div>:
             <div className="rv-card rv-rematch">
               <Trophy size={31}/><h2>{room.draw?'Evenly matched.':yourWin?'Well played!':'Ready for a comeback?'}</h2>
@@ -296,4 +321,10 @@ export default function ReversiPage({onBack,onActivityChange}:Props){
       <footer className="rv-footer">playgrove<span>.</span> · Mind games for good company.</footer>
     </div>
   </div>
+}
+
+export default function ReversiPage(props:Props){
+  const [mode,setMode]=useState<'online'|'local'>('online')
+  return mode==='local'?<LocalReversiPage onBack={props.onBack} onOnline={()=>setMode('online')}/>:
+    <OnlineReversiPage {...props} onLocal={()=>setMode('local')}/>
 }
