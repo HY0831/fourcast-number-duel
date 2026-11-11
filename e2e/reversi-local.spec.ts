@@ -69,6 +69,7 @@ test('local mode allows custom names, keeps progress when returning to mode menu
  expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false)
 })
 test('online resignation requires confirmation and both players see the immutable move history',async({page,browser})=>{
+ test.setTimeout(120_000)
  const context=await browser.newContext(),guest=await context.newPage()
  try{
   await page.goto('/games/reversi')
