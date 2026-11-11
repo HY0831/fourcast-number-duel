@@ -40,9 +40,9 @@ These integration tests supplement (rather than replace) existing pure-engine an
 
 ## Release checklist
 
-- [ ] GitHub TypeScript + all Node unit/integration tests + Vite production build pass.
-- [ ] GitHub Chromium Playwright full seven-game browser suite passes.
-- [ ] PR merged only with both check suites passing.
+- [x] GitHub TypeScript + 95 Node unit/integration tests + Vite production build passed ([CI run](https://github.com/HY0831/fourcast-number-duel/actions/runs/43027249107)).
+- [x] GitHub Chromium Playwright seven-game browser suite passed: 40 tests ([browser run](https://github.com/HY0831/fourcast-number-duel/actions/runs/43027249230)).
+- [x] PR #13 merged after both suites passed, main commit `933c8196`.
 - [ ] Render production deployment assessed separately for impact on existing in-memory rooms.
 
 ## Next iterations (not included)

@@ -1,6 +1,6 @@
 # Fourcast — Project Plan & Progress
 
-_Last updated: 2026-11-08_
+_Last updated: 2026-11-11_
 
 ## Goal
 
@@ -231,8 +231,8 @@ Scope: Fourcast, Bingo Duel, Connect Four. Working branch `polish/playgrove-v3-m
 - [x] Update clients so a successful Socket.IO transport connection is **not** treated as a ready room session until `*:resume` has completed.
 - [x] Preserve existing tokens on transient resume timeout, remove stale displayed room, and instruct refresh to retry.
 - [x] Add real Socket.IO server integration tests: disconnect, blocked action, same-turn recovery, private data, no duplicate moves, same-socket seat takeover.
-- [ ] **Release gate:** TypeScript, all Node tests, production build and full seven-game browser smoke checks pass on PR.
-- [ ] **Merge gate:** merge only after all checks pass.
+- [x] **Release gate:** 95 Node tests + TypeScript + production build passed ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43027249107)); 40 Chromium tests passed ([browser CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43027249230)).
+- [x] **Merge gate:** PR #13 squash-merged into `main` as `933c8196` after successful checks.
 - [ ] **Deployment gate:** release independently on Render when multiplayer rooms can be safely interrupted; live deployment not assumed.
 
 Next: mobile network-flap tests on a separate preview, accessibility, then design of persisted server room state.
