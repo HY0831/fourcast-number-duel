@@ -1,3 +1,4 @@
+import { safeLocalStorage } from '../../playgrove/safeStorage'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { io, type Socket } from 'socket.io-client'
 import { ArrowLeft, ArrowRight, Check, CircleDot, Copy, Gamepad2, RotateCcw, Share2, ShieldCheck, Trophy, Users, Wifi, WifiOff, X } from 'lucide-react'
@@ -22,7 +23,7 @@ const inviteUrl = (code: string) => `${window.location.origin}/games/connect-fou
 
 function savedSession(): Session | null {
   try {
-    const v = JSON.parse(localStorage.getItem(SESSION) || 'null') as Session | null
+    const v = JSON.parse(safeLocalStorage.getItem(SESSION) || 'null') as Session | null
     const invite = roomFromUrl()
     return v && typeof v.code === 'string' && v.code.length === 6 && typeof v.token === 'string' && v.token.length >= 32 && (!invite || invite === v.code) ? v : null
   } catch { return null }
@@ -33,7 +34,7 @@ export default function ConnectFourPage({ onBack, onActivityChange }: Props) {
   const [room, setRoom] = useState<Room | null>(null)
   const socketRef = useRef<Socket | null>(null)
   const sessionRef = useRef<Session | null>(savedSession())
-  const [name, setName] = useState(() => localStorage.getItem(NAME) || '')
+  const [name, setName] = useState(() => safeLocalStorage.getItem(NAME) || '')
   const [tab, setTab] = useState<'create' | 'join'>(() => roomFromUrl() ? 'join' : 'create')
   const [joinCode, setJoinCode] = useState(roomFromUrl)
   const [busy, setBusy] = useState(false)
@@ -51,7 +52,7 @@ export default function ConnectFourPage({ onBack, onActivityChange }: Props) {
         if (err) { setError('Reconnect timed out. Try again.'); return }
         if (res?.ok && res.room) { setRoom(res.room); setError('') }
         else {
-          localStorage.removeItem(SESSION)
+          safeLocalStorage.removeItem(SESSION)
           sessionRef.current = null
           setRoom(null)
           setError(res?.error || 'Your previous Connect Four room is no longer available.')
@@ -96,8 +97,8 @@ export default function ConnectFourPage({ onBack, onActivityChange }: Props) {
     await act(tab === 'create' ? 'connect4:create' : 'connect4:join', tab === 'create' ? { name: nickname } : { name: nickname, code: joinCode }, result => {
       if (!result.code || !result.token || !result.room) return
       const session = { code: result.code, token: result.token }
-      localStorage.setItem(SESSION, JSON.stringify(session))
-      localStorage.setItem(NAME, nickname)
+      safeLocalStorage.setItem(SESSION, JSON.stringify(session))
+      safeLocalStorage.setItem(NAME, nickname)
       sessionRef.current = session
       setRoom(result.room)
       window.history.replaceState(null, '', '/games/connect-four')
@@ -107,7 +108,7 @@ export default function ConnectFourPage({ onBack, onActivityChange }: Props) {
   const leaveRoom = async () => {
     if (room && room.phase === 'playing' && !window.confirm('Leave this Connect Four room? Your friend will have to wait for you to reconnect.')) return
     try { await request('connect4:leave', {}) } catch { /* local exit still allowed */ }
-    localStorage.removeItem(SESSION)
+    safeLocalStorage.removeItem(SESSION)
     sessionRef.current = null
     setRoom(null); setError('')
   }
