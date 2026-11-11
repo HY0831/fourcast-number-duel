@@ -201,7 +201,7 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - [x] Lazy-load Sudoku, Bingo, Minesweeper, Connect Four, 2048 and Nonogram routes. Preserve Fourcast as the existing base route and keep all shared room invites backward-compatible.
 - [x] Provide an accessible route-loading state, improve filter tap targets and focus styles, compact repeated saved-room banners, and respect reduced-motion preferences on the homepage.
 - [x] Add Chromium regression coverage for search, both filters, clear, per-tab persistence, lazy-route navigation and 320–1440px mobile/desktop layout.
-- [ ] **Release gate:** GitHub TypeScript, unit tests, production build and full seven-game Playwright suite must all pass before merging.
+- [x] **Release gate:** GitHub TypeScript, unit tests, production build and full seven-game Playwright suite passed for PR #11.
 - [ ] **Deployment gate:** deploy separately, avoiding restarts while multiplayer rooms are active.
 
 **Post-V1 product backlog (not changed in this pass):** consider resumable multiplayer room persistence across server restarts, optional cloud sync for solo progress, network throttling/slow-device performance measurement, and structured multi-browser accessibility testing. These require separate design/QA before implementation.
@@ -217,6 +217,22 @@ V1 homepage/search/lazy-route polish is merged in PR #11 (main commit `136ddf64`
 - [x] Introduce storage-availability safe access in Fourcast, Bingo Duel, and Connect Four while preserving their existing saved-session keys.
 - [x] Add a per-route error boundary with retry and return-to-library actions when lazy game module loading fails.
 - [x] Add Chromium test scenarios for blocked localStorage and aborted lazy route download.
-- [ ] **Release gate:** GitHub TypeScript + Node + production build and full browser suite must pass.
-- [ ] **Merge gate:** only merge PR after all checks pass; no direct edits to production.
+- [x] **Release gate:** GitHub TypeScript + Node + production build and full 40-test browser suite passed for PR #12.
+- [x] **Merge gate:** PR #12 squash-merged after both checks passed, commit `f15814b9`.
 - [ ] **Deployment gate:** coordinate Render deployment separately to avoid interrupting in-memory multiplayer rooms.
+
+
+## V3 multiplayer reconnect / presence integrity — 2026-11-11
+
+Scope: Fourcast, Bingo Duel, Connect Four. Working branch `polish/playgrove-v3-multiplayer-reconnect-20261111` (see `PLAYGROVE_V3_RECONNECT.md`).
+
+- [x] Audit socket attach/detach and the existing saved-token resume paths for all three online games.
+- [x] Close same-room player-seat switching bug that could leave a stale player falsely marked online.
+- [x] Update clients so a successful Socket.IO transport connection is **not** treated as a ready room session until `*:resume` has completed.
+- [x] Preserve existing tokens on transient resume timeout, remove stale displayed room, and instruct refresh to retry.
+- [x] Add real Socket.IO server integration tests: disconnect, blocked action, same-turn recovery, private data, no duplicate moves, same-socket seat takeover.
+- [ ] **Release gate:** TypeScript, all Node tests, production build and full seven-game browser smoke checks pass on PR.
+- [ ] **Merge gate:** merge only after all checks pass.
+- [ ] **Deployment gate:** release independently on Render when multiplayer rooms can be safely interrupted; live deployment not assumed.
+
+Next: mobile network-flap tests on a separate preview, accessibility, then design of persisted server room state.
