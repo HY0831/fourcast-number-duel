@@ -10,6 +10,8 @@ import {
 import './style.css'
 import './theme.css'
 import PlaygroveHome from './playgrove/PlaygroveHome'
+import GameRouteBoundary from './playgrove/GameRouteBoundary'
+import { safeLocalStorage } from './playgrove/safeStorage'
 // Load only the selected game; the Playgrove home and Fourcast stay in the base bundle.
 const SudokuPage = lazy(() => import('./games/sudoku/SudokuPage'))
 const BingoPage = lazy(() => import('./games/bingo/BingoPage'))
@@ -37,7 +39,7 @@ const NAME_KEY = 'fourcast:name'
 
 function getSession(): Session | null {
   try {
-    const saved = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null') as Session | null
+    const saved = JSON.parse(safeLocalStorage.getItem(SESSION_KEY) || 'null') as Session | null
     if (!saved || typeof saved.code !== 'string' || typeof saved.token !== 'string') return null
     const inviteCode = getInviteCode()
     return inviteCode && inviteCode !== saved.code ? null : saved
@@ -137,7 +139,7 @@ function FourcastApp({ onBack, onActivityChange }: { onBack: () => void; onActiv
   const [room, setRoom] = useState<Room | null>(null)
   const sessionRef = useRef<Session | null>(getSession())
   const socketRef = useRef<Socket | null>(null)
-  const [name, setName] = useState(() => localStorage.getItem(NAME_KEY) || '')
+  const [name, setName] = useState(() => safeLocalStorage.getItem(NAME_KEY) || '')
   const [mode, setMode] = useState<Mode>('unique')
   const [tab, setTab] = useState<'create' | 'join'>(() => getInviteCode() ? 'join' : 'create')
   const [joinCode, setJoinCode] = useState(getInviteCode)
@@ -163,7 +165,7 @@ function FourcastApp({ onBack, onActivityChange }: { onBack: () => void; onActiv
         if (err) { setError('Could not reconnect. Check your internet connection.'); return }
         if (res?.ok && res.room) { setRoom(res.room); setError('') }
         else {
-          localStorage.removeItem(SESSION_KEY)
+          safeLocalStorage.removeItem(SESSION_KEY)
           sessionRef.current = null
           setRoom(null)
           setError(res?.error || 'That room is no longer available.')
@@ -217,8 +219,8 @@ function FourcastApp({ onBack, onActivityChange }: { onBack: () => void; onActiv
       const data = res as JoinResponse
       if (!data.code || !data.token || !data.room) return
       const saved = { code: data.code, token: data.token }
-      localStorage.setItem(SESSION_KEY, JSON.stringify(saved))
-      localStorage.setItem(NAME_KEY, clean)
+      safeLocalStorage.setItem(SESSION_KEY, JSON.stringify(saved))
+      safeLocalStorage.setItem(NAME_KEY, clean)
       sessionRef.current = saved
       setRoom(data.room)
       history.replaceState(null, '', window.location.pathname)
@@ -227,7 +229,7 @@ function FourcastApp({ onBack, onActivityChange }: { onBack: () => void; onActiv
 
   const leave = async () => {
     try { await request('room:leave', {}) } catch { /* local leave is still allowed */ }
-    localStorage.removeItem(SESSION_KEY)
+    safeLocalStorage.removeItem(SESSION_KEY)
     sessionRef.current = null
     setRoom(null)
     setDigits('')
@@ -329,21 +331,21 @@ function FourcastApp({ onBack, onActivityChange }: { onBack: () => void; onActiv
 
 function hasSavedConnectFourSession(): boolean {
   try {
-    const saved = JSON.parse(localStorage.getItem('connect4:session') || 'null') as Session | null
+    const saved = JSON.parse(safeLocalStorage.getItem('connect4:session') || 'null') as Session | null
     return typeof saved?.code === 'string' && saved.code.length === 6 && typeof saved?.token === 'string' && saved.token.length >= 32
   } catch { return false }
 }
 
 function hasSavedBingoSession(): boolean {
   try {
-    const saved = JSON.parse(localStorage.getItem('bingo:session') || 'null') as Session | null
+    const saved = JSON.parse(safeLocalStorage.getItem('bingo:session') || 'null') as Session | null
     return typeof saved?.code === 'string' && saved.code.length === 6 && typeof saved.token === 'string' && saved.token.length > 0
   } catch { return false }
 }
 
 function hasSavedFourcastSession(): boolean {
   try {
-    const saved = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null') as Session | null
+    const saved = JSON.parse(safeLocalStorage.getItem(SESSION_KEY) || 'null') as Session | null
     return typeof saved?.code === 'string' && saved.code.length === 6 && typeof saved.token === 'string' && saved.token.length > 0
   } catch { return false }
 }
@@ -411,21 +413,23 @@ function App() {
     hasSavedBingo={hasSavedBingoSession()}
     onResumeBingo={() => goTo('/games/bingo')}
   />
-  if (page === 'sudoku') return <SudokuPage onBack={() => goTo('/')} />
-  if (page === 'bingo') return <BingoPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
-  if (page === 'minesweeper') return <MinesweeperPage onBack={() => goTo('/')} />
-  if (page === 'connect-four') return <ConnectFourPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
-  if (page === '2048') return <Twenty48Page onBack={() => goTo('/')} />
-  if (page === 'nonogram') return <NonogramPage onBack={() => goTo('/')} />
-  return <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
+  const game = page === 'sudoku' ? <SudokuPage onBack={() => goTo('/')} />
+    : page === 'bingo' ? <BingoPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
+    : page === 'minesweeper' ? <MinesweeperPage onBack={() => goTo('/')} />
+    : page === 'connect-four' ? <ConnectFourPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
+    : page === '2048' ? <Twenty48Page onBack={() => goTo('/')} />
+    : page === 'nonogram' ? <NonogramPage onBack={() => goTo('/')} />
+    : <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
+
+  return <GameRouteBoundary key={page} onBack={() => goTo('/')}>
+    <Suspense fallback={<div className="pg-route-loading" role="status" aria-live="polite">
+      <div className="pg-route-loading-indicator" aria-hidden="true" />
+      <strong>Opening your game...</strong>
+      <span>Getting the board ready.</span>
+    </div>}>
+      {game}
+    </Suspense>
+  </GameRouteBoundary>
 }
 
-createRoot(document.getElementById('root')!).render(
-  <Suspense fallback={<div className="pg-route-loading" role="status" aria-live="polite">
-    <div className="pg-route-loading-indicator" aria-hidden="true" />
-    <strong>Opening your game...</strong>
-    <span>Getting the board ready.</span>
-  </div>}>
-    <App />
-  </Suspense>
-)
+createRoot(document.getElementById('root')!).render(<App />)
