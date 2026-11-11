@@ -139,7 +139,7 @@
  .sdk-cell-notes{font-size:clamp(6px,1.75vw,8px);}
  .sdk-tools{padding:17px;border-radius:15px;gap:14px;}
  .sdk-keypad{gap:4px;}
- .sdk-keypad button{min-height:39px;font-size:17px!important;border-radius:8px;}
+ .sdk-keypad button{min-height:44px;font-size:17px!important;border-radius:8px;}
  .sdk-board-caption{font-size:9px;}
 }
 @media(max-width:360px){
