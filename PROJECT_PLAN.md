@@ -266,3 +266,20 @@ All seven published games are retained. Work on `polish/playgrove-v4-accessibili
 - [ ] **Manual QA:** two-device mobile WebSocket lobby/create/join, reconnect while the process remains alive, and solo-game local progress recovery.
 
 **Expected trade-off:** Free-tier server sleep, manual restarts, or deploys erase active multiplayer room states; starting a new room is acceptable. No further infrastructure investment is planned. Original V5 development remains traceable in the merged GitHub history (PR #17), but its database implementation is removed from the current codebase.
+
+
+## Eighth game — Hashi: Bridges (2026-11-11)
+
+Approved self-contained single-player network deduction game, without a database or server changes. Implementation branch `feature/playgrove-hashi-45-puzzles-20261111`.
+
+- [x] Add **45 fixed curated Hashi puzzles**, 15 per Easy/Medium/Hard; all solver-checked for exactly one valid connected bridge solution.
+- [x] Enforce direct nearest-island bridges, horizontal/vertical routing, maximum two, forbidden crossings, island number totals, and whole-network connectivity.
+- [x] Add tap and drag island controls, clickable bridge paths, keyboard activation, no-bridge marks, Undo/Redo, three hints, Check, Pause and zoom.
+- [x] Add local progress restoration, per-puzzle best times, completed status and the searchable eighth game card / route.
+- [x] Add independent engine uniqueness tests and eight-game browser regression coverage.
+- [ ] **Verification gate:** all TypeScript, Node, Vite build and full Chromium browser checks must be green.
+- [ ] **Merge gate:** squash-merge only after QA passes.
+- [ ] **Render gate:** deploy to existing free Singapore service and verify new release; multiplayer in-memory rooms may reset on deployment.
+- [ ] **Manual device QA:** touch/drag and accessibility checks on physical Android/iOS phones remain.
+
+See `HASHI_RULES.md` for rules, 45-puzzle inventory and acceptance criteria. Previous V5 database plan remains canceled.
