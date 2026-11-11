@@ -24,7 +24,7 @@
 .bgo-primary { display:inline-flex; align-items:center; justify-content:center; gap:10px; border:0; border-radius:11px; min-height:49px; padding:12px 18px; color:#FAF5E9; background:var(--bgo-brown); font-size:14px!important; font-weight:750!important; transition:background .15s, transform .15s; }
 .bgo-primary:not(:disabled):hover { background:var(--bgo-clay); transform:translateY(-1px); }
 .bgo-primary:disabled { opacity:.43; }
-.bgo-outline { display:inline-flex; justify-content:center; align-items:center; gap:7px; padding:10px 14px; min-height:41px; border-radius:10px; border:1px solid #B6B7A5; background:transparent; color:var(--bgo-brown); font-size:13px!important; font-weight:700!important; }
+.bgo-outline { display:inline-flex; justify-content:center; align-items:center; gap:7px; padding:10px 14px; min-height:44px; border-radius:10px; border:1px solid #B6B7A5; background:transparent; color:var(--bgo-brown); font-size:13px!important; font-weight:700!important; }
 .bgo-outline:not(:disabled):hover { background:#FAF5E9; }
 .bgo-card { background:var(--bgo-cream); color:var(--bgo-dark); border-radius:20px; padding:26px; box-shadow:0 16px 42px #1c14143a; }
 .bgo-alert { width:100%; display:flex; justify-content:space-between; align-items:center; gap:14px; background:#FBE7DB; color:#7A321B; border:1px solid #F3B894; border-radius:10px; padding:12px 15px; font-size:13px; margin-top:15px; }
