@@ -42,8 +42,8 @@
 ## Release gates
 - [x] Approved for development by owner as ninth mind-challenging Playgrove game.
 - [x] Feature branch contains server rules, new client and tests; no dependencies or databases.
-- [ ] TypeScript, Node and production Vite build verified.
-- [ ] All browser tests across nine games verified, including full online Reversi rematch.
+- [x] TypeScript, Vite build and all 116 Node tests passed (run 43061255200).
+- [x] All 60 Chromium browser tests passed across nine games, including full Reversi rematch, responsive board and reconnect (run 43061255344).
 - [ ] Squash-merge feature PR only when both pipelines are green.
 - [ ] Deploy exact reviewed commit to existing Render Free Singapore service, verify /health and production logs.
 - [ ] Real Android/iOS two-device input and VoiceOver/TalkBack checks remain manual (not covered by Chromium CI).
