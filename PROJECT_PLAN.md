@@ -207,3 +207,16 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 **Post-V1 product backlog (not changed in this pass):** consider resumable multiplayer room persistence across server restarts, optional cloud sync for solo progress, network throttling/slow-device performance measurement, and structured multi-browser accessibility testing. These require separate design/QA before implementation.
 
 See `PLAYGROVE_V1_POLISH.md`.
+
+
+## V2 reliability and recovery polish — 2026-11-11
+
+V1 homepage/search/lazy-route polish is merged in PR #11 (main commit `136ddf64`). This follow-up is a separate, controlled quality pass; see `PLAYGROVE_V2_POLISH.md`.
+
+- [x] Audit Seven-game router and all three multiplayer pages for real runtime failure modes.
+- [x] Introduce storage-availability safe access in Fourcast, Bingo Duel, and Connect Four while preserving their existing saved-session keys.
+- [x] Add a per-route error boundary with retry and return-to-library actions when lazy game module loading fails.
+- [x] Add Chromium test scenarios for blocked localStorage and aborted lazy route download.
+- [ ] **Release gate:** GitHub TypeScript + Node + production build and full browser suite must pass.
+- [ ] **Merge gate:** only merge PR after all checks pass; no direct edits to production.
+- [ ] **Deployment gate:** coordinate Render deployment separately to avoid interrupting in-memory multiplayer rooms.
