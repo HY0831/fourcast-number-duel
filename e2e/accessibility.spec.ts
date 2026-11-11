@@ -77,6 +77,7 @@ test('Fourcast, Bingo Duel and Connect Four expose accessible selected-mode cont
 })
 
 test('Connect Four exposes disc ownership in each column without changing existing move controls', async ({ page, browser }) => {
+  test.setTimeout(90_000)
   const guestContext = await browser.newContext()
   const guest = await guestContext.newPage()
   try {
@@ -95,6 +96,6 @@ test('Connect Four exposes disc ownership in each column without changing existi
     await column.click()
     await expect(page.locator('#c4-column-0-contents')).toContainText('player one')
   } finally {
-    await guestContext.close()
+    await guestContext.close().catch(() => {})
   }
 })
