@@ -180,7 +180,7 @@ export default function SudokuPage({ onBack }: { onBack: () => void }) {
         : event.key === 'ArrowRight' ? row * 9 + Math.min(col + 1, 8)
         : Math.max(0, Math.min(8, row + (event.key === 'ArrowUp' ? -1 : 1))) * 9 + col
       setSelected(next)
-      if (target?.closest('.sdk-board')) cellRefs.current[next]?.focus())
+      if (target?.closest('.sdk-board')) cellRefs.current[next]?.focus()
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
