@@ -76,11 +76,18 @@ export default function BingoPage({ onBack, onActivityChange }: Props) {
     const socket = io({ reconnection: true, reconnectionDelay: 500, timeout: 10000 })
     socketRef.current = socket
     socket.on('connect', () => {
-      setConnected(true)
       const saved = sessionRef.current
+      // Do not enable moves until the server verifies the resumed seat.
+      setConnected(!saved)
       if (!saved) return
       socket.timeout(8000).emit('bingo:resume', saved, (err: Error | null, res: RoomAck) => {
-        if (err) { setError('Connection timed out. Try again.'); return }
+        if (!socket.connected) return
+        setConnected(true)
+        if (err) {
+          setRoom(null)
+          setError('Could not restore the room. Refresh this page to retry; your saved session is kept.')
+          return
+        }
         if (res?.ok && res.room) { setRoom(res.room); setError('') }
         else {
           safeLocalStorage.removeItem(SESSION)

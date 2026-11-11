@@ -45,11 +45,18 @@ export default function ConnectFourPage({ onBack, onActivityChange }: Props) {
     const socket = io({ reconnection: true, reconnectionDelay: 500, timeout: 10000 })
     socketRef.current = socket
     socket.on('connect', () => {
-      setConnected(true)
       const previous = sessionRef.current
+      // Socket transport recovery is not room recovery until resume is acknowledged.
+      setConnected(!previous)
       if (!previous) return
       socket.timeout(8000).emit('connect4:resume', previous, (err: Error | null, res: Ack) => {
-        if (err) { setError('Reconnect timed out. Try again.'); return }
+        if (!socket.connected) return
+        setConnected(true)
+        if (err) {
+          setRoom(null)
+          setError('Could not restore the room. Refresh this page to retry; your saved session is kept.')
+          return
+        }
         if (res?.ok && res.room) { setRoom(res.room); setError('') }
         else {
           safeLocalStorage.removeItem(SESSION)
