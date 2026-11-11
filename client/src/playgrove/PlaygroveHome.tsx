@@ -1,4 +1,29 @@
-import { ArrowRight, Bomb, CircleDot, Gamepad2, Grid3X3, Hash, Image, LayoutGrid, RotateCcw, ShieldCheck, Sprout, Users, Wifi } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowRight, Bomb, CircleDot, Gamepad2, Grid3X3, Hash, Image, LayoutGrid, RotateCcw, Search, ShieldCheck, Sprout, Users, Wifi } from 'lucide-react'
+
+type LibraryMode = 'all' | 'solo' | 'multiplayer'
+type GameId = 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048' | 'nonogram'
+const MODE_KEY = 'playgrove:library:mode'
+const SEARCH_KEY = 'playgrove:library:search'
+const DIRECTORY: { id: GameId; mode: Exclude<LibraryMode, 'all'>; search: string }[] = [
+  { id: 'fourcast', mode: 'multiplayer', search: 'fourcast secret code number guessing duel friends' },
+  { id: 'sudoku', mode: 'solo', search: 'sudoku logic numbers grid puzzle' },
+  { id: 'bingo', mode: 'multiplayer', search: 'bingo duel number board five lines friends' },
+  { id: 'minesweeper', mode: 'solo', search: 'minesweeper mines flags puzzle' },
+  { id: 'connect-four', mode: 'multiplayer', search: 'connect four discs strategy friends' },
+  { id: '2048', mode: 'solo', search: '2048 sliding number tile puzzle' },
+  { id: 'nonogram', mode: 'solo', search: 'nonogram picture pixel logic puzzle' },
+]
+function savedMode(): LibraryMode {
+  try {
+    const value = sessionStorage.getItem(MODE_KEY)
+    return value === 'solo' || value === 'multiplayer' ? value : 'all'
+  } catch { return 'all' }
+}
+function savedSearch(): string {
+  try { return (sessionStorage.getItem(SEARCH_KEY) || '').slice(0, 80) }
+  catch { return '' }
+}
 
 type Props = {
   hasSavedSession: boolean
@@ -17,6 +42,18 @@ type Props = {
 }
 
 export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlaySudoku, onPlayBingo, onPlayMinesweeper, onPlayConnectFour, onPlay2048, onPlayNonogram, hasSavedBingo, hasSavedConnectFour, onResumeBingo, onResumeFourcast, onResumeConnectFour }: Props) {
+  const [mode, setMode] = useState<LibraryMode>(savedMode)
+  const [search, setSearch] = useState(savedSearch)
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(MODE_KEY, mode)
+      sessionStorage.setItem(SEARCH_KEY, search)
+    } catch { /* Game search works even when session storage is blocked. */ }
+  }, [mode, search])
+  const term = search.trim().toLowerCase()
+  const visible = new Set(DIRECTORY.filter(game => (mode === 'all' || game.mode === mode) && game.search.includes(term)).map(game => game.id))
+  const clearFilters = () => { setMode('all'); setSearch('') }
+
   return <div className="pg-shell">
     <div className="pg-background-orb pg-orb-one" aria-hidden="true" />
     <div className="pg-background-orb pg-orb-two" aria-hidden="true" />
@@ -84,8 +121,23 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
             </div>
             <span className="pg-game-count">07 GAMES AVAILABLE</span>
           </div>
+          <div className="pg-discovery">
+            <div className="pg-mode-filters" role="group" aria-label="Filter games by mode">
+              {([['all','All games'],['solo','Solo'],['multiplayer','Multiplayer']] as const).map(([value,label]) =>
+                <button key={value} type="button" aria-pressed={mode === value}
+                  className={mode === value ? 'pg-mode-active' : ''} onClick={() => setMode(value)}>{label}</button>
+              )}
+            </div>
+            <label className="pg-game-search">
+              <Search size={17} aria-hidden="true" />
+              <span className="pg-sr-only">Search games</span>
+              <input type="search" aria-label="Search games" placeholder="Find a game..." autoComplete="off"
+                maxLength={80} value={search} onChange={event => setSearch(event.target.value)} />
+            </label>
+          </div>
+          <div className="pg-result-line" role="status" aria-live="polite">{visible.size} {visible.size === 1 ? 'game' : 'games'} shown</div>
           <div className="pg-games-grid">
-            <article className="pg-game-card">
+            <article className="pg-game-card" hidden={!visible.has('fourcast')}>
               <div className="pg-card-top">
                 <div className="pg-game-symbol"><Hash size={39} strokeWidth={2.4} /></div>
                 <span className="pg-availability"><span className="pg-availability-dot" /> Available</span>
@@ -103,7 +155,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
                 Play Fourcast <ArrowRight size={18} />
               </button>
             </article>
-            <article className="pg-game-card pg-sudoku-card">
+            <article className="pg-game-card pg-sudoku-card" hidden={!visible.has('sudoku')}>
               <div className="pg-card-top">
                 <div className="pg-game-symbol pg-sudoku-symbol"><Grid3X3 size={37} strokeWidth={2.0} /></div>
                 <span className="pg-availability"><span className="pg-availability-dot" /> Available</span>
@@ -121,7 +173,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
                 Play Sudoku <ArrowRight size={18} />
               </button>
             </article>
-            <article className="pg-game-card pg-bingo-card">
+            <article className="pg-game-card pg-bingo-card" hidden={!visible.has('bingo')}>
               <div className="pg-card-top">
                 <div className="pg-game-symbol pg-bingo-symbol"><LayoutGrid size={37} strokeWidth={2.1}/></div>
                 <span className="pg-availability"><span className="pg-availability-dot"/> Available</span>
@@ -137,7 +189,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
               </div>
               <button className="pg-play-button pg-bingo-play" type="button" onClick={onPlayBingo}>Play Bingo <ArrowRight size={18}/></button>
             </article>
-            <article className="pg-game-card pg-minesweeper-card">
+            <article className="pg-game-card pg-minesweeper-card" hidden={!visible.has('minesweeper')}>
               <div className="pg-card-top">
                 <div className="pg-game-symbol pg-minesweeper-symbol"><Bomb size={37} strokeWidth={2.1}/></div>
                 <span className="pg-availability"><span className="pg-availability-dot"/> Available</span>
@@ -153,7 +205,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
               </div>
               <button className="pg-play-button pg-minesweeper-play" type="button" onClick={onPlayMinesweeper}>Play Minesweeper <ArrowRight size={18}/></button>
             </article>
-            <article className="pg-game-card pg-connect-four-card">
+            <article className="pg-game-card pg-connect-four-card" hidden={!visible.has('connect-four')}>
               <div className="pg-card-top">
                 <div className="pg-game-symbol pg-connect-four-symbol"><CircleDot size={37} strokeWidth={2.1}/></div>
                 <span className="pg-availability"><span className="pg-availability-dot"/> Available</span>
@@ -169,7 +221,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
               </div>
               <button className="pg-play-button pg-connect-four-play" type="button" onClick={onPlayConnectFour}>Play Connect Four <ArrowRight size={18}/></button>
             </article>
-            <article className="pg-game-card pg-2048-card">
+            <article className="pg-game-card pg-2048-card" hidden={!visible.has('2048')}>
               <div className="pg-card-top">
                 <div className="pg-game-symbol pg-2048-symbol"><Hash size={37} strokeWidth={2.1}/></div>
                 <span className="pg-availability"><span className="pg-availability-dot"/> Available</span>
@@ -185,7 +237,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
               </div>
               <button className="pg-play-button pg-2048-play" type="button" onClick={onPlay2048}>Play 2048 <ArrowRight size={18}/></button>
             </article>
-            <article className="pg-game-card pg-nonogram-card">
+            <article className="pg-game-card pg-nonogram-card" hidden={!visible.has('nonogram')}>
               <div className="pg-card-top">
                 <div className="pg-game-symbol pg-nonogram-symbol"><Image size={37} strokeWidth={2.1}/></div>
                 <span className="pg-availability"><span className="pg-availability-dot"/> Available</span>
@@ -201,13 +253,18 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
               </div>
               <button className="pg-play-button pg-nonogram-play" type="button" onClick={onPlayNonogram}>Play Nonogram <ArrowRight size={18}/></button>
             </article>
-            <div className="pg-coming-soon">
+            <div className="pg-coming-soon" hidden={mode !== 'all' || Boolean(term)}>
               <div className="pg-coming-icon"><Sprout size={30} strokeWidth={1.8} /></div>
               <h3>More games are<br />growing here.</h3>
               <p>Fresh challenges are on their way. Enjoy online duels or a quiet number puzzle.</p>
               <span className="pg-coming-label">COMING SOON</span>
             </div>
           </div>
+          {visible.size === 0 && <div className="pg-no-results" role="status">
+            <strong>No games found.</strong>
+            <span>Try a different name or choose another game mode.</span>
+            <button type="button" onClick={clearFilters}>Clear filters</button>
+          </div>}
         </section>
       </main>
       <footer className="pg-footer"><span>playgrove<span className="pg-footer-period">.</span></span><span>Made for every kind of player · 2026</span></footer>

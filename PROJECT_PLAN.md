@@ -191,3 +191,19 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - Per-picture browser autosave, completed gallery badges, best solve time and replay. No new database or multiplayer endpoints.
 - Implement on `feature/playgrove-nonogram-30-v1-20261111` and test all seven Playgrove games (unit, TypeScript, production build, Playwright Chromium) before merging. Render deployment remains a separate release action, and can restart in-memory active rooms.
 - See `NONOGRAM_RULES.md` for complete puzzle inventory and rules.
+
+## V1 senior game-developer quality pass — 2026-11-11
+
+**Scope:** preserve all seven game engines and multiplayer protocols. Improve navigation discoverability, home performance, usability and regression coverage without redesigning approved game screens.
+
+- [x] Identify homepage discovery friction with seven cards: add All / Solo / Multiplayer filters and searchable game names/categories.
+- [x] Remember filters/search in per-tab session storage, with an empty-state reset and accessible live result counts.
+- [x] Lazy-load Sudoku, Bingo, Minesweeper, Connect Four, 2048 and Nonogram routes. Preserve Fourcast as the existing base route and keep all shared room invites backward-compatible.
+- [x] Provide an accessible route-loading state, improve filter tap targets and focus styles, compact repeated saved-room banners, and respect reduced-motion preferences on the homepage.
+- [x] Add Chromium regression coverage for search, both filters, clear, per-tab persistence, lazy-route navigation and 320–1440px mobile/desktop layout.
+- [ ] **Release gate:** GitHub TypeScript, unit tests, production build and full seven-game Playwright suite must all pass before merging.
+- [ ] **Deployment gate:** deploy separately, avoiding restarts while multiplayer rooms are active.
+
+**Post-V1 product backlog (not changed in this pass):** consider resumable multiplayer room persistence across server restarts, optional cloud sync for solo progress, network throttling/slow-device performance measurement, and structured multi-browser accessibility testing. These require separate design/QA before implementation.
+
+See `PLAYGROVE_V1_POLISH.md`.

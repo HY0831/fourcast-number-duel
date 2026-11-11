@@ -193,3 +193,38 @@
 .pg-nonogram-card .pg-card-kicker { color:var(--pg-foliage); }
 .pg-nonogram-play { background:var(--pg-foliage); }
 .pg-nonogram-play:hover { background:var(--pg-redwood); }
+
+/* V1 quality pass: discoverability without altering the seven existing game cards. */
+.pg-discovery { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin:0 0 10px; }
+.pg-mode-filters { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+.pg-mode-filters button { min-height:44px; padding:10px 15px; border:1px solid #B6B7A566; background:#FAF5E90d; color:var(--pg-seedling); font-size:12px!important; font-weight:750!important; border-radius:999px; }
+.pg-mode-filters button:hover { border-color:var(--pg-sprout); }
+.pg-mode-filters button.pg-mode-active { background:var(--pg-sprout); border-color:var(--pg-sprout); color:var(--pg-sow); }
+.pg-game-search { min-height:44px; display:flex; align-items:center; gap:9px; background:#FAF5E9; color:var(--pg-redwood); border:1px solid #D2CEBE; border-radius:12px; padding:0 12px; flex:0 1 240px; min-width:180px; }
+.pg-game-search:focus-within { outline:3px solid var(--pg-sprout); outline-offset:3px; }
+.pg-game-search input { min-width:0; width:100%; min-height:42px; color:var(--pg-sow); font:600 13px 'DM Sans',sans-serif; background:transparent; border:0; outline:0; }
+.pg-game-search input::placeholder { color:#736A60; opacity:1; }
+.pg-sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.pg-result-line { margin:0 0 19px; color:var(--pg-mist); font-size:12px; font-weight:700; }
+.pg-game-card[hidden], .pg-coming-soon[hidden] { display:none!important; }
+.pg-no-results { min-height:175px; margin-top:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:24px; background:#FAF5E90b; border:1px dashed #B6B7A580; border-radius:20px; text-align:center; }
+.pg-no-results strong { color:var(--pg-seedling); font-size:19px; }
+.pg-no-results span { color:var(--pg-mist); font-size:13px; }
+.pg-no-results button { min-height:44px; margin-top:5px; border-radius:10px; padding:10px 20px; border:0; background:var(--pg-sprout); color:var(--pg-sow); font-size:13px!important; font-weight:800!important; }
+.pg-resume { margin:8px 0 8px; }
+.pg-resume + .pg-library { margin-top:34px; }
+.pg-route-loading { min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:14px; padding:40px; text-align:center; color:#FAF5E9; background:#392525; font-family:'DM Sans',sans-serif; }
+.pg-route-loading strong { font-family:'Space Grotesk',sans-serif; font-size:23px; }
+.pg-route-loading span { font-size:13px; color:#B6B7A5; }
+.pg-route-loading-indicator { width:26px; height:26px; border:3px solid #FAF5E933; border-top-color:#E3E890; border-radius:50%; animation:pg-loading-spin .8s linear infinite; }
+@keyframes pg-loading-spin { to { transform:rotate(360deg); } }
+@media(max-width:620px){
+  .pg-discovery { align-items:stretch; }
+  .pg-mode-filters { width:100%; }
+  .pg-mode-filters button { flex:1; padding:10px 9px; }
+  .pg-game-search { flex:1 1 100%; width:100%; }
+}
+@media(prefers-reduced-motion:reduce){
+  .pg-play-button:hover { transform:none; }
+  .pg-route-loading-indicator { animation:none; border-top-color:#E3E890; }
+}

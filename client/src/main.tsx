@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { io, Socket } from 'socket.io-client'
 import {
@@ -10,12 +10,13 @@ import {
 import './style.css'
 import './theme.css'
 import PlaygroveHome from './playgrove/PlaygroveHome'
-import SudokuPage from './games/sudoku/SudokuPage'
-import BingoPage from './games/bingo/BingoPage'
-import ConnectFourPage from './games/connect-four/ConnectFourPage'
-import MinesweeperPage from './games/minesweeper/MinesweeperPage'
-import Twenty48Page from './games/twenty48/Twenty48Page'
-import NonogramPage from './games/nonogram/NonogramPage'
+// Load only the selected game; the Playgrove home and Fourcast stay in the base bundle.
+const SudokuPage = lazy(() => import('./games/sudoku/SudokuPage'))
+const BingoPage = lazy(() => import('./games/bingo/BingoPage'))
+const ConnectFourPage = lazy(() => import('./games/connect-four/ConnectFourPage'))
+const MinesweeperPage = lazy(() => import('./games/minesweeper/MinesweeperPage'))
+const Twenty48Page = lazy(() => import('./games/twenty48/Twenty48Page'))
+const NonogramPage = lazy(() => import('./games/nonogram/NonogramPage'))
 import { resolveHubRoute } from './playgrove/routing.mjs'
 import './playgrove/playgrove.css'
 
@@ -419,4 +420,12 @@ function App() {
   return <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
 }
 
-createRoot(document.getElementById('root')!).render(<App />)
+createRoot(document.getElementById('root')!).render(
+  <Suspense fallback={<div className="pg-route-loading" role="status" aria-live="polite">
+    <div className="pg-route-loading-indicator" aria-hidden="true" />
+    <strong>Opening your game...</strong>
+    <span>Getting the board ready.</span>
+  </div>}>
+    <App />
+  </Suspense>
+)
