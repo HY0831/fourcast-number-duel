@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import { GameError, GameStore, publicRoom } from './game-engine.mjs';
 import { BingoStore, publicBingoRoom } from './bingo-engine.mjs';
 import { ConnectFourStore, publicConnectFourRoom } from './connect-four-engine.mjs';
+import { createRoomRepository, snapshotStores } from './room-persistence.mjs';
 
 const app = express();
 const httpServer = createServer(app);
@@ -17,7 +18,44 @@ const io = new Server(httpServer, {
 const games = new GameStore();
 const bingos = new BingoStore();
 const connectFours = new ConnectFourStore();
+const stores = { games, bingos, connectFours };
+let persistence = null;
+let persistenceFailed = false;
+let mutationQueue = Promise.resolve();
+let pendingBroadcasts = null; // Non-null only during a durable mutation.
 const here = dirname(fileURLToPath(import.meta.url));
+
+function serialized(job) {
+  const next = mutationQueue.then(job, job);
+  mutationQueue = next.catch(() => {});
+  return next;
+}
+
+function stopOnPersistenceFailure() {
+  if (persistenceFailed) return;
+  persistenceFailed = true;
+  // Unknown commit outcome: never serve further moves from potentially divergent memory.
+  console.error('Playgrove room persistence unavailable; restarting safely without acknowledging further moves.');
+  io.disconnectSockets(true);
+  setImmediate(() => process.exit(1));
+}
+
+function restoreFailedAction(before, sockets) {
+  for (const key of Object.keys(before)) stores[key].rooms = before[key];
+  for (const item of sockets) {
+    const socket = item.socket;
+    socket.data = item.data;
+    if (!socket.connected) continue;
+    for (const room of [...socket.rooms]) if (room !== socket.id && !item.rooms.has(room)) socket.leave(room);
+    for (const room of item.rooms) if (!socket.rooms.has(room)) socket.join(room);
+  }
+}
+
+function snapshotSocketSessions() {
+  return [...io.sockets.sockets.values()].map(socket => ({
+    socket, data: structuredClone(socket.data), rooms: new Set(socket.rooms),
+  }));
+}
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', activeRooms: games.rooms.size, activeBingoRooms: bingos.rooms.size, activeConnectFourRooms: connectFours.rooms.size }));
 if (process.env.NODE_ENV === 'production') {
@@ -26,22 +64,41 @@ if (process.env.NODE_ENV === 'production') {
   app.get('*', (_req, res) => res.sendFile(join(dist, 'index.html')));
 }
 
-function broadcast(room) {
+function sendFourcast(room) {
   for (const player of room.players) {
     if (player.socketId) io.to(player.socketId).emit('room:update', publicRoom(room, player.id));
   }
 }
-
-function broadcastBingo(room) {
+function sendBingo(room) {
   for (const player of room.players) {
     if (player.socketId) io.to(player.socketId).emit('bingo:update', publicBingoRoom(room, player.id));
   }
 }
-
-function broadcastConnectFour(room) {
+function sendConnectFour(room) {
   for (const player of room.players) {
     if (player.socketId) io.to(player.socketId).emit('connect4:update', publicConnectFourRoom(room, player.id));
   }
+}
+function broadcast(room) {
+  if (pendingBroadcasts) pendingBroadcasts.set('fourcast:' + room.code, () => {
+    const current = games.rooms.get(room.code);
+    if (current) sendFourcast(current);
+  });
+  else sendFourcast(room);
+}
+function broadcastBingo(room) {
+  if (pendingBroadcasts) pendingBroadcasts.set('bingo:' + room.code, () => {
+    const current = bingos.rooms.get(room.code);
+    if (current) sendBingo(current);
+  });
+  else sendBingo(room);
+}
+function broadcastConnectFour(room) {
+  if (pendingBroadcasts) pendingBroadcasts.set('connect4:' + room.code, () => {
+    const current = connectFours.rooms.get(room.code);
+    if (current) sendConnectFour(current);
+  });
+  else sendConnectFour(room);
 }
 
 io.on('connection', (socket) => {
@@ -50,16 +107,44 @@ io.on('connection', (socket) => {
   function safely(run) {
     return (payload, ack) => {
       const reply = typeof ack === 'function' ? ack : () => {};
-      try {
-        if (Date.now() - windowStart > 10000) { windowStart = Date.now(); actionCount = 0; }
-        actionCount++;
-        if (actionCount > 55) throw new GameError('Too many requests. Try again shortly.');
-        const result = run(payload || {});
-        reply({ ok: true, ...result });
-      } catch (err) {
-        reply({ ok: false, error: err instanceof GameError ? err.message : 'Something went wrong.' });
-        if (!(err instanceof GameError)) console.error('Game error:', err);
-      }
+      const execute = async () => {
+        if (persistenceFailed) {
+          reply({ ok: false, error: 'Game server is reconnecting. Please retry shortly.' });
+          return;
+        }
+        const before = persistence ? snapshotStores(stores) : null;
+        const previousSockets = persistence ? snapshotSocketSessions() : null;
+        if (persistence) pendingBroadcasts = new Map();
+        try {
+          if (Date.now() - windowStart > 10000) { windowStart = Date.now(); actionCount = 0; }
+          actionCount++;
+          if (actionCount > 55) throw new GameError('Too many requests. Try again shortly.');
+          const result = run(payload || {});
+          // Only acknowledge and publish the result AFTER durable transaction COMMIT.
+          if (persistence) await persistence.save(before, stores);
+          const broadcasts = pendingBroadcasts;
+          pendingBroadcasts = null;
+          if (broadcasts) for (const publish of broadcasts.values()) publish();
+          reply({ ok: true, ...result });
+        } catch (err) {
+          pendingBroadcasts = null;
+          if (persistence) {
+            if (err instanceof GameError) {
+              restoreFailedAction(before, previousSockets);
+            } else {
+              // A write could have committed before the connection failed. Restart
+              // to recover the authoritative database state rather than guessing.
+              reply({ ok: false, error: 'Room storage is temporarily unavailable. Reconnect shortly.' });
+              stopOnPersistenceFailure();
+              return;
+            }
+          }
+          reply({ ok: false, error: err instanceof GameError ? err.message : 'Something went wrong.' });
+          if (!(err instanceof GameError)) console.error('Game error:', err);
+        }
+      };
+      if (persistence) void serialized(execute);
+      else void execute();
     };
   }
 
@@ -330,13 +415,52 @@ io.on('connection', (socket) => {
   }));
 
   socket.on('room:leave', safely(() => { detach(); return {}; }));
-  socket.on('disconnect', () => { detach(); detachBingo(); detachConnectFour(); });
+  socket.on('disconnect', () => {
+    if (!persistence || persistenceFailed) { detach(); detachBingo(); detachConnectFour(); return; }
+    void serialized(async () => {
+      if (persistenceFailed) return;
+      const before = snapshotStores(stores);
+      pendingBroadcasts = new Map();
+      detach(); detachBingo(); detachConnectFour();
+      try {
+        await persistence.save(before, stores);
+        const broadcasts = pendingBroadcasts;
+        pendingBroadcasts = null;
+        for (const publish of broadcasts.values()) publish();
+      } catch {
+        pendingBroadcasts = null;
+        stopOnPersistenceFailure();
+      }
+    });
+  });
 });
 
-const interval = setInterval(() => { games.cleanup(); bingos.cleanup(); connectFours.cleanup(); }, 10 * 60 * 1000);
+const interval = setInterval(() => {
+  const cleanup = () => { games.cleanup(); bingos.cleanup(); connectFours.cleanup(); };
+  if (!persistence) { cleanup(); return; }
+  if (persistenceFailed) return;
+  void serialized(async () => {
+    if (persistenceFailed) return;
+    const before = snapshotStores(stores);
+    cleanup();
+    try { await persistence.save(before, stores); }
+    catch { stopOnPersistenceFailure(); }
+  });
+}, 10 * 60 * 1000);
 interval.unref();
 
 const port = Number(process.env.PORT || 3001);
-httpServer.listen(port, '0.0.0.0', () => {
-  console.log(`Fourcast listening on http://0.0.0.0:${port}`);
-});
+async function start() {
+  try {
+    persistence = await createRoomRepository(process.env.PLAYGROVE_DATABASE_URL, stores);
+    httpServer.listen(port, '0.0.0.0', () => {
+      console.log(`Playgrove listening on http://0.0.0.0:${port}; durable rooms ${persistence ? 'enabled' : 'disabled'}`);
+    });
+  } catch {
+    // Startup fails closed when durable storage is requested but inaccessible,
+    // locked by another server, or contains an unsupported/corrupt snapshot.
+    console.error('Playgrove room persistence initialization failed. No game server started.');
+    process.exitCode = 1;
+  }
+}
+void start();
