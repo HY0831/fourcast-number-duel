@@ -66,11 +66,15 @@ io.on('connection', (socket) => {
   function attach(room, player) {
     detachBingo();
     detachConnectFour();
-    if (socket.data.code && socket.data.code !== room.code) detach();
+    // A socket switching seats within the same room must release its old seat.
+    if (socket.data.code && (socket.data.code !== room.code || socket.data.token !== player.token)) detach();
     if (player.socketId && player.socketId !== socket.id) {
       const previousSocket = io.sockets.sockets.get(player.socketId);
       previousSocket?.leave(room.code);
-      if (previousSocket) previousSocket.data.code = null;
+      if (previousSocket) {
+        previousSocket.data.code = null;
+        previousSocket.data.token = null;
+      }
     }
     player.socketId = socket.id;
     socket.data.code = room.code;
@@ -106,7 +110,7 @@ io.on('connection', (socket) => {
   function attachBingo(room, player) {
     detach();
     detachConnectFour();
-    if (socket.data.bingoCode && socket.data.bingoCode !== room.code) detachBingo();
+    if (socket.data.bingoCode && (socket.data.bingoCode !== room.code || socket.data.bingoToken !== player.token)) detachBingo();
     if (player.socketId && player.socketId !== socket.id) {
       const oldSocket = io.sockets.sockets.get(player.socketId);
       oldSocket?.leave(`bingo:${room.code}`);
@@ -195,7 +199,7 @@ io.on('connection', (socket) => {
   function attachConnectFour(room, player) {
     detach();
     detachBingo();
-    if (socket.data.connectFourCode && socket.data.connectFourCode !== room.code) detachConnectFour();
+    if (socket.data.connectFourCode && (socket.data.connectFourCode !== room.code || socket.data.connectFourToken !== player.token)) detachConnectFour();
     if (player.socketId && player.socketId !== socket.id) {
       const previous = io.sockets.sockets.get(player.socketId);
       previous?.leave(`connect4:${room.code}`);
