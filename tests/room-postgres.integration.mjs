@@ -44,6 +44,7 @@ async function launchServer(t, expectFailure = false) {
       const res = await fetch(`${baseURL}/health`, { signal: AbortSignal.timeout(300) });
       if (res.ok) {
         assert.equal(expectFailure, false, 'A second writer must never accept requests.');
+        assert.equal((await res.json()).storage, 'postgresql', 'Test server must use the durable store.');
         return { child, baseURL, output };
       }
     } catch { /* Starting up. */ }
