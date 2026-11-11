@@ -32,6 +32,7 @@
 .ng-filter-group button{border:0;color:#DCD7CC;background:transparent;border-radius:8px;padding:10px 14px;font-size:12px!important;font-weight:800!important;}
 .ng-filter-group button.ng-filter-active{background:var(--ng-lime);color:var(--ng-ink);}
 .ng-search{display:flex;align-items:center;gap:9px;background:#FAF5E9;color:#584B44;border-radius:10px;padding:0 13px;height:44px;max-width:295px;width:100%;}
+.ng-search:focus-within{outline:3px solid var(--ng-lime);outline-offset:3px;}
 .ng-search input{border:0;outline:0;background:transparent;color:var(--ng-ink);font-size:12px;min-width:0;width:100%;}
 .ng-search input:focus-visible{outline:0;}
 .ng-categories{display:flex;gap:7px;overflow-x:auto;padding:5px 2px 10px;margin-bottom:6px;scrollbar-width:thin;}
