@@ -34,9 +34,9 @@ async function launchServer(t, expectFailure = false) {
   let output = '';
   child.stdout.on('data', chunk => { output += chunk.toString(); });
   child.stderr.on('data', chunk => { output += chunk.toString(); });
-  t.after(async () => { if (child.exitCode === null) { child.kill('SIGTERM'); await Promise.race([once(child, 'exit'), new Promise(r => setTimeout(r, 2000))]); } });
+  t.after(async () => { if (child.exitCode === null && child.signalCode === null) { child.kill('SIGTERM'); await Promise.race([once(child, 'exit'), new Promise(r => setTimeout(r, 2000))]); } });
   for (let attempts = 0; attempts < 110; attempts++) {
-    if (child.exitCode !== null) {
+    if (child.exitCode !== null || child.signalCode !== null) {
       if (expectFailure) return { child, baseURL, output };
       throw new Error('Persistent game server exited before becoming healthy: ' + output.slice(-600));
     }
@@ -53,10 +53,10 @@ async function launchServer(t, expectFailure = false) {
 }
 
 async function stop(child) {
-  if (child.exitCode !== null) return;
+  if (child.exitCode !== null || child.signalCode !== null) return;
   child.kill('SIGTERM');
   await Promise.race([once(child, 'exit'), new Promise(r => setTimeout(r, 3000))]);
-  assert.notEqual(child.exitCode, null, 'Game server did not stop.');
+  assert.ok(child.exitCode !== null || child.signalCode !== null, 'Game server did not stop.');
 }
 
 async function socketFor(t, baseURL) {
