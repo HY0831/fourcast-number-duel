@@ -85,7 +85,7 @@ After it is hosted, the host creates a private room and sends an invite link or 
 
 ## Personal-use deployment
 
-Playgrove is maintained as a free, small game collection for two people. All seven games use the existing Render Node service and no external database. Fourcast, Bingo Duel and Connect Four support the current room-code and reconnect-token flow **while the same server process remains alive**. Solo games save progress locally in your browser. If the service sleeps, is redeployed or restarts, online room states reset, but you can create a fresh room in seconds.
+Playgrove is maintained as a free, small game collection for two people. All nine games use the existing Render Node service and no external database. Fourcast, Bingo Duel, Connect Four and Reversi support the current room-code and reconnect-token flow **while the same server process remains alive**. Solo games save progress locally in your browser. If the service sleeps, is redeployed or restarts, online room states reset, but you can create a fresh room in seconds.
 
 Before publishing code changes, check for active online matches to avoid disrupting players. See the deployment and test checklist in `PROJECT_PLAN.md`.
 
