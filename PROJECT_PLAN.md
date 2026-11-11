@@ -181,3 +181,13 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - Added `/games/2048`, a sixth Playgrove card, an independent pure game engine and responsive UI with touch swipes, keyboard and direction buttons, score/best, one-step undo, browser autosave, and New Game.
 - No server, database, or Socket.IO changes; Fourcast, Sudoku, Bingo, Minesweeper and Connect Four remain intact.
 - Branch `feature/playgrove-2048-v1-20261111`; TypeScript/unit/build and six-game Playwright browser checks required before merge. See `2048_RULES.md`.
+
+## Seventh game — Nonogram / Picture Logic (2026-11-11)
+
+- Approved fixed curated library expanded from 18 to **30** picture puzzles; exactly **10 Easy (5×5), 10 Medium (10×10), 10 Hard (15×15)**. No random puzzle generator.
+- Seven categories (Animals, People, Food, Nature, Objects, Places, Symbols), difficulty filters and picture-name search. Unsolved thumbnails conceal the exact artwork; correct solved pictures reveal authentic pixel art.
+- Independent engine checks binary artwork, calculates row/column run clues, validates uniqueness and line-deduction solvability for every authored puzzle. Keep `tests/nonogram-engine.test.mjs` comprehensive so future collection additions are vetted.
+- Mobile-first gameplay includes Fill/X toggle, tap-to-clear, desktop right-click, keyboard navigation, Undo, 3 hints, pause, timer, restart and zoomable 10×10 and 15×15 boards with sticky row/column clues.
+- Per-picture browser autosave, completed gallery badges, best solve time and replay. No new database or multiplayer endpoints.
+- Implement on `feature/playgrove-nonogram-30-v1-20261111` and test all seven Playgrove games (unit, TypeScript, production build, Playwright Chromium) before merging. Render deployment remains a separate release action, and can restart in-memory active rooms.
+- See `NONOGRAM_RULES.md` for complete puzzle inventory and rules.

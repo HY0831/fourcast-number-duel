@@ -1,0 +1,131 @@
+/* Playgrove Nonogram — completely scoped, mobile-first, high-contrast design. */
+.ng-shell{--ng-ink:#392525;--ng-paper:#FAF5E9;--ng-moss:#3E4734;--ng-lime:#E3E890;--ng-slate:#728383;--ng-mist:#B6B7A5;--ng-terra:#B25D3E;min-height:100vh;background:radial-gradient(ellipse at 85% -10%,#B25D3E30,transparent 42%),var(--ng-ink);color:var(--ng-paper);font-family:'DM Sans',sans-serif;}
+.ng-shell *{box-sizing:border-box;}
+.ng-shell button,.ng-shell input{font:inherit;}
+.ng-shell button{cursor:pointer;}
+.ng-shell button:disabled{cursor:not-allowed;opacity:.47;}
+.ng-shell button:focus-visible,.ng-shell input:focus-visible{outline:3px solid var(--ng-lime);outline-offset:2px;}
+.ng-frame{width:min(1200px,100%);margin:auto;padding:0 28px;min-height:100vh;display:flex;flex-direction:column;}
+.ng-header{height:88px;border-bottom:1px solid #FFFFFF25;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.ng-brand{font-size:23px!important;font-family:'Space Grotesk',sans-serif!important;letter-spacing:-1px;font-weight:800!important;border:0;display:inline-flex;align-items:center;gap:10px;color:var(--ng-paper);background:transparent;padding:0;}
+.ng-brand span{display:grid;place-items:center;background:var(--ng-lime);border-radius:10px;color:var(--ng-ink);width:38px;height:38px;}
+.ng-brand b,.ng-hero h1 span,.ng-game-heading h1 span,.ng-footer b{color:var(--ng-lime);}
+.ng-back{display:inline-flex;align-items:center;gap:8px;border:1px solid #FFFFFF50;background:transparent;color:var(--ng-paper);padding:10px 14px;min-height:42px;border-radius:10px;font-size:13px!important;font-weight:700!important;}
+.ng-back:hover{border-color:var(--ng-lime);}
+.ng-main{flex:1;padding:36px 0 72px;min-width:0;}
+.ng-hero{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:29px 35px 32px;border:1px solid #FFFFFF2D;background:linear-gradient(115deg,#483731,#3C2D2C);border-radius:21px;margin-bottom:37px;overflow:hidden;}
+.ng-eyebrow{display:inline-flex;align-items:center;gap:6px;color:var(--ng-lime);font-size:11px;font-weight:800;letter-spacing:1.45px;}
+.ng-hero h1,.ng-game-heading h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(34px,6vw,53px);margin:11px 0 8px;line-height:1.1;letter-spacing:-1.5px;}
+.ng-hero p,.ng-game-heading p{color:#DDD3C5;font-size:14px;line-height:1.65;margin:0;max-width:570px;}
+.ng-tags{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px;}
+.ng-tags span{display:inline-flex;align-items:center;gap:6px;background:#FFFFFF12;border:1px solid #FFFFFF20;color:#F2EBDC;border-radius:50px;padding:8px 11px;font-size:11px;font-weight:700;}
+.ng-hero-art{flex:0 0 168px;aspect-ratio:1;background:linear-gradient(155deg,#E3E890,#B6B7A5);border:10px solid #392525;border-radius:18px;box-shadow:8px 9px 0 #281E1E;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ng-ink);transform:rotate(5deg);}
+.ng-hero-art>span{font-size:86px;font-family:'Space Grotesk',sans-serif;line-height:1;font-weight:800;}
+.ng-hero-art small{font-weight:800;font-size:10px;letter-spacing:1px;}
+.ng-library{min-width:0;}
+.ng-section-top{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:22px;}
+.ng-section-top h2{margin:6px 0;font-family:'Space Grotesk',sans-serif;font-size:29px;letter-spacing:-.65px;}
+.ng-section-top p{font-size:13px;color:#D4CDC2;margin:0;line-height:1.5;}
+.ng-total{padding:11px 15px;border-radius:10px;background:#5A4840;color:var(--ng-lime);font-size:12px;font-weight:800;white-space:nowrap;}
+.ng-library-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;margin-bottom:12px;}
+.ng-filter-group{display:inline-flex;align-items:center;gap:6px;background:#51423C;padding:5px;border-radius:12px;}
+.ng-filter-group button{border:0;color:#DCD7CC;background:transparent;border-radius:8px;padding:10px 14px;font-size:12px!important;font-weight:800!important;}
+.ng-filter-group button.ng-filter-active{background:var(--ng-lime);color:var(--ng-ink);}
+.ng-search{display:flex;align-items:center;gap:9px;background:#FAF5E9;color:#584B44;border-radius:10px;padding:0 13px;height:44px;max-width:295px;width:100%;}
+.ng-search input{border:0;outline:0;background:transparent;color:var(--ng-ink);font-size:12px;min-width:0;width:100%;}
+.ng-search input:focus-visible{outline:0;}
+.ng-categories{display:flex;gap:7px;overflow-x:auto;padding:5px 2px 10px;margin-bottom:6px;scrollbar-width:thin;}
+.ng-categories button{display:flex;align-items:center;justify-content:center;gap:6px;flex-shrink:0;border-radius:50px;background:transparent;border:1px solid #B6B7A570;color:#F2EBE0;padding:8px 11px;white-space:nowrap;font-size:11px!important;font-weight:750!important;}
+.ng-categories button.ng-category-active{background:#E3E890;color:#392525;border-color:#E3E890;}
+.ng-library-summary{color:#D0C7B6;margin:9px 0 19px;font-size:12px;}
+.ng-gallery-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;}
+.ng-puzzle-card{background:#FAF5E9;border-radius:15px;color:var(--ng-ink);border:1px solid #FFFFFF30;padding:12px;display:flex;flex-direction:column;min-width:0;}
+.ng-card-art{background:#E4E4D7;aspect-ratio:1;display:grid;place-items:center;border-radius:10px;overflow:hidden;}
+.ng-card-art.ng-card-complete{background:#D9E0C8;}
+.ng-mystery{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent 0px,transparent 17px,#39252513 18px),repeating-linear-gradient(90deg,transparent 0px,transparent 17px,#39252513 18px);color:#7B7E71;}
+.ng-mystery-question{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;line-height:1;}
+.ng-artwork{display:grid;aspect-ratio:1;max-width:100%;height:auto;width:80%;overflow:hidden;border:1px solid #39252550;border-radius:3px;background:#FAF5E9;image-rendering:pixelated;}
+.ng-pixel-painted{background:#3E4734;}.ng-pixel-blank{background:#F9F7ED;}
+.ng-card-meta{display:flex;align-items:center;justify-content:space-between;gap:3px;margin-top:12px;}
+.ng-card-level{background:#E3E890;color:#392525;border-radius:50px;padding:4px 8px;font-size:10px;font-weight:800;white-space:nowrap;}
+.ng-inprogress{font-size:9px;color:#A2583C;font-weight:800;}
+.ng-puzzle-card h3{font-family:'Space Grotesk',sans-serif;margin:9px 0 3px;font-size:16px;letter-spacing:-.4px;line-height:1.2;}
+.ng-puzzle-card p{font-size:11px;color:#685E54;margin:0 0 13px;}
+.ng-start{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;border:0;border-radius:8px;background:#3E4734;color:#FAF5E9;padding:11px 12px;font-size:12px!important;font-weight:800!important;margin-top:auto;min-height:42px;}
+.ng-start:hover{background:#683226;}
+.ng-empty-result{display:flex;flex-direction:column;align-items:center;gap:12px;background:#50413B;border-radius:15px;padding:45px;color:#FAF5E9;text-align:center;}
+.ng-empty-result button{border:0;padding:10px 20px;border-radius:10px;background:#E3E890;color:#392525;font-weight:800;}
+.ng-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.ng-play-main{padding-top:25px;}
+.ng-game-heading{display:flex;justify-content:space-between;gap:12px;margin:0 0 23px;align-items:end;}
+.ng-game-heading h1{font-size:clamp(29px,5vw,44px);margin-top:8px;}
+.ng-return{display:flex;align-items:center;gap:4px;border:0;background:transparent;color:#E3E890;font-size:12px!important;font-weight:800!important;padding:0 0 15px;}
+.ng-picture-number{font-size:11px;color:#E3E890;background:#55433D;border-radius:50px;padding:9px 13px;white-space:nowrap;}
+.ng-workspace{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(275px,.9fr);align-items:start;gap:18px;}
+.ng-board-panel{background:var(--ng-paper);color:var(--ng-ink);padding:19px;border-radius:16px;min-width:0;overflow:hidden;}
+.ng-stat-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:16px;}
+.ng-stat{display:flex;align-items:center;gap:9px;background:#E8E7DB;border-radius:10px;padding:10px;min-width:0;}
+.ng-stat>svg{color:#683226;flex:none;}
+.ng-stat div{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.ng-stat span{font-size:9px;letter-spacing:.7px;font-weight:800;color:#71665C;white-space:nowrap;}
+.ng-stat strong{font-family:'Space Grotesk',sans-serif;font-size:18px;line-height:1.2;}
+.ng-mode-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.ng-mode{display:flex;gap:5px;background:#EEEDE5;border-radius:10px;padding:4px;}
+.ng-mode button{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;background:transparent;color:#3F3A31;font-weight:800!important;font-size:12px!important;padding:9px 15px;border-radius:7px;min-height:38px;}
+.ng-mode button.ng-mode-active{background:#3E4734;color:#FAF5E9;box-shadow:0 2px 6px #3925252C;}
+.ng-zoom-controls{display:flex;align-items:center;gap:7px;color:#62554C;}
+.ng-zoom-controls button{display:grid;place-items:center;border:1px solid #ABA89B;background:#FFF;color:#392525;width:34px;height:34px;border-radius:7px;}
+.ng-zoom-controls span{font-weight:800;font-size:11px;min-width:35px;text-align:center;}
+.ng-board-holder{background:#E1E1D3;border:1px solid #C9C9B8;padding:8px;border-radius:11px;width:100%;min-width:0;overflow:auto;max-height:72vh;scrollbar-color:#9B9D88 transparent;overscroll-behavior:contain;}
+.ng-board-grid{--ng-cell:34px;display:grid;grid-template-columns:var(--ng-left-clue) repeat(var(--ng-size),var(--ng-cell));grid-template-rows:var(--ng-top-clue) repeat(var(--ng-size),var(--ng-cell));width:max-content;min-width:0;background:#FAF5E9;border:1px solid #8A8B7D;}
+.ng-board-grid[data-size="5"]{--ng-cell:48px;}
+.ng-board-grid[data-size="10"]{--ng-cell:35px;}
+.ng-board-grid[data-size="15"]{--ng-cell:32px;}
+.ng-board-grid[data-zoom="compact"]{--ng-cell:27px;}
+.ng-board-grid[data-zoom="large"]{--ng-cell:41px;}
+.ng-board-grid[data-size="5"][data-zoom="compact"]{--ng-cell:39px;}
+.ng-board-grid[data-size="5"][data-zoom="large"]{--ng-cell:55px;}
+.ng-corner{position:sticky;top:0;left:0;z-index:5;display:grid;place-items:center;color:#7E7B62;background:#DAD9CB;border-right:2px solid #7E7B62;border-bottom:2px solid #7E7B62;}
+.ng-col-clue{position:sticky;top:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:end;gap:0;padding:3px 0 6px;background:#F2F0E7;border-bottom:2px solid #7E7B62;border-right:1px solid #D5D0C2;white-space:nowrap;color:#392525;}
+.ng-col-clue span,.ng-row-clue span{font-family:'Space Grotesk',sans-serif;font-size:12px;line-height:17px;font-weight:800;min-width:15px;text-align:center;}
+.ng-row-clue{position:sticky;left:0;z-index:3;display:flex;align-items:center;justify-content:end;gap:4px;padding:0 8px 0 4px;background:#F2F0E7;border-right:2px solid #7E7B62;border-bottom:1px solid #D5D0C2;color:#392525;white-space:nowrap;}
+.ng-clue-finished{background:#E3E890;color:#3E4734;}
+.ng-cell{display:grid;place-items:center;background:#FFFDF7;border:1px solid #D3D2C5;border-radius:0;padding:0;color:#B25D3E;touch-action:manipulation;position:relative;}
+.ng-cell:hover:not(:disabled){background:#E7EED2;}
+.ng-cell.ng-cell-filled,.ng-cell.ng-cell-filled:hover:not(:disabled){background:#3E4734;border-color:#37402C;}
+.ng-cell.ng-cell-cross{background:#F6E6D7;color:#A04935;}
+.ng-cell.ng-cell-group-left{border-left:2px solid #7E7B62;}
+.ng-cell.ng-cell-group-top{border-top:2px solid #7E7B62;}
+.ng-cell:disabled{opacity:1;}
+.ng-cell:focus-visible{outline:3px solid #B25D3E;outline-offset:-3px;z-index:2;}
+.ng-cell svg{width:min(52%,17px);height:min(52%,17px);}
+.ng-board-caption{display:flex;flex-wrap:wrap;gap:10px;margin-top:13px;font-size:10px;color:#675C52;}
+.ng-board-caption>span{display:inline-flex;align-items:center;gap:5px;}
+.ng-legend-fill{width:11px;height:11px;background:#3E4734;display:inline-block;border-radius:2px;}
+.ng-mobile-hint{font-size:11px;color:#726A61;margin:10px 0 0;line-height:1.5;}
+.ng-paused-banner,.ng-completed-banner{margin-top:14px;padding:14px;border-radius:10px;display:flex;align-items:center;gap:10px;background:#F7DDD3;color:#743521;font-size:12px;font-weight:800;}
+.ng-completed-banner{background:#E3E890;color:#3E4734;}
+.ng-completed-banner div{display:flex;flex-direction:column;gap:3px;}.ng-completed-banner span{font-weight:500;}
+.ng-side{display:flex;flex-direction:column;gap:14px;min-width:0;}
+.ng-side-card{background:#FAF5E9;color:#392525;padding:20px;border-radius:15px;min-width:0;}
+.ng-side-eyebrow{color:#7B5B40;font-size:10px;letter-spacing:1.3px;font-weight:900;}
+.ng-side-card h2{font-family:'Space Grotesk',sans-serif;font-size:22px;margin:9px 0;letter-spacing:-.5px;}
+.ng-side-card p{font-size:12px;line-height:1.65;color:#625A50;margin:0 0 16px;}
+.ng-side-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+.ng-side-actions button{display:flex;align-items:center;justify-content:center;gap:6px;background:#E5E7D6;color:#392525;border:1px solid #C3C7AF;border-radius:9px;padding:12px 5px;font-size:12px!important;font-weight:800!important;min-height:43px;}
+.ng-side-actions button:hover:not(:disabled){background:#D6E2C1;}
+.ng-helper{font-size:10px;color:#74665B;line-height:1.55;display:block;margin-top:14px;}
+.ng-progress-info{display:flex;align-items:center;justify-content:space-between;gap:7px;margin:16px 0 12px;}
+.ng-progress-info strong{font-size:16px;}.ng-progress-info span{font-size:10px;color:#74665B;}
+.ng-progress-track{height:9px;background:#DADBD1;border-radius:30px;overflow:hidden;margin-bottom:9px;}
+.ng-progress-track div{height:100%;background:#728383;border-radius:30px;transition:width .2s;}
+.ng-progress-card p{font-size:11px;margin:9px 0;}
+.ng-best{border-top:1px solid #D7D2C8;margin-top:12px;padding-top:12px;font-size:11px;color:#544D45;}
+.ng-unlocked-art .ng-big-art{max-width:235px;width:100%;background:#FDF9E9;border-radius:8px;margin:16px auto;}
+.ng-see-library{border:0;background:#3E4734;color:#FAF5E9;padding:12px 14px;border-radius:10px;font-weight:800!important;width:100%;font-size:12px!important;}
+.ng-footer{border-top:1px solid #FFFFFF25;display:flex;justify-content:space-between;gap:12px;padding:23px 0 27px;align-items:center;font-size:12px;color:#DDD4C4;}
+.ng-footer>span:first-child{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:-.6px;}
+@media(max-width:960px){.ng-gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr));}.ng-workspace{grid-template-columns:minmax(0,1fr);}.ng-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}.ng-unlocked-art{grid-column:1/-1;}.ng-hero-art{flex-basis:128px;}}
+@media(max-width:690px){.ng-frame{padding:0 16px;}.ng-header{height:70px;}.ng-brand{font-size:20px!important;}.ng-hero{padding:23px 20px;}.ng-hero-art{display:none;}.ng-section-top{align-items:start;}.ng-library-tools{flex-direction:column;align-items:stretch;}.ng-filter-group{width:100%;justify-content:space-between;}.ng-filter-group button{flex:1;padding:10px 5px;}.ng-search{max-width:100%;}.ng-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.ng-side{grid-template-columns:minmax(0,1fr);}.ng-game-heading{flex-direction:column;align-items:start;}.ng-board-panel{padding:12px;}}
+@media(max-width:410px){.ng-frame{padding:0 12px;}.ng-back{font-size:11px!important;padding:9px 10px;}.ng-hero h1{font-size:36px;}.ng-hero{margin-bottom:27px;}.ng-section-top{flex-direction:column;align-items:start;gap:10px;}.ng-total{padding:8px 12px;}.ng-gallery-grid{gap:9px;}.ng-puzzle-card{padding:9px;}.ng-puzzle-card h3{font-size:14px;}.ng-card-level{font-size:9px;}.ng-mode-row{gap:5px;}.ng-mode button{padding:8px 10px;}.ng-board-holder{padding:5px;}.ng-board-grid[data-size="5"]{--ng-cell:43px;}.ng-board-grid[data-size="5"][data-zoom="large"]{--ng-cell:49px;}.ng-board-grid[data-size="10"]{--ng-cell:30px;}.ng-board-grid[data-size="15"]{--ng-cell:29px;}.ng-stat{padding:9px 6px;gap:5px;}.ng-stat svg{width:14px;}.ng-stat strong{font-size:15px;}.ng-stat span{font-size:8px;}.ng-footer{font-size:10px;}}
+@media(prefers-reduced-motion:reduce){.ng-progress-track div{transition:none;}}

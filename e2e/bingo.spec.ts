@@ -28,7 +28,7 @@ async function callNumber(page: Page, n: number) {
 test('Playgrove lists Bingo and all five game routes still work', async ({page}) => {
   await page.setViewportSize({width:390,height:844})
   await page.goto('/')
-  await expect(page.getByText('06 GAMES AVAILABLE')).toBeVisible()
+  await expect(page.getByText('07 GAMES AVAILABLE')).toBeVisible()
   await expect(page.getByRole('heading',{name:'Fourcast'})).toBeVisible()
   await expect(page.getByRole('heading',{name:'Sudoku'})).toBeVisible()
   await expect(page.getByRole('heading',{name:'Bingo Duel'})).toBeVisible()
@@ -137,7 +137,9 @@ test('Bingo Random fills all numbers 1–25, asks before replacing manual entrie
     await page.goto('/games/bingo')
     await page.getByLabel('YOUR NICKNAME').fill('Alex')
     await page.getByRole('button',{name:'Create Bingo room'}).click()
+    await expect(page.locator('.bgo-invite-code')).toBeVisible()
     const room=(await page.locator('.bgo-invite-code span').allTextContents()).join('')
+    expect(room).toMatch(/^[A-Z0-9]{6}$/)
     await guest.goto(`/games/bingo?room=${room}`)
     await guest.getByLabel('YOUR NICKNAME').fill('Blair')
     await guest.getByRole('button',{name:'Join Bingo room'}).click()

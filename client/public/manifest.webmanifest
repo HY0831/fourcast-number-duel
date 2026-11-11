@@ -1,7 +1,7 @@
 {
   "name": "Playgrove — Online Games",
   "short_name": "Playgrove",
-  "description": "Playgrove: six games — Fourcast, Sudoku, Bingo, Minesweeper, Connect Four and 2048.",
+  "description": "Playgrove: seven games — Fourcast, Sudoku, Bingo, Minesweeper, Connect Four, 2048 and Nonogram.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
