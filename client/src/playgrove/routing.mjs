@@ -12,6 +12,7 @@ export function resolveHubRoute(pathname, search = '') {
   if (path === '/games/2048') return { page: '2048', redirect: null };
   if (path === '/games/nonogram') return { page: 'nonogram', redirect: null };
   if (path === '/games/hashi') return { page: 'hashi', redirect: null };
+  if (path === '/games/reversi') return { page: 'reversi', redirect: null };
   if (path === '/') {
     const code = new URLSearchParams(search).get('room')?.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6) || '';
     if (code) return { page: 'fourcast', redirect: `/games/fourcast?room=${code}` };
