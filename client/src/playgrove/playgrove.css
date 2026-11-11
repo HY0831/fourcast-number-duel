@@ -228,3 +228,14 @@
   .pg-play-button:hover { transform:none; }
   .pg-route-loading-indicator { animation:none; border-top-color:#E3E890; }
 }
+
+
+/* A failed code-split download must offer a way back to the rest of Playgrove. */
+.pg-route-error { min-height:100vh; display:grid; place-items:center; padding:24px; background:#392525; color:#FAF5E9; font-family:'DM Sans',sans-serif; }
+.pg-route-error-card { width:min(100%,480px); padding:clamp(24px,5vw,40px); border:1px solid #B6B7A566; border-radius:22px; background:#3E4734; text-align:center; }
+.pg-route-error-card h1 { margin:0 0 14px; color:#E3E890; font-family:'Space Grotesk',sans-serif; font-size:clamp(24px,5vw,32px); }
+.pg-route-error-card p { margin:0 0 25px; color:#FAF5E9; font-size:15px; line-height:1.55; }
+.pg-route-error-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; }
+.pg-route-error-actions button { min-height:44px; padding:10px 18px; border:1px solid #E3E890; border-radius:12px; background:#E3E890; color:#392525; font-weight:800; cursor:pointer; }
+.pg-route-error-actions button + button { background:transparent; color:#FAF5E9; border-color:#FAF5E999; }
+.pg-route-error-actions button:focus-visible { outline:3px solid #FAF5E9; outline-offset:3px; }

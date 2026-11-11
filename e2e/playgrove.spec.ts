@@ -174,3 +174,42 @@ test('library filters survive returning from a lazily loaded game; small screens
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), `Overflow at ${width}px`).toBe(false)
   }
 })
+
+
+test('a failed game download shows recovery actions without taking down the library', async ({ page }) => {
+  // Production chunk names are emitted by Vite for the lazily imported game.
+  await page.route('**/assets/NonogramPage-*.js', route => route.abort('failed'))
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Play Nonogram' }).click()
+  await expect(page).toHaveURL(/\/games\/nonogram$/)
+  await expect(page.getByRole('alert').getByRole('heading', { name: "We couldn't open this game." })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Back to Game Library' }).click()
+  await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible()
+  await page.getByRole('button', { name: 'Play Sudoku' }).click()
+  await expect(page.getByRole('gridcell')).toHaveCount(81)
+})
+
+test('multiplayer rooms remain playable when localStorage access is denied', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      get() { throw new DOMException('Storage blocked by privacy settings', 'SecurityError') },
+    })
+  })
+
+  const games = [
+    { path: '/games/fourcast', create: 'Create game room' },
+    { path: '/games/bingo', create: 'Create Bingo room' },
+    { path: '/games/connect-four', create: 'Create Connect Four room' },
+  ]
+  for (const game of games) {
+    await page.goto(game.path)
+    await page.getByLabel('YOUR NICKNAME').fill('Storage Tester')
+    const create = page.getByRole('button', { name: game.create })
+    await expect(create).toBeEnabled()
+    await create.click()
+    await expect(page.getByRole('heading', { name: 'Battle with a friend' })).toBeVisible()
+  }
+})
