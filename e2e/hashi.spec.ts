@@ -66,8 +66,8 @@ test('tap islands, keyboard bridge activation, undo, redo, no-bridge marks and p
 })
 test('crossing bridges cannot be placed and Check reports island overload',async({page})=>{
   const puzzle=PUZZLES.find(p=>p.edges.some((_,i)=>p.edges.some((_,j)=>i!==j&&edgesCross(p,i,j))))!
-  const a=puzzle.edges.findIndex((_,i)=>puzzle.edges.some((_,j)=>i!==j&&edgesCross(p,i,j)))
-  const b=puzzle.edges.findIndex((_,j)=>j!==a&&edgesCross(p,a,j))
+  const a=puzzle.edges.findIndex((_,i)=>puzzle.edges.some((_,j)=>i!==j&&edgesCross(puzzle,i,j)))
+  const b=puzzle.edges.findIndex((_,j)=>j!==a&&edgesCross(puzzle,a,j))
   await start(page,puzzle.title)
   await activateBridge(page,a)
   await activateBridge(page,b)
