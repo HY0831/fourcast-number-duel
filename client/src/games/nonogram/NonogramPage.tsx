@@ -162,7 +162,7 @@ export default function NonogramPage({ onBack }: Props) {
             <div className={`ng-card-art ${complete?'ng-card-complete':''}`}>{complete?<PicturePixels puzzle={p}/>:<MysteryArtwork puzzle={p}/>}</div>
             <div className="ng-card-meta"><span className="ng-card-level">{p.difficulty} · {p.width}×{p.height}</span>{complete?<CheckCircle2 size={16} color="#557046" aria-label="Completed"/>:marked?<span className="ng-inprogress">In progress</span>:null}</div>
             <h3>{p.title}</h3><p>{p.category}</p>
-            <button type="button" className="ng-start" onClick={()=>pick(p.id)} aria-label={`${complete?'Replay':marked?'Continue':'Play'} ${p.title}`}>{complete?'View / Replay':marked?'Continue puzzle':'Play puzzle'} <span aria-hidden="true">→</span></button>
+            <button type="button" className="ng-start" onClick={()=>pick(p.id)} aria-label={`${complete?'View / Replay':marked?'Continue':'Play'} ${p.title}`}>{complete?'View / Replay':marked?'Continue puzzle':'Play puzzle'} <span aria-hidden="true">→</span></button>
           </article>
         })}</div>
         {library.length===0&&<div className="ng-empty-result"><Image size={27}/><p>No pictures match those filters.</p><button type="button" onClick={()=>{setDifficulty('All');setCategory('All');setQuery('')}}>Clear filters</button></div>}
