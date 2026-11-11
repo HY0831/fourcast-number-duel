@@ -42,7 +42,7 @@ Build a simple, good-looking mobile-first, online multiplayer four-digit guessin
 - [x] Dedicated GitHub repository created by user: `HY0831/fourcast-number-duel`
 - [x] All 21 source/project files pushed to `main` on GitHub
 - [ ] Approve and deploy the Render Blueprint (public Node/WebSocket service) and test from two phones on different networks
-- [ ] Add persistent room storage (Redis/PostgreSQL) for server restarts
+- [ ] Activate persistent multiplayer room storage on the production web service (opt-in PostgreSQL implementation and recovery tests are developed in V5; dedicated database provisioning and safe deployment still pending)
 - [ ] Install frontend dependencies, perform the full typecheck/build, and test on Android and iOS browsers (npm registry blocked in current workspace)
 - [x] Mobile web-app manifest and install icons (HTTPS host required for home-screen installation)
 
@@ -252,3 +252,22 @@ All seven published games are retained. Work on `polish/playgrove-v4-accessibili
 - [x] **Merge gate:** PR #15 squash-merged into `main` at `140b1254` after all checks passed.
 - [ ] **Device QA:** VoiceOver, TalkBack, NVDA and real mobile touch validation are still required; don't claim full WCAG compliance.
 - [ ] **Deploy gate:** Render release separately to protect active server-memory multiplayer rooms.
+
+
+## V5 optional PostgreSQL-backed multiplayer room recovery — 2026-11-11
+
+**Current phase:** feature branch `feature/playgrove-v5-persistent-rooms-20261111`. See `PLAYGROVE_V5_PERSISTENCE.md` for the architecture, schema, rollout and security design. No changes to solo games, existing Socket.IO messages, room codes or browser tokens.
+
+- [x] Audit current in-memory room engines, restart behavior, 3-hour TTL, lock/secret privacy and frontend saved session format.
+- [x] Implement optional PostgreSQL snapshots for Fourcast, Bingo Duel and Connect Four; **unset** `PLAYGROVE_DATABASE_URL` retains current in-memory behavior.
+- [x] Restore room state on server startup, discard stale socket IDs, keep expired room removal and existing session-token-based recovery.
+- [x] Serialize mutations, acknowledge and broadcast only after PostgreSQL transaction success, and fail closed on uncertain write outcomes.
+- [x] Enforce one active game server writer with PostgreSQL advisory lock; no multi-instance deployment is claimed.
+- [x] Add defensive schema/version validation and avoid exposing the room database URI or private state in public health responses.
+- [x] Add 4 room snapshot/restore/diff unit tests and isolated real PostgreSQL server process restart/recovery test on GitHub Actions.
+- [ ] **Release gate:** TypeScript, all Node tests, production build, real PostgreSQL restart/recovery, full Chromium seven-game browser regression pass on PR.
+- [ ] **Merge gate:** only squash-merge when all CI checks pass.
+- [ ] **Production activation gate:** use a dedicated Playgrove database and a single Render instance; explicitly select the Render workspace, confirm provisioning/costs, migration and downtime window; do not deploy over existing active rooms.
+- [ ] **Operations gate:** TLS, least-privilege database credentials, backups, restore drills, monitoring and actual phone recovery tests before claiming production room durability.
+
+**Important:** merging V5 code to `main` with `PLAYGROVE_DATABASE_URL` unset does **not** protect existing live rooms from restarts. Production persistence is a separate, deliberate activation.
