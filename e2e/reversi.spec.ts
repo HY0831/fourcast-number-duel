@@ -37,7 +37,7 @@ test('Reversi is the ninth library game with its own 8x8 online room route',asyn
   await expect(page.locator('.pg-game-card:visible')).toHaveCount(5)
   await expect(page.getByRole('heading',{name:'Reversi'})).toBeHidden()
 })
-test('Reversi lobby, invite, gameplay board and score never overflow small mobile screens',async({page})=>{
+test('Reversi lobby and waiting room never overflow small mobile screens',async({page})=>{
   for(const width of [320,390,768,1440]){
     await page.setViewportSize({width,height:850})
     await page.goto('/games/reversi')
@@ -48,6 +48,8 @@ test('Reversi lobby, invite, gameplay board and score never overflow small mobil
     await expect(page.getByLabel(/Room code [A-Z0-9]{6}/)).toBeVisible()
     expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),'Waiting page overflow at '+width).toBe(false)
     await page.getByRole('button',{name:'Exit room'}).click()
+    await expect(page.getByRole('heading',{name:/Control the corners/})).toBeVisible()
+    await expect.poll(()=>page.evaluate(()=>localStorage.getItem('reversi:session'))).toBeNull()
   }
 })
 test('two online players see the standard opening, legal moves, flips and enforced turns',async({page,browser})=>{
