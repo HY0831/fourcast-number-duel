@@ -10,6 +10,7 @@ test('Playgrove homepage, Fourcast entry, and back navigation work on mobile', a
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
   await expect(page.getByRole('heading', { name: /Good games/ })).toBeVisible()
+  await expect(page.locator('.pg-hero-art .pg-art-swatch')).toHaveText(['0', '8', '1', '3'])
   await expect(page.getByRole('heading', { name: 'Fourcast' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Play Fourcast' })).toBeVisible()
   await expect(page.getByText('More games are')).toBeVisible()
