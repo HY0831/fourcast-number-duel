@@ -19,6 +19,7 @@ const ConnectFourPage = lazy(() => import('./games/connect-four/ConnectFourPage'
 const MinesweeperPage = lazy(() => import('./games/minesweeper/MinesweeperPage'))
 const Twenty48Page = lazy(() => import('./games/twenty48/Twenty48Page'))
 const NonogramPage = lazy(() => import('./games/nonogram/NonogramPage'))
+const HashiPage = lazy(() => import('./games/hashi/HashiPage'))
 import { resolveHubRoute } from './playgrove/routing.mjs'
 import './playgrove/playgrove.css'
 
@@ -371,7 +372,7 @@ function currentPage() {
 }
 
 function App() {
-  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048' | 'nonogram'>(currentPage)
+  const [page, setPage] = useState<'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048' | 'nonogram' | 'hashi'>(currentPage)
   const pageRef = useRef(page)
   const activeMatchRef = useRef(false)
   const onActivityChange = useCallback((active: boolean) => { activeMatchRef.current = active }, [])
@@ -402,7 +403,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : page === 'minesweeper' ? 'Minesweeper — Easy, Medium & Hard | Playgrove' : page === 'connect-four' ? 'Connect Four — Playgrove' : page === '2048' ? '2048 — Playgrove' : page === 'nonogram' ? 'Nonogram — 30 Picture Puzzles | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
+    document.title = page === 'hub' ? 'Playgrove — Online Game Library' : page === 'sudoku' ? 'Sudoku — Easy, Medium & Hard | Playgrove' : page === 'bingo' ? 'Bingo Duel — Five Lines to Win | Playgrove' : page === 'minesweeper' ? 'Minesweeper — Easy, Medium & Hard | Playgrove' : page === 'connect-four' ? 'Connect Four — Playgrove' : page === '2048' ? '2048 — Playgrove' : page === 'nonogram' ? 'Nonogram — 30 Picture Puzzles | Playgrove' : page === 'hashi' ? 'Hashi Bridges — 45 Logic Puzzles | Playgrove' : 'Fourcast — The Number Duel | Playgrove'
   }, [page])
 
   if (page === 'hub') return <PlaygroveHome
@@ -415,6 +416,7 @@ function App() {
     onPlayConnectFour={() => goTo('/games/connect-four')}
     onPlay2048={() => goTo('/games/2048')}
     onPlayNonogram={() => goTo('/games/nonogram')}
+    onPlayHashi={() => goTo('/games/hashi')}
     hasSavedConnectFour={hasSavedConnectFourSession()}
     onResumeConnectFour={() => goTo('/games/connect-four')}
     hasSavedBingo={hasSavedBingoSession()}
@@ -426,6 +428,7 @@ function App() {
     : page === 'connect-four' ? <ConnectFourPage onBack={() => goTo('/')} onActivityChange={onActivityChange} />
     : page === '2048' ? <Twenty48Page onBack={() => goTo('/')} />
     : page === 'nonogram' ? <NonogramPage onBack={() => goTo('/')} />
+    : page === 'hashi' ? <HashiPage onBack={() => goTo('/')} />
     : <FourcastApp onBack={() => goTo('/')} onActivityChange={onActivityChange} />
 
   return <GameRouteBoundary key={page} onBack={() => goTo('/')}>

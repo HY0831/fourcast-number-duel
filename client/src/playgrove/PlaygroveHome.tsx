@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { ArrowRight, Bomb, CircleDot, Gamepad2, Grid3X3, Hash, Image, LayoutGrid, RotateCcw, Search, ShieldCheck, Sprout, Users, Wifi } from 'lucide-react'
+import { ArrowRight, Bomb, CircleDot, Gamepad2, Grid3X3, Hash, Image, Network, LayoutGrid, RotateCcw, Search, ShieldCheck, Sprout, Users, Wifi } from 'lucide-react'
 
 type LibraryMode = 'all' | 'solo' | 'multiplayer'
-type GameId = 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048' | 'nonogram'
+type GameId = 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048' | 'nonogram' | 'hashi'
 const MODE_KEY = 'playgrove:library:mode'
 const SEARCH_KEY = 'playgrove:library:search'
 const DIRECTORY: { id: GameId; mode: Exclude<LibraryMode, 'all'>; search: string }[] = [
@@ -13,6 +13,7 @@ const DIRECTORY: { id: GameId; mode: Exclude<LibraryMode, 'all'>; search: string
   { id: 'connect-four', mode: 'multiplayer', search: 'connect four discs strategy friends' },
   { id: '2048', mode: 'solo', search: '2048 sliding number tile puzzle' },
   { id: 'nonogram', mode: 'solo', search: 'nonogram picture pixel logic puzzle' },
+  { id: 'hashi', mode: 'solo', search: 'hashi bridges islands number network logic puzzle' },
 ]
 function savedMode(): LibraryMode {
   try {
@@ -34,6 +35,7 @@ type Props = {
   onPlayConnectFour: () => void
   onPlay2048: () => void
   onPlayNonogram: () => void
+  onPlayHashi: () => void
   hasSavedConnectFour: boolean
   onResumeConnectFour: () => void
   hasSavedBingo: boolean
@@ -41,7 +43,7 @@ type Props = {
   onResumeFourcast: () => void
 }
 
-export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlaySudoku, onPlayBingo, onPlayMinesweeper, onPlayConnectFour, onPlay2048, onPlayNonogram, hasSavedBingo, hasSavedConnectFour, onResumeBingo, onResumeFourcast, onResumeConnectFour }: Props) {
+export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlaySudoku, onPlayBingo, onPlayMinesweeper, onPlayConnectFour, onPlay2048, onPlayNonogram, onPlayHashi, hasSavedBingo, hasSavedConnectFour, onResumeBingo, onResumeFourcast, onResumeConnectFour }: Props) {
   const [mode, setMode] = useState<LibraryMode>(savedMode)
   const [search, setSearch] = useState(savedSearch)
   useEffect(() => {
@@ -119,7 +121,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
               <span className="pg-section-eyebrow">THE GAME LIBRARY</span>
               <h2 id="pg-library-title">Explore games</h2>
             </div>
-            <span className="pg-game-count">07 GAMES AVAILABLE</span>
+            <span className="pg-game-count">08 GAMES AVAILABLE</span>
           </div>
           <div className="pg-discovery">
             <div className="pg-mode-filters" role="group" aria-label="Filter games by mode">
@@ -252,6 +254,22 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
                 <span><Grid3X3 size={16}/> 30 picture puzzles</span>
               </div>
               <button className="pg-play-button pg-nonogram-play" type="button" onClick={onPlayNonogram}>Play Nonogram <ArrowRight size={18}/></button>
+            </article>
+            <article className="pg-game-card pg-hashi-card" hidden={!visible.has('hashi')}>
+              <div className="pg-card-top">
+                <div className="pg-game-symbol pg-hashi-symbol"><Network size={37} strokeWidth={2.1}/></div>
+                <span className="pg-availability"><span className="pg-availability-dot"/> Available</span>
+              </div>
+              <div className="pg-game-description">
+                <span className="pg-card-kicker">THE ISLAND NETWORK CHALLENGE</span>
+                <h3>Hashi: Bridges</h3>
+                <p>Connect numbered islands with single or double bridges. One network, one solution.</p>
+              </div>
+              <div className="pg-game-features">
+                <span><Users size={16}/> Solo play</span>
+                <span><Grid3X3 size={16}/> 45 puzzles · 3 levels</span>
+              </div>
+              <button className="pg-play-button pg-hashi-play" type="button" onClick={onPlayHashi}>Play Hashi <ArrowRight size={18}/></button>
             </article>
             <div className="pg-coming-soon" hidden={mode !== 'all' || Boolean(term)}>
               <div className="pg-coming-icon"><Sprout size={30} strokeWidth={1.8} /></div>

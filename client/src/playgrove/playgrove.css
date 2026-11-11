@@ -239,3 +239,10 @@
 .pg-route-error-actions button { min-height:44px; padding:10px 18px; border:1px solid #E3E890; border-radius:12px; background:#E3E890; color:#392525; font-weight:800; cursor:pointer; }
 .pg-route-error-actions button + button { background:transparent; color:#FAF5E9; border-color:#FAF5E999; }
 .pg-route-error-actions button:focus-visible { outline:3px solid #FAF5E9; outline-offset:3px; }
+
+/* Eighth Playgrove game: Hashi Bridges. */
+.pg-hashi-card{border-top:5px solid var(--pg-sprout)}
+.pg-hashi-symbol{background:var(--pg-foliage);color:var(--pg-sprout)}
+.pg-hashi-card .pg-card-kicker{color:var(--pg-foliage)}
+.pg-hashi-play{background:var(--pg-foliage)}
+.pg-hashi-play:hover{background:var(--pg-redwood)}

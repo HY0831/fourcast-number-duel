@@ -68,3 +68,10 @@ test('Nonogram uses an independent route without changing any existing game invi
   assert.deepEqual(resolveHubRoute('/games/bingo','?room=XY2345'), { page: 'bingo', redirect: null });
   assert.deepEqual(resolveHubRoute('/', '?room=AB2345'), { page: 'fourcast', redirect: '/games/fourcast?room=AB2345' });
 });
+
+
+test('Hashi is the eighth standalone route and does not affect existing invitations',()=>{
+  assert.deepEqual(resolveHubRoute('/games/hashi'),{page:'hashi',redirect:null});
+  assert.deepEqual(resolveHubRoute('/games/hashi/'),{page:'hashi',redirect:null});
+  assert.deepEqual(resolveHubRoute('/', '?room=AB2345'),{page:'fourcast',redirect:'/games/fourcast?room=AB2345'});
+});

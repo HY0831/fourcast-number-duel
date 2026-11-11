@@ -10,11 +10,11 @@ async function playHeart(page: Page) {
   await expect(page.getByRole('heading',{name:'Heart.'})).toBeVisible()
 }
 
-test('Playgrove lists seven games and Nonogram opens a 30-picture gallery without spoiling artwork', async ({page}) => {
+test('Playgrove lists eight games and Nonogram opens a 30-picture gallery without spoiling artwork', async ({page}) => {
   await page.setViewportSize({width:390,height:844})
   await page.goto('/')
-  await expect(page.getByText('07 GAMES AVAILABLE')).toBeVisible()
-  for(const name of ['Fourcast','Sudoku','Bingo Duel','Minesweeper','Connect Four','2048','Nonogram'])
+  await expect(page.getByText('08 GAMES AVAILABLE')).toBeVisible()
+  for(const name of ['Fourcast','Sudoku','Bingo Duel','Minesweeper','Connect Four','2048','Nonogram','Hashi: Bridges'])
     await expect(page.getByRole('heading',{name,exact:true})).toBeVisible()
   await page.getByRole('button',{name:'Play Nonogram'}).click()
   await expect(page).toHaveURL(/\/games\/nonogram$/)
