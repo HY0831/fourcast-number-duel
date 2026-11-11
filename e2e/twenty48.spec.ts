@@ -5,7 +5,7 @@ const blank = () => Array<number>(16).fill(0)
 
 test('Playgrove shows six games and 2048 opens from the Game Library', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByText('08 GAMES AVAILABLE')).toBeVisible()
+  await expect(page.getByText('09 GAMES AVAILABLE')).toBeVisible()
   for (const title of ['Fourcast','Sudoku','Bingo Duel','Minesweeper','Connect Four','2048']) {
     await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible()
   }
