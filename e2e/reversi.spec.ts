@@ -52,6 +52,30 @@ test('Reversi lobby and waiting room never overflow small mobile screens',async(
     await expect.poll(()=>page.evaluate(()=>localStorage.getItem('reversi:session'))).toBeNull()
   }
 })
+test('active Reversi board and scores remain visible and playable from 320px phones to desktop',async({page,browser})=>{
+  const context=await browser.newContext(),guest=await context.newPage()
+  try{
+    await createAndJoin(page,guest)
+    for(const width of [320,390,768,1440]){
+      await page.setViewportSize({width,height:850})
+      await expect(boardCells(page)).toHaveCount(64)
+      await expect(page.locator('.rv-scoreboard')).toBeVisible()
+      const layout=await page.evaluate(()=>{
+        const board=document.querySelector('.rv-board')!.getBoundingClientRect()
+        return {scrollWidth:document.documentElement.scrollWidth,viewport:window.innerWidth,
+          boardWidth:board.width,right:board.right,left:board.left}
+      })
+      expect(layout.scrollWidth,'Page overflow at '+width).toBeLessThanOrEqual(layout.viewport+1)
+      expect(layout.boardWidth).toBeGreaterThan(250)
+      expect(layout.left,'Board left side must stay visible at '+width).toBeGreaterThanOrEqual(0)
+      expect(layout.right,'Board right side must stay visible at '+width).toBeLessThanOrEqual(width+1)
+    }
+    await page.setViewportSize({width:320,height:780})
+    await page.getByRole('gridcell',{name:'Row 3, column 4: Empty, legal move'}).click()
+    await expect(gameMove(guest)).toContainText('1 moves')
+  }finally{await context.close()}
+})
+
 test('two online players see the standard opening, legal moves, flips and enforced turns',async({page,browser})=>{
   const context=await browser.newContext(),guest=await context.newPage()
   try{
