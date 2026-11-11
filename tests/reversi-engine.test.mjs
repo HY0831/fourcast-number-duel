@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {ROOM_TTL_MS} from '../server/game-engine.mjs';
 import assert from 'node:assert/strict';
 import {BLACK, WHITE, startingBoard, flipsForMove, legalMoves, playDisc, discCounts,
   publicReversiRoom, ReversiStore} from '../server/reversi-engine.mjs';
@@ -122,18 +123,13 @@ test('a finished equal-score position is declared a draw',()=>{
   const whites=board.filter(v=>v===WHITE).length;
   for(let i=63;i>=24&&board.filter(v=>v===WHITE).length<33;i--)if(i%8&&board[i]===BLACK)board[i]=WHITE;
   assert.equal(discCounts(board).white,33);
-  const flips=flipsForMove(board,0,BLACK);
-  if(flips.length!==1){
-    // If an incidental diagonal matches, this fabricated board is not
-    // a valid tie construction; stick to the guaranteed pure scoring test.
-    assert.ok(flips.length>=1);
-  }else{
-    room.board=board;room.turnIndex=0;
-    store.play(room.code,host.token,0);
-    assert.equal(room.draw,true);
-    assert.equal(room.winnerId,null);
-    assert.deepEqual(room.phase,'finished');
-  }
+  assert.deepEqual(flipsForMove(board,0,BLACK),[1]);
+  room.board=board;room.turnIndex=0;
+  store.play(room.code,host.token,0);
+  assert.equal(room.draw,true);
+  assert.equal(room.winnerId,null);
+  assert.equal(room.phase,'finished');
+  assert.deepEqual(discCounts(room.board),{black:32,white:32,empty:0});
 });
 test('rematch requires both player approvals, resets board and swaps who plays Black',()=>{
   const {store,room,host,guest}=pair();
