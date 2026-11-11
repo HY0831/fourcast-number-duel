@@ -4,6 +4,8 @@
 
 ## Available Games
 
+- **Hashi: Bridges** — 45 fixed, independently unique-solution numbered-island network puzzles: 15 Easy (7×7), 15 Medium (10×10), and 15 Hard (15×15). Build zero, one or two bridges between adjacent islands, obey numbers and make one connected network. Includes tap/drag, keyboard, no-bridge marks, Undo/Redo, three hints, Check, Pause, zoom, local save and best times. Play at `/games/hashi`. See [HASHI_RULES.md](HASHI_RULES.md).
+
 - **Nonogram (Picture Logic)** — 30 handcrafted, validated and uniquely solvable picture puzzles: 10 Easy 5×5, 10 Medium 10×10, 10 Hard 15×15. Browse pictures by difficulty, category and search; Fill/X marks, Undo, 3 hints, pause/timer, local progress and best times, completed artwork reveal. Play at `/games/nonogram`. See [NONOGRAM_RULES.md](NONOGRAM_RULES.md).
 
 - **2048** — single-player sliding tile puzzle with swipe/arrow controls, score, undo, browser autosave, and win/continue screens. Play at `/games/2048`. See [2048_RULES.md](2048_RULES.md).
