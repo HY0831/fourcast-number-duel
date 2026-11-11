@@ -77,15 +77,19 @@ test('Fourcast, Bingo Duel and Connect Four expose accessible selected-mode cont
 })
 
 test('Connect Four exposes disc ownership in each column without changing existing move controls', async ({ page, browser }) => {
-  test.setTimeout(90_000)
+  test.setTimeout(60_000)
   const guestContext = await browser.newContext()
   const guest = await guestContext.newPage()
   try {
     await page.goto('/games/connect-four')
     await page.getByLabel('YOUR NICKNAME').fill('Alex')
     await page.getByRole('button', { name: 'Create Connect Four room' }).click()
+    // allTextContents() does not wait for async socket room creation: wait for lobby.
+    await expect(page.locator('.c4-invite-code span')).toHaveCount(6)
     const roomCode = (await page.locator('.c4-invite-code span').allTextContents()).join('')
+    expect(roomCode).toMatch(/^[A-Z0-9]{6}$/)
     await guest.goto(`/games/connect-four?room=${roomCode}`)
+    await expect(guest.getByLabel('6-CHARACTER ROOM CODE')).toHaveValue(roomCode)
     await guest.getByLabel('YOUR NICKNAME').fill('Blair')
     await guest.getByRole('button', { name: 'Join Connect Four room' }).click()
     const column = page.getByRole('gridcell', { name: 'Drop in column 1' })
