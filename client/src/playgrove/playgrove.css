@@ -246,3 +246,10 @@
 .pg-hashi-card .pg-card-kicker{color:var(--pg-foliage)}
 .pg-hashi-play{background:var(--pg-foliage)}
 .pg-hashi-play:hover{background:var(--pg-redwood)}
+
+/* Ninth Playgrove game: Reversi — the classic two-player strategy board. */
+.pg-reversi-card{border-top:5px solid var(--pg-terracotta)}
+.pg-reversi-symbol{background:var(--pg-foliage);color:var(--pg-sprout)}
+.pg-reversi-card .pg-card-kicker{color:var(--pg-foliage)}
+.pg-reversi-play{background:var(--pg-foliage)}
+.pg-reversi-play:hover{background:var(--pg-redwood)}
