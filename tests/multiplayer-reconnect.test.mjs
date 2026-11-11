@@ -182,11 +182,68 @@ test('Connect Four keeps board and correct turn during an opponent reconnect', {
   assert.equal(snapshot.room.turnPlayerId, created.room.you);
 });
 
-test('All three games release the original seat when the same socket resumes a different player', { timeout: 25000 }, async t => {
+
+test('Reversi pauses after a disconnect and restores the exact turn, scores and board using the original token', { timeout: 25000 }, async t => {
+  const host = await connected(t);
+  const guest = await connected(t);
+  const created = await send(host, 'reversi:create', { name: 'Alex' });
+  const joined = await send(guest, 'reversi:join', { code: created.code, name: 'Blair' });
+  assert.equal(created.ok, true);
+  assert.equal(joined.ok, true);
+  assert.deepEqual(joined.room.legalMoves, [19, 26, 37, 44]);
+  assert.equal((await send(host, 'reversi:place', { index: 19 })).ok, true);
+  const offline = nextUpdate(host, 'reversi:update', room => room.phase === 'playing' && online(room, false) === false);
+  guest.disconnect();
+  const paused = await offline;
+  assert.equal(paused.scores.black, 4);
+  assert.equal(paused.scores.white, 1);
+  assert.equal(paused.board[27], 1);
+  assert.equal(paused.turnPlayerId, joined.room.you);
+  const blocked = await send(host, 'reversi:place', { index: 26 });
+  assert.equal(blocked.ok, false);
+  assert.match(blocked.error, /reconnect|turn/);
+
+  const guestAgain = await connected(t);
+  const resumed = await send(guestAgain, 'reversi:resume', { code: created.code, token: joined.token });
+  assert.equal(resumed.ok, true);
+  assert.equal(resumed.room.turnPlayerId, joined.room.you);
+  assert.equal(resumed.room.board[19], 1);
+  assert.equal(resumed.room.board[27], 1);
+  assert.equal(resumed.room.scores.black, 4);
+  assert.equal(resumed.room.players.every(p => p.online), true);
+  assert.equal(JSON.stringify(resumed.room).includes(created.token), false);
+  assert.equal(JSON.stringify(resumed.room).includes(joined.token), false);
+  const place = await send(guestAgain, 'reversi:place', { index: resumed.room.legalMoves[0] });
+  assert.equal(place.ok, true);
+  const continued = await send(host, 'reversi:resume', { code: created.code, token: created.token });
+  assert.equal(continued.room.moveCount, 2);
+  assert.equal(continued.room.turnPlayerId, created.room.you);
+});
+
+test('switching a socket from Reversi to another game releases the previous Reversi seat', { timeout: 25000 }, async t => {
+  const host = await connected(t);
+  const guest = await connected(t);
+  const created = await send(host, 'reversi:create', { name: 'Alex' });
+  const joined = await send(guest, 'reversi:join', { name: 'Blair', code: created.code });
+  assert.equal(joined.ok, true);
+  const newGame = await send(host, 'connect4:create', { name: 'Alex' });
+  assert.equal(newGame.ok, true);
+  const guestView = await send(guest, 'reversi:resume', { code: created.code, token: joined.token });
+  assert.equal(guestView.ok, true);
+  assert.equal(online(guestView.room, true), false);
+  assert.equal(online(guestView.room, false), true);
+  assert.equal((await send(guest, 'reversi:place', { index: 19 })).ok, false);
+  const restore = await send(host, 'reversi:resume', { code: created.code, token: created.token });
+  assert.equal(restore.ok, true);
+  assert.equal(restore.room.players.every(p => p.online), true);
+});
+
+test('All four games release the original seat when the same socket resumes a different player', { timeout: 25000 }, async t => {
   for (const type of [
     { prefix: 'room', create: 'room:create', join: 'room:join', resume: 'room:resume', update: 'room:update' },
     { prefix: 'bingo', create: 'bingo:create', join: 'bingo:join', resume: 'bingo:resume', update: 'bingo:update' },
     { prefix: 'connect4', create: 'connect4:create', join: 'connect4:join', resume: 'connect4:resume', update: 'connect4:update' },
+    { prefix: 'reversi', create: 'reversi:create', join: 'reversi:join', resume: 'reversi:resume', update: 'reversi:update' },
   ]) {
     const host = await connected(t);
     const guest = await connected(t);

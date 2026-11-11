@@ -75,3 +75,10 @@ test('Hashi is the eighth standalone route and does not affect existing invitati
   assert.deepEqual(resolveHubRoute('/games/hashi/'),{page:'hashi',redirect:null});
   assert.deepEqual(resolveHubRoute('/', '?room=AB2345'),{page:'fourcast',redirect:'/games/fourcast?room=AB2345'});
 });
+
+test('Reversi route is independent and preserves all multiplayer invite redirects',()=>{
+  assert.deepEqual(resolveHubRoute('/games/reversi'),{page:'reversi',redirect:null});
+  assert.deepEqual(resolveHubRoute('/games/reversi/','?room=ABC123'),{page:'reversi',redirect:null});
+  assert.deepEqual(resolveHubRoute('/games/connect-four','?room=AB2345'),{page:'connect-four',redirect:null});
+  assert.deepEqual(resolveHubRoute('/','?room=AB2345'),{page:'fourcast',redirect:'/games/fourcast?room=AB2345'});
+});

@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import { GameError, GameStore, publicRoom } from './game-engine.mjs';
 import { BingoStore, publicBingoRoom } from './bingo-engine.mjs';
 import { ConnectFourStore, publicConnectFourRoom } from './connect-four-engine.mjs';
+import { ReversiStore, publicReversiRoom } from './reversi-engine.mjs';
 
 const app = express();
 const httpServer = createServer(app);
@@ -17,9 +18,10 @@ const io = new Server(httpServer, {
 const games = new GameStore();
 const bingos = new BingoStore();
 const connectFours = new ConnectFourStore();
+const reversis = new ReversiStore();
 const here = dirname(fileURLToPath(import.meta.url));
 
-app.get('/health', (_req, res) => res.json({ status: 'ok', activeRooms: games.rooms.size, activeBingoRooms: bingos.rooms.size, activeConnectFourRooms: connectFours.rooms.size }));
+app.get('/health', (_req, res) => res.json({ status: 'ok', activeRooms: games.rooms.size, activeBingoRooms: bingos.rooms.size, activeConnectFourRooms: connectFours.rooms.size, activeReversiRooms: reversis.rooms.size }));
 if (process.env.NODE_ENV === 'production') {
   const dist = join(here, '..', 'dist');
   app.use(express.static(dist));
@@ -41,6 +43,12 @@ function broadcastBingo(room) {
 function broadcastConnectFour(room) {
   for (const player of room.players) {
     if (player.socketId) io.to(player.socketId).emit('connect4:update', publicConnectFourRoom(room, player.id));
+  }
+}
+
+function broadcastReversi(room) {
+  for (const player of room.players) {
+    if (player.socketId) io.to(player.socketId).emit('reversi:update', publicReversiRoom(room, player.id));
   }
 }
 
@@ -66,6 +74,7 @@ io.on('connection', (socket) => {
   function attach(room, player) {
     detachBingo();
     detachConnectFour();
+    detachReversi();
     // A socket switching seats within the same room must release its old seat.
     if (socket.data.code && (socket.data.code !== room.code || socket.data.token !== player.token)) detach();
     if (player.socketId && player.socketId !== socket.id) {
@@ -110,6 +119,7 @@ io.on('connection', (socket) => {
   function attachBingo(room, player) {
     detach();
     detachConnectFour();
+    detachReversi();
     if (socket.data.bingoCode && (socket.data.bingoCode !== room.code || socket.data.bingoToken !== player.token)) detachBingo();
     if (player.socketId && player.socketId !== socket.id) {
       const oldSocket = io.sockets.sockets.get(player.socketId);
@@ -199,6 +209,7 @@ io.on('connection', (socket) => {
   function attachConnectFour(room, player) {
     detach();
     detachBingo();
+    detachReversi();
     if (socket.data.connectFourCode && (socket.data.connectFourCode !== room.code || socket.data.connectFourToken !== player.token)) detachConnectFour();
     if (player.socketId && player.socketId !== socket.id) {
       const previous = io.sockets.sockets.get(player.socketId);
@@ -278,6 +289,89 @@ io.on('connection', (socket) => {
 
   socket.on('connect4:leave', safely(() => { detachConnectFour(); return {}; }));
 
+  function attachReversi(room, player) {
+    detach();
+    detachBingo();
+    detachConnectFour();
+    if (socket.data.reversiCode && (socket.data.reversiCode !== room.code || socket.data.reversiToken !== player.token)) detachReversi();
+    if (player.socketId && player.socketId !== socket.id) {
+      const previous = io.sockets.sockets.get(player.socketId);
+      previous?.leave('reversi:' + room.code);
+      if (previous) {
+        previous.data.reversiCode = null;
+        previous.data.reversiToken = null;
+      }
+    }
+    player.socketId = socket.id;
+    socket.data.reversiCode = room.code;
+    socket.data.reversiToken = player.token;
+    socket.join('reversi:' + room.code);
+    room.updatedAt = Date.now();
+  }
+
+  function detachReversi() {
+    const code = socket.data.reversiCode;
+    const token = socket.data.reversiToken;
+    if (!code || !token) return;
+    try {
+      const { room, player } = reversis.authorize(code, token);
+      if (player.socketId === socket.id) {
+        player.socketId = null;
+        room.updatedAt = Date.now();
+        broadcastReversi(room);
+      }
+    } catch { /* expired room */ }
+    socket.leave('reversi:' + code);
+    socket.data.reversiCode = null;
+    socket.data.reversiToken = null;
+  }
+
+  function ownReversiRoom() {
+    if (!socket.data.reversiCode || !socket.data.reversiToken) throw new GameError('Join a Reversi room first.');
+    const result = reversis.authorize(socket.data.reversiCode, socket.data.reversiToken);
+    if (result.player.socketId !== socket.id) throw new GameError('Your session moved to another device.');
+    return result;
+  }
+
+  socket.on('reversi:create', safely(({ name }) => {
+    detachReversi();
+    const { room, player } = reversis.create(name);
+    attachReversi(room, player);
+    broadcastReversi(room);
+    return { code: room.code, token: player.token, room: publicReversiRoom(room, player.id) };
+  }));
+
+  socket.on('reversi:join', safely(({ code, name }) => {
+    detachReversi();
+    const { room, player } = reversis.join(code, name);
+    attachReversi(room, player);
+    broadcastReversi(room);
+    return { code: room.code, token: player.token, room: publicReversiRoom(room, player.id) };
+  }));
+
+  socket.on('reversi:resume', safely(({ code, token }) => {
+    const { room, player } = reversis.join(code, null, token);
+    attachReversi(room, player);
+    broadcastReversi(room);
+    return { code: room.code, token: player.token, room: publicReversiRoom(room, player.id) };
+  }));
+
+  socket.on('reversi:place', safely(({ index }) => {
+    const { room } = ownReversiRoom();
+    reversis.play(room.code, socket.data.reversiToken, index);
+    broadcastReversi(room);
+    return {};
+  }));
+
+  socket.on('reversi:rematch', safely(() => {
+    const { room } = ownReversiRoom();
+    reversis.requestRematch(room.code, socket.data.reversiToken);
+    broadcastReversi(room);
+    return {};
+  }));
+
+  socket.on('reversi:leave', safely(() => { detachReversi(); return {}; }));
+
   socket.on('room:create', safely(({ name, mode }) => {
     detach();
     const { room, player } = games.create(name, mode);
@@ -330,10 +424,10 @@ io.on('connection', (socket) => {
   }));
 
   socket.on('room:leave', safely(() => { detach(); return {}; }));
-  socket.on('disconnect', () => { detach(); detachBingo(); detachConnectFour(); });
+  socket.on('disconnect', () => { detach(); detachBingo(); detachConnectFour(); detachReversi(); });
 });
 
-const interval = setInterval(() => { games.cleanup(); bingos.cleanup(); connectFours.cleanup(); }, 10 * 60 * 1000);
+const interval = setInterval(() => { games.cleanup(); bingos.cleanup(); connectFours.cleanup(); reversis.cleanup(); }, 10 * 60 * 1000);
 interval.unref();
 
 const port = Number(process.env.PORT || 3001);

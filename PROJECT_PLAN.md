@@ -1,6 +1,6 @@
 # Fourcast — Project Plan & Progress
 
-_Last updated: 2026-11-11_
+_Last updated: 2026-11-12_
 
 ## Goal
 
@@ -41,7 +41,8 @@ Build a simple, good-looking mobile-first, online multiplayer four-digit guessin
 
 - [x] Dedicated GitHub repository created by user: `HY0831/fourcast-number-duel`
 - [x] All 21 source/project files pushed to `main` on GitHub
-- [x] Original seven-game Playgrove web service deployed on Render Free in Singapore; latest polish release is a separate deployment step.\n- [ ] Final real-phone check from two separate networks following the latest release.
+- [x] Eight-game Playgrove web service live on Render Free in Singapore, with ninth-game Reversi release in progress.
+- [ ] Final real-phone check from two separate networks following the latest release.
 - [x] Confirm personal-use hosting: no database, Redis, or extra paid services needed; multiplayer rooms intentionally reset when Render restarts or sleeps.
 - [ ] Install frontend dependencies, perform the full typecheck/build, and test on Android and iOS browsers (npm registry blocked in current workspace)
 - [x] Mobile web-app manifest and install icons (HTTPS host required for home-screen installation)
@@ -278,8 +279,25 @@ Approved self-contained single-player network deduction game, without a database
 - [x] Add local progress restoration, per-puzzle best times, completed status and the searchable eighth game card / route.
 - [x] Add independent engine uniqueness tests and eight-game browser regression coverage.
 - [x] **Verification gate:** 103/103 Node tests, TypeScript and Vite production build passed ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43053146641)); all 53 Chromium tests passed with no retries ([browser CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43053146775)).
-- [ ] **Merge gate:** squash-merge only after QA passes.
-- [ ] **Render gate:** deploy to existing free Singapore service and verify new release; multiplayer in-memory rooms may reset on deployment.
+- [x] **Merge gate:** Hashi PR #21 squash-merged into main at d1c7a58b after both suites passed.
+- [x] **Render gate:** Hashi became live on Render Free on 2026-11-12 MYT at d1c7a58b.
 - [ ] **Manual device QA:** touch/drag and accessibility checks on physical Android/iOS phones remain.
 
 See `HASHI_RULES.md` for rules, 45-puzzle inventory and acceptance criteria. Previous V5 database plan remains canceled.
+
+## Game #9 — Reversi online strategy duel (2026-11-12)
+
+**Approved direction:** Mind-challenging classic strategy game for two, preserving Playgrove's memory-only rooms and free hosting. Branch: feature/playgrove-reversi-online-20261112.
+
+- [x] Authoritative 8×8 Reversi engine with legal flips, automatic forced passes, equal-score draws and final-disc scoring.
+- [x] Secure Socket.IO two-player rooms, private invitations, seat-bound tokens, player presence, reconnect, and two-party colour-swapping rematches.
+- [x] Mobile-first responsive Black/White board, legal move highlights, scoreboard, move history highlight and status banners.
+- [x] Ninth game hub card, /games/reversi route, resume control and navigation warnings.
+- [x] Node engine tests, real socket reconnection/seat-release tests and Chromium E2E (pairing, full match, rematch, mobile widths).
+- [x] **TypeScript, Node and Vite build:** 116/116 Node tests, TypeScript and production Vite build passed ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43061255200)).
+- [x] **Nine-game Chromium QA:** 60/60 browser tests passed with no retries, including full Reversi game/rematch and 320px mobile board ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43061255344)).
+- [ ] Squash-merge PR only after green CI and update backlog with the final test counts.
+- [ ] Verify a single Render Free release at exact main commit and inspect health/status.
+- [ ] Manual iOS/Android touch, invite sharing, VoiceOver/TalkBack checks still needed.
+
+See REVERSI_RULES.md for full rules and acceptance criteria. No new database, paid infrastructure or external API.

@@ -1,3 +1,3 @@
-export type PlaygrovePage = 'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048' | 'nonogram' | 'hashi';
+export type PlaygrovePage = 'hub' | 'fourcast' | 'sudoku' | 'bingo' | 'minesweeper' | 'connect-four' | '2048' | 'nonogram' | 'hashi' | 'reversi';
 export type RouteResolution = { page: PlaygrovePage; redirect: string | null };
 export function resolveHubRoute(pathname: string, search?: string): RouteResolution;
