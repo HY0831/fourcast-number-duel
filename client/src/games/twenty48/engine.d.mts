@@ -1,0 +1,14 @@
+export type Direction = 'up' | 'down' | 'left' | 'right';
+export type Status = 'playing' | 'won' | 'lost';
+export type Game = { board: number[]; score: number; moves: number; status: Status; reached2048: boolean; spawnIndex: number | null };
+export const GRID_SIZE: 4;
+export const WIN_VALUE: 2048;
+export const DIRECTIONS: ReadonlyArray<Direction>;
+export function spawnTile(board: number[], random?: () => number): { board: number[]; index: number | null; value: number | null };
+export function createGame(random?: () => number): Game;
+export function canMove(board: number[]): boolean;
+export function collapseLine(line: number[]): { line: number[]; points: number };
+export function moveGame(game: Game, direction: Direction, random?: () => number): { game: Game; moved: boolean; gained: number };
+export function continueAfterWin(game: Game): Game;
+export function maximumTile(board: number[]): number;
+export function restoreGame(value: unknown): Game | null;

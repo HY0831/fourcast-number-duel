@@ -179,3 +179,10 @@
 @media (min-width:960px) {
   .pg-games-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
 }
+
+/* Sixth Playgrove game: 2048 */
+.pg-2048-card { border-top:5px solid var(--pg-foliage); }
+.pg-2048-symbol { background:var(--pg-seedling); color:var(--pg-foliage); }
+.pg-2048-card .pg-card-kicker { color:var(--pg-foliage); }
+.pg-2048-play { background:var(--pg-foliage); }
+.pg-2048-play:hover { background:var(--pg-redwood); }

@@ -174,3 +174,10 @@ One Node process serves Express static React assets and Socket.IO. In developmen
 - `/games/connect-four` with Playgrove fifth card, mobile-first tap-any-column board, last disc highlight and unmistakable winning-line outline, active room return warning, saved room session.
 - All existing Fourcast, Bingo, Sudoku and Minesweeper functionality preserved and tested.
 - Implemented on `feature/playgrove-connect-four-v1-20261110` and verified with unit tests, build and Chromium two-player browser regression suite prior to merging. See `CONNECT_FOUR_RULES.md`.
+
+## Sixth game — 2048 (2026-11-11)
+
+- Added classic single-player 2048 on a 4×4 board; matching tiles merge once per move and one tile spawns after each valid move (90% chance of 2, 10% chance of 4). Reach 2048 to win and optionally continue; no moves left means loss.
+- Added `/games/2048`, a sixth Playgrove card, an independent pure game engine and responsive UI with touch swipes, keyboard and direction buttons, score/best, one-step undo, browser autosave, and New Game.
+- No server, database, or Socket.IO changes; Fourcast, Sudoku, Bingo, Minesweeper and Connect Four remain intact.
+- Branch `feature/playgrove-2048-v1-20261111`; TypeScript/unit/build and six-game Playwright browser checks required before merge. See `2048_RULES.md`.

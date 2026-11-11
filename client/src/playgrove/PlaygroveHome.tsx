@@ -7,6 +7,7 @@ type Props = {
   onPlayBingo: () => void
   onPlayMinesweeper: () => void
   onPlayConnectFour: () => void
+  onPlay2048: () => void
   hasSavedConnectFour: boolean
   onResumeConnectFour: () => void
   hasSavedBingo: boolean
@@ -14,7 +15,7 @@ type Props = {
   onResumeFourcast: () => void
 }
 
-export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlaySudoku, onPlayBingo, onPlayMinesweeper, onPlayConnectFour, hasSavedBingo, hasSavedConnectFour, onResumeBingo, onResumeFourcast, onResumeConnectFour }: Props) {
+export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlaySudoku, onPlayBingo, onPlayMinesweeper, onPlayConnectFour, onPlay2048, hasSavedBingo, hasSavedConnectFour, onResumeBingo, onResumeFourcast, onResumeConnectFour }: Props) {
   return <div className="pg-shell">
     <div className="pg-background-orb pg-orb-one" aria-hidden="true" />
     <div className="pg-background-orb pg-orb-two" aria-hidden="true" />
@@ -80,7 +81,7 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
               <span className="pg-section-eyebrow">THE GAME LIBRARY</span>
               <h2 id="pg-library-title">Explore games</h2>
             </div>
-            <span className="pg-game-count">05 GAMES AVAILABLE</span>
+            <span className="pg-game-count">06 GAMES AVAILABLE</span>
           </div>
           <div className="pg-games-grid">
             <article className="pg-game-card">
@@ -166,6 +167,22 @@ export default function PlaygroveHome({ hasSavedSession, onPlayFourcast, onPlayS
                 <span><Wifi size={16}/> Online multiplayer</span>
               </div>
               <button className="pg-play-button pg-connect-four-play" type="button" onClick={onPlayConnectFour}>Play Connect Four <ArrowRight size={18}/></button>
+            </article>
+            <article className="pg-game-card pg-2048-card">
+              <div className="pg-card-top">
+                <div className="pg-game-symbol pg-2048-symbol"><Hash size={37} strokeWidth={2.1}/></div>
+                <span className="pg-availability"><span className="pg-availability-dot"/> Available</span>
+              </div>
+              <div className="pg-game-description">
+                <span className="pg-card-kicker">THE SLIDING NUMBER PUZZLE</span>
+                <h3>2048</h3>
+                <p>Slide matching number tiles, build your score and reach 2048.</p>
+              </div>
+              <div className="pg-game-features">
+                <span><Users size={16}/> Solo play</span>
+                <span><Grid3X3 size={16}/> 4 × 4 puzzle</span>
+              </div>
+              <button className="pg-play-button pg-2048-play" type="button" onClick={onPlay2048}>Play 2048 <ArrowRight size={18}/></button>
             </article>
             <div className="pg-coming-soon">
               <div className="pg-coming-icon"><Sprout size={30} strokeWidth={1.8} /></div>

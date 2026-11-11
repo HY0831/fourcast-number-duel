@@ -4,6 +4,8 @@
 
 ## Available Games
 
+- **2048** — single-player sliding tile puzzle with swipe/arrow controls, score, undo, browser autosave, and win/continue screens. Play at `/games/2048`. See [2048_RULES.md](2048_RULES.md).
+
 - **Connect Four** — online 2-player 7×6 disc-drop strategy game. Play in private rooms; four connected discs win, full board without a win is a draw. Both players approve rematches, and active sessions resume after reconnecting. Play at `/games/connect-four`. See [CONNECT_FOUR_RULES.md](CONNECT_FOUR_RULES.md).
 
 - **Fourcast** — 2-player real-time online number duel, with private room invitations, distinct secret-code modes, per-player guess histories and rematches.
@@ -16,6 +18,7 @@ Fourcast is unchanged: its current real-time server, URL and existing invitation
 ## Explore Playgrove
 
 - `/` — Playgrove Game Library: available Fourcast card, game introduction, coming-soon panel and saved-session prompt.
+- `/games/2048` — solo number-sliding puzzle with local best score and undo.
 - `/games/connect-four` — real-time private Connect Four rooms (invites with `?room=ABC123`).
 - `/games/minesweeper` — solo Minesweeper with three classic difficulty levels.
 - `/games/bingo` — multiplayer Bingo Duel, private invites at `/games/bingo?room=ABC123`.\n- `/games/sudoku` — single-player Sudoku (Easy / Medium / Hard).\n- `/games/fourcast` — the existing Fourcast create/join and gameplay experience.
