@@ -122,3 +122,35 @@
 @media(max-width:480px){.rv-frame{padding:0 13px}.rv-topbar{min-height:74px;gap:6px}.rv-brand{font-size:18px}.rv-brand svg{width:17px}.rv-back{padding:9px;font-size:11px!important}.rv-online{font-size:10px}.rv-entry{padding-bottom:45px}.rv-intro>p{font-size:14px}.rv-rules{margin-top:22px}.rv-rules p{margin-right:0;max-width:100%;padding-bottom:100px}.rv-mini-board{right:20px;bottom:12px;transform:rotate(0)}.rv-form{padding:22px 18px}.rv-game{padding:24px 0 48px}.rv-room-heading{align-items:start}.rv-room-heading h1{font-size:26px}.rv-room-heading .rv-outline{padding:8px;font-size:11px!important}.rv-scoreboard{gap:7px}.rv-score{padding:11px 8px;gap:7px}.rv-score>.rv-disc{width:23px;height:23px}.rv-score strong{font-size:12px}.rv-score>b{font-size:22px}.rv-score span:not(.rv-disc){font-size:9px}.rv-board-panel{padding:10px}.rv-board-wrap{padding:5px}.rv-board{gap:1px;padding:3px;border-width:2px}.rv-board-row{gap:1px}.rv-turn-banner{padding:12px}.rv-turn-banner>svg{width:17px}.rv-invite{gap:4px}.rv-invite span{width:40px;height:48px;font-size:20px}}
 @media(max-width:340px){.rv-invite span{width:36px;height:43px}.rv-brand{font-size:16px}.rv-back{font-size:10px!important}.rv-score>b{font-size:19px}.rv-board-heading{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.rv-shell *, .rv-shell *::before,.rv-shell *::after{transition:none!important;animation:none!important}}
+
+
+/* Game #9: additional same-device mode, move-history viewer and resignation controls. */
+.rv-local-switch{border:1px solid #E3E89085;border-radius:12px;background:#E3E89012;color:var(--rv-paper);min-height:45px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 14px;font-size:12px!important;text-align:left}
+.rv-local-switch strong{color:var(--rv-lime)}
+.rv-online-local-cta{margin-top:17px;width:100%;max-width:480px}
+.rv-offline-label{color:var(--rv-lime)}
+.rv-local-setup{display:flex;flex-direction:column;gap:13px;padding:27px;min-width:0}
+.rv-local-setup .rv-eyebrow{color:var(--rv-leaf)}
+.rv-local-setup h2{font-family:'Space Grotesk',sans-serif;font-size:27px;margin:3px 0 6px}
+.rv-local-setup>label{display:flex;flex-direction:column;gap:6px;color:var(--rv-leaf);font-size:12px;font-weight:800}
+.rv-local-setup input{border:1px solid #9AA58E;border-radius:10px;min-height:45px;padding:10px 12px;font-size:14px;color:var(--rv-ink);background:#fff}
+.rv-local-setup>p{font-size:12px;line-height:1.65;color:#60584F;margin:2px 0 3px}
+.rv-local-resume{color:var(--rv-ink);border-color:#9AA58E}
+.rv-local-setup .rv-local-switch{border:0;background:#EBEBDD;color:var(--rv-ink);font-size:12px!important;margin-top:2px}
+.rv-local-setup .rv-local-switch strong{color:var(--rv-leaf)}
+.rv-history{padding:19px;min-width:0}
+.rv-history-title{display:flex;align-items:center;gap:9px;color:var(--rv-leaf);margin-bottom:11px}
+.rv-history-title h2{font-family:'Space Grotesk',sans-serif;font-size:17px;letter-spacing:-.3px;margin:0}
+.rv-history-list{display:flex;flex-direction:column;gap:5px;overflow:auto;max-height:235px;overscroll-behavior:contain;padding:2px}
+.rv-history-list button{border:1px solid transparent;background:#F0EEE5;color:var(--rv-ink);padding:8px 11px;border-radius:8px;min-height:37px;text-align:left;font-size:12px!important;font-weight:650!important}
+.rv-history-list button[aria-pressed=true]{background:#E2EBCB;border-color:#7F9866}
+.rv-history-list button:hover{border-color:#A5AD92}
+.rv-live{margin-top:11px;border:0;background:var(--rv-leaf);color:#fff;border-radius:9px;padding:10px 13px;min-height:42px;display:flex;justify-content:center;align-items:center;gap:8px;width:100%;font-size:12px!important;font-weight:800!important}
+.rv-local-actions{padding:16px;display:flex;flex-direction:column;gap:10px}
+.rv-local-actions .rv-outline{color:var(--rv-ink);border-color:#9AA58E}
+.rv-resign{margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border:1px solid #B25D3E90;background:#FFF4EC;color:#823A2A;border-radius:9px;width:100%;min-height:43px;font-size:12px!important;font-weight:800!important}
+.rv-resign:hover{border-color:#823A2A}
+.rv-cell-flipped .rv-disc{animation:rv-flip-in .35s ease-out both}
+@keyframes rv-flip-in{0%{transform:rotateY(90deg) scale(.8)}100%{transform:rotateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.rv-cell-flipped .rv-disc{animation:none!important}}
+@media(max-width:620px){.rv-local-setup{padding:20px}.rv-history{padding:14px}.rv-online-local-cta{max-width:none}}

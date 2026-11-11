@@ -1,0 +1,10 @@
+import type {Disc,PlayerDisc} from './reversi-rules.mjs';
+export type LocalMove={index:number;disc:PlayerDisc;flipped:number[];board:Disc[]};
+export type LocalState={round:number;blackSeat:number;names:string[];phase:'playing'|'finished';board:Disc[];turn:PlayerDisc;moves:LocalMove[];passed:PlayerDisc|null;winner:PlayerDisc|null;draw:boolean;resignedBy:PlayerDisc|null};
+export function freshLocal(round?:number,names?:string[]):LocalState;
+export function playLocal(s:LocalState,index:number):LocalState;
+export function resignLocal(s:LocalState):LocalState;
+export function rematchLocal(s:LocalState):LocalState;
+export function localPlayerName(s:LocalState,disc:PlayerDisc):string;
+export function inspectLocal(s:LocalState):{scores:{black:number;white:number;empty:number};legal:number[];lastMove:LocalMove|null};
+export function restoreLocal(input:unknown):LocalState;

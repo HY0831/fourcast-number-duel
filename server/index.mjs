@@ -363,6 +363,13 @@ io.on('connection', (socket) => {
     return {};
   }));
 
+  socket.on('reversi:resign', safely(() => {
+    const {room}=ownReversiRoom();
+    reversis.resign(room.code,socket.data.reversiToken);
+    broadcastReversi(room);
+    return {};
+  }));
+
   socket.on('reversi:rematch', safely(() => {
     const { room } = ownReversiRoom();
     reversis.requestRematch(room.code, socket.data.reversiToken);

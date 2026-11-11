@@ -47,3 +47,25 @@
 - [ ] Squash-merge feature PR only when both pipelines are green.
 - [ ] Deploy exact reviewed commit to existing Render Free Singapore service, verify /health and production logs.
 - [ ] Real Android/iOS two-device input and VoiceOver/TalkBack checks remain manual (not covered by Chromium CI).
+
+
+## Approved Reversi v1 completion — local and online (2026-11-12)
+
+The original online Game #9 release in PR #22 provided the standard eight-direction flipping rules, private room codes and secure reconnection. The approved v1 additionally requires **same-device local play, resignation and full move-history review**; these changes are isolated on `feature/playgrove-reversi-local-history-resign-20261112`.
+
+- A **local two-player** choice on the Reversi entry screen opens a distinct React component with no socket or backend calls. Players can name themselves, take alternating turns on a single device and continue while offline after initial loading.
+- The shared pure move engine (`reversi-rules.mjs`) is imported by both server gameplay and local UI; it guarantees equivalent legal moves, captures, disc totals, automatic passes and finishing conditions.
+- Local match progress is saved in `playgrove:reversi:local:v1`. A saved match is replay-validated on restore to reject corrupt states; same-device match history and colour-swapping rematches remain browser-only.
+- Online rooms record authoritative, immutable board snapshots for the **complete move history**; the history viewer can inspect the starting position and prior moves without changing the server state or allowing a move while reviewing.
+- Resignation requires a confirmation dialog. The server authorizes online resignation from the authenticated session and grants the opponent the round; local resignation grants the opposing colour the win. A rematch resets histories and swaps colours. Online rematches still require both players' agreement.
+- Disc flipping uses a short transform animation unless `prefers-reduced-motion: reduce` is set.
+- Existing seven-game and Hashi functionality, online room tokens, free Render plan and database-free architecture are unchanged.
+
+### Verification and release gates
+
+- [x] Existing online Reversi (PR #22) completed and merged to main before this extension.
+- [x] Extract shared rules, implement local match and save, online resignation and full move history.
+- [x] Add Node and Chromium tests for the new behaviours and all nine existing games.
+- [ ] Pass the complete TypeScript / Node / build check and nine-game Chromium suite on the extension PR.
+- [ ] Merge only after CI succeeds, then publish to existing Render Free service; verify production SHA and startup health.
+- [ ] Physical iOS/Android two-player testing and screen-reader checks remain manual acceptance criteria.

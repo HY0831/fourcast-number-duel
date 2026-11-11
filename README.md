@@ -4,7 +4,7 @@
 
 ## Available Games
 
-- **Reversi** — a real-time **two-player 8×8 strategy duel**. Place Black/White discs, flip enclosed lines horizontally, vertically and diagonally, automatically pass when a player has no legal moves, and count discs when neither can play. Private room code/link, live score, turn and move highlights, reconnectable session and consent-based colour-swapping rematches. Play at `/games/reversi`. See [REVERSI_RULES.md](REVERSI_RULES.md).
+- **Reversi** — a classic two-player 8×8 strategy duel with **online private rooms or same-device local play** (no network required after loading). Flip captured Black/White discs, use highlighted legal moves, automatically pass if no move exists, review historical board positions without altering the current game, and resign with confirmation. Online games support reconnection, private invitations and mutually agreed rematches; local games save progress on the same browser, and rematches swap colours. Reduced-motion disc animations are supported. Play at `/games/reversi`. See [REVERSI_RULES.md](REVERSI_RULES.md).
 
 
 - **Hashi: Bridges** — 45 fixed, independently unique-solution numbered-island network puzzles: 15 Easy (7×7), 15 Medium (10×10), and 15 Hard (15×15). Build zero, one or two bridges between adjacent islands, obey numbers and make one connected network. Includes tap/drag, keyboard, no-bridge marks, Undo/Redo, three hints, Check, Pause, zoom, local save and best times. Play at `/games/hashi`. See [HASHI_RULES.md](HASHI_RULES.md).
@@ -85,7 +85,7 @@ After it is hosted, the host creates a private room and sends an invite link or 
 
 ## Personal-use deployment
 
-Playgrove is maintained as a free, small game collection for two people. All nine games use the existing Render Node service and no external database. Fourcast, Bingo Duel, Connect Four and Reversi support the current room-code and reconnect-token flow **while the same server process remains alive**. Solo games save progress locally in your browser. If the service sleeps, is redeployed or restarts, online room states reset, but you can create a fresh room in seconds.
+Playgrove is maintained as a free, small game collection for two people. All nine games use the existing Render Node service and no external database. Fourcast, Bingo Duel, Connect Four and **online** Reversi support room codes and reconnect tokens **while the same server process remains alive**. **Local Reversi** is saved in the browser and works without an online room or database. Solo games save progress locally in your browser. If the service sleeps, is redeployed or restarts, online room states reset, but you can create a fresh room in seconds.
 
 Before publishing code changes, check for active online matches to avoid disrupting players. See the deployment and test checklist in `PROJECT_PLAN.md`.
 

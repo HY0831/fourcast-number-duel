@@ -301,3 +301,21 @@ See `HASHI_RULES.md` for rules, 45-puzzle inventory and acceptance criteria. Pre
 - [ ] Manual iOS/Android touch, invite sharing, VoiceOver/TalkBack checks still needed.
 
 See REVERSI_RULES.md for full rules and acceptance criteria. No new database, paid infrastructure or external API.
+
+
+## Reversi v1 full-scope completion — local play, resignation and history (2026-11-12)
+
+**Context:** Online Reversi had already been merged in PR #22. The approved v1 also requires local two-player, resignation, full move history and disc flip animation. Complete these missing features without duplicating the game or provisioning a database. Current branch: `feature/playgrove-reversi-local-history-resign-20261112`.
+
+- [x] Reuse one pure 8×8 Reversi rules implementation for server and browser-local gameplay, keeping server turn/session authority.
+- [x] Build local two-player setup, custom player names, offline turn exchange, automatic passes, browser progress restoration, game result and colour-swapping rematches.
+- [x] Add readonly board history replay to both online and local mode, including the starting position, without altering live match state.
+- [x] Add confirmed online/local resignation; only the authenticated online room member can resign, awarding the opponent a win.
+- [x] Add reduced-motion-friendly disc flip animation and scoped UI controls.
+- [x] Add Node tests and Playwright local/offline/online history/resign tests.
+- [ ] **Verification:** TypeScript, Node tests, Vite build and all Chromium browser tests must pass.
+- [ ] **Merge:** only squash-merge after checks are green.
+- [ ] **Deployment:** verify Render auto-deploy; deploy one reviewed `main` commit and confirm app is live.
+- [ ] **Manual QA:** test on actual Android/iOS phones, including VoiceOver/TalkBack.
+
+Design and implementation recorded in `REVERSI_RULES.md`; zero additional paid services.
