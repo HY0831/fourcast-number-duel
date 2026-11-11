@@ -209,9 +209,11 @@ export default function MinesweeperPage({ onBack }: Props) {
               </div>
             </div>
 
+            <p id="msw-keyboard-help" className="pg-sr-only">Use arrow keys to navigate squares, Enter or Space for the selected action, and F to flag or unflag a square. The first reveal and surrounding squares are safe.</p>
+            <div className="pg-sr-only" role="status" aria-live="polite" aria-atomic="true">{opened} safe squares revealed; {flags} flags placed; {game.status === 'won' ? 'game won' : game.status === 'lost' ? 'game lost' : 'game in progress'}.</div>
             <div className="msw-board-wrapper">
             <div className="msw-scroll" ref={boardRef} aria-label="Scrollable Minesweeper board" tabIndex={0}>
-              <div className="msw-grid" role="grid" aria-label={`${config.label} Minesweeper board`}
+              <div className="msw-grid" role="grid" aria-label={`${config.label} Minesweeper board`} aria-describedby="msw-keyboard-help"
                 aria-rowcount={game.rows} aria-colcount={game.cols}
                 data-level={game.level} data-zoom={zoom}
                 style={{ gridTemplateColumns: `repeat(${game.cols}, var(--msw-cell-size))` }}>
