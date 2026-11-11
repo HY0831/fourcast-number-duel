@@ -2,6 +2,7 @@ import {randomBytes, randomUUID} from 'node:crypto';
 import {GameError, normalizeName, normalizeRoomCode, ROOM_TTL_MS} from './game-engine.mjs';
 import {BLACK,WHITE,startingBoard,legalMoves,playDisc,discCounts} from '../client/src/games/reversi/reversi-rules.mjs';
 export {REVERSI_SIZE,REVERSI_CELLS,BLACK,WHITE,startingBoard,flipsForMove,legalMoves,playDisc,discCounts} from '../client/src/games/reversi/reversi-rules.mjs';
+const ALPHABET='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 const playerDisc = (room,playerIndex)=>playerIndex===room.blackIndex?BLACK:WHITE;
 const createPlayer = (name,isHost)=>({
