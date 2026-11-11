@@ -40,6 +40,6 @@ Run alongside the **entire existing 95-test Node suite** and Chromium game regre
 
 ## Merge gates
 
-- [ ] TypeScript, Node tests and production Vite build pass.
-- [ ] Full Chromium Playwright regression including 5 new accessibility tests passes.
-- [ ] Merge only after both workflows pass.
+- [x] TypeScript, 95 Node tests and production Vite build passed ([GitHub Actions](https://github.com/HY0831/fourcast-number-duel/actions/runs/43031520739)).
+- [x] Full Chromium Playwright regression passed: 45/45 tests, no retries, including 5 new accessibility tests ([GitHub Actions](https://github.com/HY0831/fourcast-number-duel/actions/runs/43031520575)).
+- [x] Merged PR #15 after both workflows passed: `main` commit `140b1254`.
