@@ -277,7 +277,7 @@ Approved self-contained single-player network deduction game, without a database
 - [x] Add tap and drag island controls, clickable bridge paths, keyboard activation, no-bridge marks, Undo/Redo, three hints, Check, Pause and zoom.
 - [x] Add local progress restoration, per-puzzle best times, completed status and the searchable eighth game card / route.
 - [x] Add independent engine uniqueness tests and eight-game browser regression coverage.
-- [ ] **Verification gate:** all TypeScript, Node, Vite build and full Chromium browser checks must be green.
+- [x] **Verification gate:** 103/103 Node tests, TypeScript and Vite production build passed ([CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43053146641)); all 53 Chromium tests passed with no retries ([browser CI](https://github.com/HY0831/fourcast-number-duel/actions/runs/43053146775)).
 - [ ] **Merge gate:** squash-merge only after QA passes.
 - [ ] **Render gate:** deploy to existing free Singapore service and verify new release; multiplayer in-memory rooms may reset on deployment.
 - [ ] **Manual device QA:** touch/drag and accessibility checks on physical Android/iOS phones remain.
