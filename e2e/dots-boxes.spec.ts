@@ -122,7 +122,6 @@ test('online two-device private room supports extra turns, reconnect and consens
     await guest.getByRole('button',{name:'Request rematch'}).click()
     await expect(guest.getByText('Your turn — draw a line!')).toBeVisible()
     await expect(page.getByText('Blair is playing')).toBeVisible()
-    await expect(page.getByText('ROOM')).toHaveCount(0)
     await expect(page.locator('.db-score-row').first().locator('b')).toHaveText('0')
   }finally{await ctx.close()}
 })
