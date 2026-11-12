@@ -109,8 +109,8 @@ test('game library filters Solo and Multiplayer without hiding or renaming exist
   await page.goto('/')
   const cards = page.locator('.pg-game-card:visible')
   const filters = page.getByRole('group', { name: 'Filter games by mode' })
-  await expect(cards).toHaveCount(9)
-  await expect(page.getByText('9 games shown')).toBeVisible()
+  await expect(cards).toHaveCount(10)
+  await expect(page.getByText('10 games shown')).toBeVisible()
 
   await filters.getByRole('button', { name: 'Solo' }).click()
   await expect(filters.getByRole('button', { name: 'Solo' })).toHaveAttribute('aria-pressed', 'true')
@@ -118,21 +118,21 @@ test('game library filters Solo and Multiplayer without hiding or renaming exist
   for (const name of ['Sudoku', 'Minesweeper', '2048', 'Nonogram', 'Hashi: Bridges']) {
     await expect(page.getByRole('heading', { name, exact: true })).toBeVisible()
   }
-  for (const name of ['Fourcast', 'Bingo Duel', 'Connect Four', 'Reversi']) {
+  for (const name of ['Fourcast', 'Bingo Duel', 'Connect Four', 'Reversi', 'Dots & Boxes']) {
     await expect(page.getByRole('heading', { name, exact: true })).toBeHidden()
   }
   await expect(page.getByText('5 games shown')).toBeVisible()
 
   await filters.getByRole('button', { name: 'Multiplayer' }).click()
-  await expect(cards).toHaveCount(4)
-  await expect(page.getByText('4 games shown')).toBeVisible()
-  for (const name of ['Fourcast', 'Bingo Duel', 'Connect Four', 'Reversi']) {
+  await expect(cards).toHaveCount(5)
+  await expect(page.getByText('5 games shown')).toBeVisible()
+  for (const name of ['Fourcast', 'Bingo Duel', 'Connect Four', 'Reversi', 'Dots & Boxes']) {
     await expect(page.getByRole('heading', { name, exact: true })).toBeVisible()
   }
 
   await filters.getByRole('button', { name: 'All games' }).click()
-  await expect(cards).toHaveCount(9)
-  await expect(page.getByText('09 GAMES AVAILABLE')).toBeVisible()
+  await expect(cards).toHaveCount(10)
+  await expect(page.getByText('10 GAMES AVAILABLE')).toBeVisible()
 })
 
 test('library name search, empty state and filter reset are functional and accessible', async ({ page }) => {
@@ -148,7 +148,7 @@ test('library name search, empty state and filter reset are functional and acces
   await expect(page.getByRole('button', { name: 'Clear filters' })).toBeVisible()
   await page.getByRole('button', { name: 'Clear filters' }).click()
   await expect(search).toHaveValue('')
-  await expect(page.locator('.pg-game-card:visible')).toHaveCount(9)
+  await expect(page.locator('.pg-game-card:visible')).toHaveCount(10)
 })
 
 test('library filters survive returning from a lazily loaded game; small screens have no overflow', async ({ page }) => {
