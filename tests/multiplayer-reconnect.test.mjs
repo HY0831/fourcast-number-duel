@@ -238,12 +238,13 @@ test('switching a socket from Reversi to another game releases the previous Reve
   assert.equal(restore.room.players.every(p => p.online), true);
 });
 
-test('All four games release the original seat when the same socket resumes a different player', { timeout: 25000 }, async t => {
+test('All five online games release the original seat when the same socket resumes a different player', { timeout: 25000 }, async t => {
   for (const type of [
     { prefix: 'room', create: 'room:create', join: 'room:join', resume: 'room:resume', update: 'room:update' },
     { prefix: 'bingo', create: 'bingo:create', join: 'bingo:join', resume: 'bingo:resume', update: 'bingo:update' },
     { prefix: 'connect4', create: 'connect4:create', join: 'connect4:join', resume: 'connect4:resume', update: 'connect4:update' },
     { prefix: 'reversi', create: 'reversi:create', join: 'reversi:join', resume: 'reversi:resume', update: 'reversi:update' },
+    { prefix: 'dots', create: 'dots:create', join: 'dots:join', resume: 'dots:resume', update: 'dots:update' },
   ]) {
     const host = await connected(t);
     const guest = await connected(t);
@@ -262,4 +263,39 @@ test('All four games release the original seat when the same socket resumes a di
     assert.equal(oldSeat.ok, true, type.prefix);
     assert.equal(oldSeat.room.players.every(player => player.online), true, type.prefix);
   }
+});
+
+
+test('Dots & Boxes keeps captured boxes, whose turn, and invite tokens intact across reconnect', {timeout:25000}, async t=>{
+  const host=await connected(t),guest=await connected(t);
+  const created=await send(host,'dots:create',{name:'Alex',size:3});
+  const joined=await send(guest,'dots:join',{name:'Blair',code:created.code});
+  assert.equal(created.ok,true);assert.equal(joined.ok,true);
+  assert.equal(joined.room.size,3);
+  assert.equal((await send(host,'dots:line',{index:0})).ok,true);
+  const offline=nextUpdate(host,'dots:update',r=>r.roomPhase==='active'&&r.players.some(p=>p.number===2&&!p.online));
+  guest.disconnect();
+  const paused=await offline;
+  assert.equal(paused.edges[0],1);
+  assert.equal(paused.turn,2);
+  assert.equal((await send(host,'dots:line',{index:1})).ok,false);
+  const again=await connected(t);
+  const resumed=await send(again,'dots:resume',{code:created.code,token:joined.token});
+  assert.equal(resumed.ok,true);
+  assert.equal(resumed.room.players.every(p=>p.online),true);
+  assert.equal(resumed.room.edges[0],1);
+  assert.equal(resumed.room.turn,2);
+  assert.ok(!JSON.stringify(resumed.room).includes(joined.token));
+  assert.ok(!JSON.stringify(resumed.room).includes(created.token));
+  assert.equal((await send(again,'dots:line',{index:3})).ok,true);
+  const hostView=await send(host,'dots:resume',{code:created.code,token:created.token});
+  assert.equal(hostView.ok,true);
+  assert.equal(hostView.room.moves.length,2);
+  assert.equal(hostView.room.turn,1);
+  assert.equal((await send(host,'dots:line',{index:12})).ok,true);
+  assert.equal((await send(again,'dots:line',{index:13})).ok,true);
+  const box=await send(host,'dots:resume',{code:created.code,token:created.token});
+  assert.equal(box.room.owners[0],2);
+  assert.deepEqual(box.room.scores,[0,1]);
+  assert.equal(box.room.turn,2,'closing a box grants another turn');
 });
