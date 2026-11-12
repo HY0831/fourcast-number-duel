@@ -319,3 +319,25 @@ See REVERSI_RULES.md for full rules and acceptance criteria. No new database, pa
 - [ ] **Manual QA:** test on actual Android/iOS phones, including VoiceOver/TalkBack.
 
 Design and implementation recorded in `REVERSI_RULES.md`; zero additional paid services.
+
+
+## Playgrove Game #10 — Dots & Boxes (2026-11-12)
+
+**Approved scope:** Dots & Boxes is the tenth Playgrove game, replacing the unimplemented Wall Race proposal. Keep personal-use, database-free and zero additional API spending. Feature branch: `feature/playgrove-dots-boxes-game-10-20261112`.
+
+- [x] Implement shared 3×3 / 5×5 / 7×7 Dots & Boxes rules: draw unclaimed adjacent lines only, fourth-edge box capture, extra turns including double-box captures, full-board winners, scores, rematches, resignation.
+- [x] Add private online room codes, secure per-player socket sessions, turn validation, reconnection, disconnect pause, two-player admission, cross-game seat release and memory-only storage.
+- [x] Add same-device two-player mode, local autosave with replay validation, offline gameplay after loading, and resumable local matches.
+- [x] Add Playgrove-themed mobile-first board, animations, color-coded box ownership, accessible line controls, historical position review, and three board sizes.
+- [x] Add Game #10 dashboard card, search, multiplayer filter, deep-link route and saved online-room resumption.
+- [x] Add Node tests and Playwright tests covering all ten games, board sizes, scoring, capture chains, reconnection, storage denial, saves, history and mobile layouts.
+- [ ] **Release gate:** TypeScript, Node, Vite production build and ten-game Chromium suite pass without failures or retries.
+- [ ] **Merge gate:** merge the reviewed PR only after the checks are green.
+- [ ] **Render gate:** verify the exact main commit is deployed to the existing free Singapore service, not a new service.
+- [ ] **Real-device QA:** Android/iOS touch, two separate networks and accessibility checks require manual testing.
+
+See DOTS_BOXES_RULES.md for rules and complete acceptance criteria. No database, Redis, additional paid infrastructure or API.
+
+### Reversi v1 release closure
+
+Previous PR #23 was merged into main as `199a6b64d3adc9fa9793692c87395f2b092fa34f`; 125/125 Node and 65/65 Chromium tests passed without retries, and Render deployment `dep-dbqae4ijnfac73dbk2hg` became live on 2026-11-12 01:34 MYT. Manual phone testing remains open.

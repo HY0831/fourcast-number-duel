@@ -81,7 +81,10 @@ test('online resignation requires confirmation and both players see the immutabl
   await page.goto('/games/reversi')
   await page.getByLabel('YOUR NICKNAME').fill('Alex')
   await ready(page,'Create Reversi room')
+  // Creating the room is async; wait for the invitation before reading its code.
+  await expect(page.getByRole('heading',{name:'Waiting for your friend.'})).toBeVisible()
   const code=(await page.locator('.rv-invite span').allTextContents()).join('')
+  expect(code).toMatch(/^[A-Z0-9]{6}$/)
   await guest.goto('/games/reversi?room='+code)
   await guest.getByLabel('YOUR NICKNAME').fill('Blair')
   await ready(guest,'Join Reversi room')

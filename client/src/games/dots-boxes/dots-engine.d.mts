@@ -1,0 +1,17 @@
+export type Player=1|2;
+export type GameMove={index:number;player:Player;claimed:number[]};
+export type GameState={size:3|5|7;round:number;startingPlayer:Player;phase:'playing'|'finished';turn:Player;edges:number[];owners:number[];scores:number[];moves:GameMove[];winner:Player|null;draw:boolean;resignedBy:Player|null;lastClaimed:number[]};
+export const SIZES:readonly [3,5,7];
+export function validSize(n:number):boolean;
+export function edgeCount(n:number):number;
+export function boxCount(n:number):number;
+export function other(p:Player):Player;
+export function boxEdges(size:number,row:number,col:number):number[];
+export function edgeInfo(size:number,index:number):{orientation:'horizontal'|'vertical';row:number;col:number};
+export function freshGame(size?:number,round?:number,startingPlayer?:Player):GameState;
+export function playLine(state:GameState,index:number):GameState;
+export function resignGame(state:GameState):GameState;
+export function rematchGame(state:GameState,size?:number):GameState;
+export function replayGame(size:number,moves:GameMove[],round?:number,startingPlayer?:Player):GameState;
+export function snapshotAt(state:GameState,count:number):GameState;
+export function restoreGame(raw:unknown):GameState|null;

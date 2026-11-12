@@ -82,3 +82,10 @@ test('Reversi route is independent and preserves all multiplayer invite redirect
   assert.deepEqual(resolveHubRoute('/games/connect-four','?room=AB2345'),{page:'connect-four',redirect:null});
   assert.deepEqual(resolveHubRoute('/','?room=AB2345'),{page:'fourcast',redirect:'/games/fourcast?room=AB2345'});
 });
+
+test('Dots & Boxes has the tenth standalone route while older invite URLs remain valid',()=>{
+  assert.deepEqual(resolveHubRoute('/games/dots-boxes'),{page:'dots-boxes',redirect:null});
+  assert.deepEqual(resolveHubRoute('/games/dots-boxes/','?room=ABC123'),{page:'dots-boxes',redirect:null});
+  assert.deepEqual(resolveHubRoute('/games/reversi','?room=AB2345'),{page:'reversi',redirect:null});
+  assert.deepEqual(resolveHubRoute('/','?room=AB2345'),{page:'fourcast',redirect:'/games/fourcast?room=AB2345'});
+});
