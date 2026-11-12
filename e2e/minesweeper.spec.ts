@@ -12,7 +12,7 @@ async function savedGame(page: Page, level = 'easy') {
 
 test('Minesweeper remains available as Playgrove’s fourth game and is reachable without breaking other routes', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByText('09 GAMES AVAILABLE')).toBeVisible()
+  await expect(page.getByText('10 GAMES AVAILABLE')).toBeVisible()
   for (const name of ['Fourcast','Sudoku','Bingo Duel','Minesweeper']) {
     await expect(page.getByRole('heading',{name,exact:true})).toBeVisible()
   }
