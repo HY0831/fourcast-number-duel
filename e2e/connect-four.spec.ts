@@ -26,7 +26,7 @@ async function play(page: Page, column: number, expectedMoves: number) {
 test('Playgrove lists all five games and routes to Connect Four without breaking other games', async ({page}) => {
   await page.setViewportSize({width:390,height:844})
   await page.goto('/')
-  await expect(page.getByText('09 GAMES AVAILABLE')).toBeVisible()
+  await expect(page.getByText('10 GAMES AVAILABLE')).toBeVisible()
   for (const title of ['Fourcast','Sudoku','Bingo Duel','Minesweeper','Connect Four']) {
     await expect(page.getByRole('heading', {name:title,exact:true})).toBeVisible()
   }
