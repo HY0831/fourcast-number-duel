@@ -1,6 +1,6 @@
-import {useCallback,useEffect,useMemo,useRef,useState,type KeyboardEvent} from 'react'
+import {useCallback,useEffect,useRef,useState,type KeyboardEvent,type ReactNode} from 'react'
 import {io,type Socket} from 'socket.io-client'
-import {ArrowLeft,ArrowRight,Check,CheckCircle2,Copy,Flag,Gamepad2,History,Link2,RotateCcw,Share2,ShieldCheck,Users,Wifi,WifiOff,X} from 'lucide-react'
+import {ArrowLeft,ArrowRight,Check,CheckCircle2,Copy,Flag,Gamepad2,History,RotateCcw,Share2,ShieldCheck,Users,Wifi,WifiOff,X} from 'lucide-react'
 import {safeLocalStorage} from '../../playgrove/safeStorage'
 import {SIZES,edgeCount,edgeInfo,boxCount,playLine,freshGame,restoreGame,rematchGame,resignGame,snapshotAt,type GameState} from './dots-engine.mjs'
 import './dots-boxes.css'
@@ -34,7 +34,6 @@ const initialMode=(): 'local'|'online'=> {
 }
 const playerName=(names:[string,string],p:number)=>names[p-1]
 const labelFor=(p:number)=>p===1?'Blue':'Coral'
-const boxLabel=(i:number,size:number)=>'row '+(Math.floor(i/size)+1)+', column '+(i%size+1)
 const clip=async(text:string)=>{
   if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);return}
   const input=document.createElement('textarea');input.value=text;input.style.position='fixed';input.style.opacity='0'
@@ -125,7 +124,7 @@ function DotsBoard({state,names,enabled,onLine}:{state:GameState;names:[string,s
     </aside>
   </div>
 }
-function Setup({onBack,mode,onMode,children}:{onBack:()=>void;mode:'online'|'local';onMode:(mode:'online'|'local')=>void;children:React.ReactNode}){
+function Setup({mode,onMode,children}:{mode:'online'|'local';onMode:(mode:'online'|'local')=>void;children:ReactNode}){
   return <main className="db-entry">
     <section className="db-intro">
       <span className="db-eyebrow">GAME #10 · STRATEGY FOR TWO</span>
@@ -141,11 +140,11 @@ function Setup({onBack,mode,onMode,children}:{onBack:()=>void;mode:'online'|'loc
     <section className="db-panel db-start">{children}</section>
   </main>
 }
-function LocalMode({onBack,onMode}:{onBack:()=>void;onMode:(m:'online'|'local')=>void}){
+function LocalMode({onMode}:{onMode:(m:'online'|'local')=>void}){
   const [saved,setSaved]=useState(readLocal)
   const [started,setStarted]=useState(false)
   const [names,setNames]=useState<[string,string]>(saved?.names||['Player 1','Player 2'])
-  const [size,setSize]=useState(3|5|7>(saved?.state.size||5)
+  const [size,setSize]=useState<3|5|7>((saved?.state.size as 3|5|7)||5)
   const [state,setState]=useState<GameState>(saved?.state||freshGame())
   const [notice,setNotice]=useState('')
   useEffect(()=>{if(started)safeLocalStorage.setItem(LOCAL,JSON.stringify({names,state}))},[started,names,state])
@@ -159,7 +158,7 @@ function LocalMode({onBack,onMode}:{onBack:()=>void;onMode:(m:'online'|'local')=
     if(!window.confirm('Resign this round? Your opponent will be the winner.'))return
     setState(s=>resignGame(s))
   }
-  return !started?<Setup onBack={onBack} mode="local" onMode={onMode}>
+  return !started?<Setup mode="local" onMode={onMode}>
     <span className="db-eyebrow">LOCAL TWO-PLAYER</span><h2>Share one screen</h2>
     <p>No internet or room required after loading. Pass the phone to take turns.</p>
     {names.map((name,i)=><label key={i} className="db-label" htmlFor={'db-name-'+i}>Player {i+1}
@@ -188,7 +187,7 @@ function SizePicker({value,onChange}:{value:3|5|7;onChange:(n:3|5|7)=>void}){
       onClick={()=>onChange(n)}>{n}×{n}<span>{n===3?'Quick':n===5?'Classic':'Strategic'}</span></button>)}
   </div></div>
 }
-function OnlineMode({onBack,onActivityChange,onMode}:{onBack:()=>void;onActivityChange:(active:boolean)=>void;onMode:(m:'online'|'local')=>void}){
+function OnlineMode({onActivityChange,onMode}:{onActivityChange:(active:boolean)=>void;onMode:(m:'online'|'local')=>void}){
   const [connected,setConnected]=useState(false)
   const [room,setRoom]=useState<Room|null>(null)
   const [name,setName]=useState(()=>safeLocalStorage.getItem(NAME)||'')
@@ -271,7 +270,7 @@ function OnlineMode({onBack,onActivityChange,onMode}:{onBack:()=>void;onActivity
   const me=room?.players.find(p=>p.id===room.you)
   const myNumber=me?.number
   const canPlay=Boolean(room?.phase==='playing'&&room.roomPhase==='active'&&connected&&bothOnline&&room.turn===myNumber&&!busy)
-  return !room?<Setup onBack={onBack} mode="online" onMode={onMode}>
+  return !room?<Setup mode="online" onMode={onMode}>
     <div className="db-tabs" role="group" aria-label="Online room action">
       <button type="button" className={tab==='create'?'active':''} aria-pressed={tab==='create'} onClick={()=>setTab('create')}>Create room</button>
       <button type="button" className={tab==='join'?'active':''} aria-pressed={tab==='join'} onClick={()=>setTab('join')}>Join room</button>
@@ -327,8 +326,8 @@ export default function DotsBoxesPage({onBack,onActivityChange}:Props){
     <header className="db-top"><button className="db-header-button" type="button" onClick={onBack}><ArrowLeft size={17}/> All games</button>
       <span className="db-brand"><Gamepad2 size={20}/> playgrove<span>.</span></span>
       <span className="db-game-label">DOTS & BOXES</span></header>
-    {mode==='online'?<OnlineMode onBack={onBack} onMode={switchMode} onActivityChange={onActivityChange}/>:
-      <LocalMode onBack={onBack} onMode={switchMode}/>}
+    {mode==='online'?<OnlineMode onMode={switchMode} onActivityChange={onActivityChange}/>:
+      <LocalMode onMode={switchMode}/>}
     <footer className="db-footer">playgrove<span>.</span> · Ten games, one happy corner.</footer>
   </div></div>
 }
