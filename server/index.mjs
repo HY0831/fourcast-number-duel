@@ -7,6 +7,7 @@ import { GameError, GameStore, publicRoom } from './game-engine.mjs';
 import { BingoStore, publicBingoRoom } from './bingo-engine.mjs';
 import { ConnectFourStore, publicConnectFourRoom } from './connect-four-engine.mjs';
 import { ReversiStore, publicReversiRoom } from './reversi-engine.mjs';
+import { DotsStore, publicDotsRoom } from './dots-engine.mjs';
 
 const app = express();
 const httpServer = createServer(app);
@@ -19,9 +20,10 @@ const games = new GameStore();
 const bingos = new BingoStore();
 const connectFours = new ConnectFourStore();
 const reversis = new ReversiStore();
+const dots = new DotsStore();
 const here = dirname(fileURLToPath(import.meta.url));
 
-app.get('/health', (_req, res) => res.json({ status: 'ok', activeRooms: games.rooms.size, activeBingoRooms: bingos.rooms.size, activeConnectFourRooms: connectFours.rooms.size, activeReversiRooms: reversis.rooms.size }));
+app.get('/health', (_req, res) => res.json({ status: 'ok', activeRooms: games.rooms.size, activeBingoRooms: bingos.rooms.size, activeConnectFourRooms: connectFours.rooms.size, activeReversiRooms: reversis.rooms.size, activeDotsRooms: dots.rooms.size }));
 if (process.env.NODE_ENV === 'production') {
   const dist = join(here, '..', 'dist');
   app.use(express.static(dist));
@@ -52,6 +54,10 @@ function broadcastReversi(room) {
   }
 }
 
+function broadcastDots(room) {
+  for(const p of room.players)if(p.socketId)io.to(p.socketId).emit('dots:update',publicDotsRoom(room,p.id));
+}
+
 io.on('connection', (socket) => {
   let actionCount = 0;
   let windowStart = Date.now();
@@ -72,6 +78,7 @@ io.on('connection', (socket) => {
   }
 
   function attach(room, player) {
+    detachDots();
     detachBingo();
     detachConnectFour();
     detachReversi();
@@ -117,6 +124,7 @@ io.on('connection', (socket) => {
   }
 
   function attachBingo(room, player) {
+    detachDots();
     detach();
     detachConnectFour();
     detachReversi();
@@ -207,6 +215,7 @@ io.on('connection', (socket) => {
   socket.on('bingo:leave', safely(() => { detachBingo(); return {}; }));
 
   function attachConnectFour(room, player) {
+    detachDots();
     detach();
     detachBingo();
     detachReversi();
@@ -290,6 +299,7 @@ io.on('connection', (socket) => {
   socket.on('connect4:leave', safely(() => { detachConnectFour(); return {}; }));
 
   function attachReversi(room, player) {
+    detachDots();
     detach();
     detachBingo();
     detachConnectFour();
@@ -379,6 +389,63 @@ io.on('connection', (socket) => {
 
   socket.on('reversi:leave', safely(() => { detachReversi(); return {}; }));
 
+  function attachDots(room,player) {
+    detach();detachBingo();detachConnectFour();detachReversi();
+    if(socket.data.dotsCode&&(socket.data.dotsCode!==room.code||socket.data.dotsToken!==player.token))detachDots();
+    if(player.socketId&&player.socketId!==socket.id){
+      const previous=io.sockets.sockets.get(player.socketId);
+      previous?.leave('dots:'+room.code);
+      if(previous){previous.data.dotsCode=null;previous.data.dotsToken=null;}
+    }
+    player.socketId=socket.id;
+    socket.data.dotsCode=room.code;socket.data.dotsToken=player.token;
+    socket.join('dots:'+room.code);
+    room.updatedAt=Date.now();
+  }
+  function detachDots(){
+    const code=socket.data.dotsCode,token=socket.data.dotsToken;
+    if(!code||!token)return;
+    try{
+      const {room,player}=dots.authorize(code,token);
+      if(player.socketId===socket.id){player.socketId=null;room.updatedAt=Date.now();broadcastDots(room);}
+    }catch{/* Expired room */}
+    socket.leave('dots:'+code);
+    socket.data.dotsCode=null;socket.data.dotsToken=null;
+  }
+  function ownDots(){
+    if(!socket.data.dotsCode||!socket.data.dotsToken)throw new GameError('Join a Dots & Boxes room first.');
+    const {room,player}=dots.authorize(socket.data.dotsCode,socket.data.dotsToken);
+    if(player.socketId!==socket.id)throw new GameError('Your session moved to another device.');
+    return {room,player};
+  }
+  socket.on('dots:create',safely(({name,size})=>{
+    detachDots();
+    const {room,player}=dots.create(name,size);
+    attachDots(room,player);broadcastDots(room);
+    return {code:room.code,token:player.token,room:publicDotsRoom(room,player.id)};
+  }));
+  socket.on('dots:join',safely(({name,code})=>{
+    detachDots();
+    const {room,player}=dots.join(code,name);
+    attachDots(room,player);broadcastDots(room);
+    return {code:room.code,token:player.token,room:publicDotsRoom(room,player.id)};
+  }));
+  socket.on('dots:resume',safely(({code,token})=>{
+    const {room,player}=dots.join(code,null,token);
+    attachDots(room,player);broadcastDots(room);
+    return {code:room.code,token:player.token,room:publicDotsRoom(room,player.id)};
+  }));
+  socket.on('dots:line',safely(({index})=>{
+    const {room}=ownDots();dots.play(room.code,socket.data.dotsToken,index);broadcastDots(room);return {};
+  }));
+  socket.on('dots:resign',safely(()=>{
+    const {room}=ownDots();dots.resign(room.code,socket.data.dotsToken);broadcastDots(room);return {};
+  }));
+  socket.on('dots:rematch',safely(()=>{
+    const {room}=ownDots();dots.rematch(room.code,socket.data.dotsToken);broadcastDots(room);return {};
+  }));
+  socket.on('dots:leave',safely(()=>{detachDots();return {};}));
+
   socket.on('room:create', safely(({ name, mode }) => {
     detach();
     const { room, player } = games.create(name, mode);
@@ -431,10 +498,10 @@ io.on('connection', (socket) => {
   }));
 
   socket.on('room:leave', safely(() => { detach(); return {}; }));
-  socket.on('disconnect', () => { detach(); detachBingo(); detachConnectFour(); detachReversi(); });
+  socket.on('disconnect', () => { detach(); detachBingo(); detachConnectFour(); detachReversi(); detachDots(); });
 });
 
-const interval = setInterval(() => { games.cleanup(); bingos.cleanup(); connectFours.cleanup(); reversis.cleanup(); }, 10 * 60 * 1000);
+const interval = setInterval(() => { games.cleanup(); bingos.cleanup(); connectFours.cleanup(); reversis.cleanup(); dots.cleanup(); }, 10 * 60 * 1000);
 interval.unref();
 
 const port = Number(process.env.PORT || 3001);
