@@ -253,3 +253,9 @@
 .pg-reversi-card .pg-card-kicker{color:var(--pg-foliage)}
 .pg-reversi-play{background:var(--pg-foliage)}
 .pg-reversi-play:hover{background:var(--pg-redwood)}
+
+/* Playgrove Game #10 — Dots & Boxes */
+.pg-dots-card{border-top:5px solid #317D93}
+.pg-dots-symbol{background:#D4E6E8;color:#317D93}
+.pg-dots-card .pg-card-kicker{color:#317D93}
+.pg-dots-play{background:#28596A}.pg-dots-play:hover{background:#397C8F}
