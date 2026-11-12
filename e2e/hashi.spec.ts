@@ -14,8 +14,8 @@ const start=async(page:Page,title='First Crossing')=>{
 test('Playgrove discovers its eighth game and the curated 45-puzzle gallery',async({page})=>{
   await page.setViewportSize({width:390,height:844})
   await page.goto('/')
-  await expect(page.getByText('09 GAMES AVAILABLE')).toBeVisible()
-  await expect(page.locator('.pg-game-card:visible')).toHaveCount(9)
+  await expect(page.getByText('10 GAMES AVAILABLE')).toBeVisible()
+  await expect(page.locator('.pg-game-card:visible')).toHaveCount(10)
   await page.getByRole('button',{name:'Play Hashi'}).click()
   await expect(page).toHaveURL(/\/games\/hashi$/)
   await expect(page.getByRole('heading',{name:'Hashi: Bridges.'})).toBeVisible()
