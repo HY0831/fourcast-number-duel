@@ -4,6 +4,8 @@
 
 ## Available Games
 
+- **Dots & Boxes — Game #10.** Connect neighbouring dots, claim boxes by drawing the fourth side, and earn another turn each time you close a box. Choose 3×3 (Quick), 5×5 (Classic), or 7×7 (Strategic) boxes and play **online with a private room** or **local two-player on one device**. Includes live scores, owner colours, animations, move-history review, confirmed resignation, rematches, reconnect and local browser saves. No database required. Play at `/games/dots-boxes`. See [DOTS_BOXES_RULES.md](DOTS_BOXES_RULES.md).
+
 - **Reversi** — a classic two-player 8×8 strategy duel with **online private rooms or same-device local play** (no network required after loading). Flip captured Black/White discs, use highlighted legal moves, automatically pass if no move exists, review historical board positions without altering the current game, and resign with confirmation. Online games support reconnection, private invitations and mutually agreed rematches; local games save progress on the same browser, and rematches swap colours. Reduced-motion disc animations are supported. Play at `/games/reversi`. See [REVERSI_RULES.md](REVERSI_RULES.md).
 
 
@@ -85,7 +87,7 @@ After it is hosted, the host creates a private room and sends an invite link or 
 
 ## Personal-use deployment
 
-Playgrove is maintained as a free, small game collection for two people. All nine games use the existing Render Node service and no external database. Fourcast, Bingo Duel, Connect Four and **online** Reversi support room codes and reconnect tokens **while the same server process remains alive**. **Local Reversi** is saved in the browser and works without an online room or database. Solo games save progress locally in your browser. If the service sleeps, is redeployed or restarts, online room states reset, but you can create a fresh room in seconds.
+Playgrove is maintained as a free, small game collection for two people. All ten games use the existing Render Node service and no external database. Fourcast, Bingo Duel, Connect Four, **online** Reversi and **online** Dots & Boxes support room codes and reconnect tokens **while the same server process remains alive**. **Local Reversi** is saved in the browser and works without an online room or database. Solo games save progress locally in your browser. If the service sleeps, is redeployed or restarts, online room states reset, but you can create a fresh room in seconds.
 
 Before publishing code changes, check for active online matches to avoid disrupting players. See the deployment and test checklist in `PROJECT_PLAN.md`.
 
